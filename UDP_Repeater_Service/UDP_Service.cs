@@ -29,21 +29,6 @@ using System.IO;
 
 
 
-
-/// <summary> 
-///  Class Name: TheMainProgram  <br/><br/> 
-///
-///  Description: Runs the main part of the whole repeater service. Turns on the repeater thread <br/>
-///  and then continutes listening until input is received from the GUI. At which point, the "UDP_Repeater_Config.json <br/>
-///  and the JsonData Object is updated. It then restarts the repeater thread with the updated settings. <br/><br/>
-///
-///  Inputs: None <br/><br/>
-///  
-///  Returns:  None
-/// </summary>
-
-
-
 namespace UDP_Repeater_Service
 {
     /// <summary>

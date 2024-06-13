@@ -103,10 +103,8 @@ namespace JsonDataNameSpace
             Thread.Sleep(1000);     // this makes sure the Event log is created before being written to
             eventLog.Source = "UDP_Repeater_Backend";
                 // Write an entry to the event log.
-            eventLog.WriteEntry(e.ToString(), EventLogEntryType.Error, 722);
+            eventLog.WriteEntry(e.Message, EventLogEntryType.Error);
         }
     }
-
-
 }
 
