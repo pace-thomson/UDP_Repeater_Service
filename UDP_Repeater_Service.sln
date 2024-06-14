@@ -5,6 +5,8 @@ VisualStudioVersion = 17.10.34928.147
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UDP_Repeater_Service", "UDP_Repeater_Service\UDP_Repeater_Service.csproj", "{0F235598-AC16-4C42-82DB-867CC0E3BE9E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UDP_Repeater_GUI", "UDP_Test_GUI\UDP_Repeater_GUI.csproj", "{FF4CC2F7-7D9E-45D1-9171-5663EC939E56}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{0F235598-AC16-4C42-82DB-867CC0E3BE9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0F235598-AC16-4C42-82DB-867CC0E3BE9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0F235598-AC16-4C42-82DB-867CC0E3BE9E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF4CC2F7-7D9E-45D1-9171-5663EC939E56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF4CC2F7-7D9E-45D1-9171-5663EC939E56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF4CC2F7-7D9E-45D1-9171-5663EC939E56}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF4CC2F7-7D9E-45D1-9171-5663EC939E56}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

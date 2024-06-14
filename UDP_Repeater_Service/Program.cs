@@ -7,13 +7,13 @@
 //
 // Language:         Visual C#
 // Target:           Windows PC
-// Operating System: Windows 10 Enterprise
+// Operating System: Windows 11 Enterprise
 // Compiler:         Visual Studio .Net 2022
 //
 // Change History:
 //
-// Version  Date    Author          Description
-// 1.0      ---     Jade Thomson    Initial Release
+// Version  Date        Author           Description
+// 1.0      ---     Jade Pace Thomson    Initial Release
 //---------------------------------------------------
 
 using System.ServiceProcess;

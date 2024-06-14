@@ -7,22 +7,21 @@
 //
 // Language:         Visual C#
 // Target:           Windows PC
-// Operating System: Windows 10 Enterprise
+// Operating System: Windows 11 Enterprise
 // Compiler:         Visual Studio .Net 2022
 //
 //          Change History:
 //
-// Version  Date    Author          Description
-// 1.0      ---     Jade Thomson    Initial Release
+// Version  Date        Author           Description
+// 1.0      ---     Jade Pace Thomson    Initial Release
 //---------------------------------------------------
 
-using System;
 using System.ServiceProcess;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Repeater;
 using GUIreceiver;
-using JsonDataNameSpace;
+using BackendClassNameSpace;
 using Newtonsoft.Json;
 using System.Threading;
 using System.IO;
@@ -41,9 +40,7 @@ namespace UDP_Repeater_Service
         ///  Class Name: UDP_Service  <br/><br/> 
         ///  Parent Class: ServiceBase  <br/><br/> 
         ///
-        ///  Description: Runs the main part of the whole repeater service. Turns on the repeater thread <br/>
-        ///  and then continutes listening until input is received from the GUI. At which point, the "UDP_Repeater_Config.json <br/>
-        ///  and the JsonData Object is updated. It then restarts the repeater thread with the updated settings. <br/><br/>
+        ///  Description: Creates the service side of things. This was auto-generated as part of this template. <br/><br/>
         ///
         ///  Inputs: None <br/><br/>
         ///  
@@ -54,38 +51,46 @@ namespace UDP_Repeater_Service
             InitializeComponent();
         }
 
+        /// <summary> 
+        ///  Class Name: UDP_Service  <br/><br/> 
+        ///  Parent Class: ServiceBase  <br/><br/> 
+        ///
+        ///  Description: When windows starts this service, it runs the backend program.<br/>
+        ///  This was auto-generated as part of this template. <br/><br/>
+        ///
+        ///  Inputs: None <br/><br/>
+        ///  
+        ///  Returns:  None
+        /// </summary>
         protected override void OnStart(string[] args)
         {
             TheMainProgram.main();
-        }
-
-        protected override void OnStop()
-        {
         }
     }
 }
 
 
 /// <summary>
-/// Houses all of the functionality that sets up and runs the program
+/// Houses all of the functionality that sets up and runs the program Repeater Service
 /// </summary>
 class TheMainProgram
 {
     /// <summary> 
     ///  Class Name: TheMainProgram  <br/><br/> 
     ///
-    ///  Description: Creates "UDP_Repeater_Config.json" if it doesn't already exist. Then it creates a JsonData object and <br/>
+    ///  Description: Creates "UDP_Repeater_Config.json" if it doesn't already exist. Then it creates a Backend object and <br/>
     ///  updates it's values to match those found under currentConfig within "UDP_Repeater_Config.json".<br/><br/>
     ///
     ///  Inputs: None <br/><br/>
     ///  
-    ///  Returns:  JsonData jsonData - A new JsonData object.
+    ///  Returns:  Backend backendObject - A new Backend object.
     /// </summary>
-    public static JsonData SetConfig()
+    public static Backend SetConfig()
     {
-        if (!File.Exists("UDP_Repeater_Config.json"))
+        if (!File.Exists("UDP_Repeater_Config.json"))   // actual path: "C:\\Windows\\SysWOW64\\UDP_Repeater_Config.json"
         {
-            string defaults = @"
+                                // if UDP_Repeater_Config.json doense't exist, it make it and then poplulates it with this string
+            string defaults = @"        
                 {
                     ""currentConfig"": {
                         ""receiveFrom"": {
@@ -114,57 +119,57 @@ class TheMainProgram
             File.WriteAllText("UDP_Repeater_Config.json", defaults);
         }
 
-        Console.WriteLine("Current IP and Port Configuration: ");
         string jsonString = File.ReadAllText("UDP_Repeater_Config.json");
 
 
         JObject jsonObject = JObject.Parse(jsonString);
 
-        string receiveIp = (string)jsonObject["currentConfig"]["receiveFrom"]["ip"];
-        string receivePort = (string)jsonObject["currentConfig"]["receiveFrom"]["port"];
-        string sendIp = (string)jsonObject["currentConfig"]["sendTo"]["ip"];
-        string sendPort = (string)jsonObject["currentConfig"]["sendTo"]["port"];
+        string receiveIp    =   (string)jsonObject["currentConfig"]["receiveFrom"]["ip"];
+        string receivePort  =   (string)jsonObject["currentConfig"]["receiveFrom"]["port"];
+        string sendIp       =   (string)jsonObject["currentConfig"]["sendTo"]["ip"];
+        string sendPort     =   (string)jsonObject["currentConfig"]["sendTo"]["port"];
+        int frequency       =   (int)jsonObject["inactivitySettings"]["frequency"];
+        string interval     =   (string)jsonObject["inactivitySettings"]["interval"];
 
-        JsonData jsonData = new JsonData(receiveIp, receivePort, sendIp, sendPort);
+        Backend backendObject = new Backend(receiveIp, receivePort, sendIp, sendPort, frequency, interval);
 
-        Console.WriteLine(jsonString);
-        return jsonData;
+        return backendObject;
     }
 
 
     /// <summary> 
     ///  Class Name: TheMainProgram  <br/><br/> 
     ///
-    ///  Description: Restores the values in <paramref name="jsonData"/> to match those found in "UDP_Repeater_Config.json"  <br/>
-    ///  under defaultSettings. Also updates the settings under currentConfig the same way.<br/><br/>
+    ///  Description: Restores the values in <paramref name="backendObject"/> to match those found in "UDP_Repeater_Config.json"  <br/>
+    ///  under defaultSettings. Also updates the settings under currentConfig in "UDP_Repeater_Config.json" the same way.<br/><br/>
     ///
     ///  Inputs:  <br/>
-    ///  JsonData <paramref name="jsonData"/> - The JsonData update with the default settings. <br/><br/>
+    ///  Backend <paramref name="backendObject"/> - The Backend object to update with the default settings. <br/><br/>
     ///  
     ///  Returns:  None
     /// </summary>
-    public static void RestoreToDefaults(JsonData jsonData)
+    public static void RestoreToDefaults(Backend backendObject)
     {
         string jsonString = File.ReadAllText("UDP_Repeater_Config.json");
 
 
         JObject jsonObject = JObject.Parse(jsonString);
 
-        string receiveIp = (string)jsonObject["defaultSettings"]["receiveFrom"]["ip"];
-        string receivePort = (string)jsonObject["defaultSettings"]["receiveFrom"]["port"];
-        string sendIp = (string)jsonObject["defaultSettings"]["sendTo"]["ip"];
-        string sendPort = (string)jsonObject["defaultSettings"]["sendTo"]["port"];
+        string receiveIp   =  (string)jsonObject["defaultSettings"]["receiveFrom"]["ip"];
+        string receivePort =  (string)jsonObject["defaultSettings"]["receiveFrom"]["port"];
+        string sendIp      =  (string)jsonObject["defaultSettings"]["sendTo"]["ip"];
+        string sendPort    =  (string)jsonObject["defaultSettings"]["sendTo"]["port"];
 
-        jsonObject["currentConfig"]["receiveFrom"]["ip"] = receiveIp;
-        jsonObject["currentConfig"]["receiveFrom"]["port"] = receivePort;
-        jsonObject["currentConfig"]["sendTo"]["ip"] = sendIp;
-        jsonObject["currentConfig"]["sendTo"]["port"] = sendPort;
+        jsonObject["currentConfig"]["receiveFrom"]["ip"]   =  receiveIp;
+        jsonObject["currentConfig"]["receiveFrom"]["port"] =  receivePort;
+        jsonObject["currentConfig"]["sendTo"]["ip"]        =  sendIp;
+        jsonObject["currentConfig"]["sendTo"]["port"]      =  sendPort;
 
 
-        jsonData.receiveIp = receiveIp;
-        jsonData.receivePort = int.Parse(receivePort);
-        jsonData.sendIp = sendIp;
-        jsonData.sendPort = int.Parse(sendPort);
+        backendObject.receiveIp    =  receiveIp;
+        backendObject.receivePort  =  int.Parse(receivePort);
+        backendObject.sendIp       =  sendIp;
+        backendObject.sendPort     =  int.Parse(sendPort);
 
         var stringThing = JsonConvert.SerializeObject(jsonObject, Formatting.Indented);
         File.WriteAllText("UDP_Repeater_Config.json", jsonString);
@@ -173,40 +178,43 @@ class TheMainProgram
     /// <summary> 
     ///  Class Name: TheMainProgram  <br/><br/> 
     ///
-    ///  Description: Restores the values in "UDP_Repeater_Config.json" to match those found in the new <paramref name="jsonData"/>. <br/><br/>
+    ///  Description: Restores the values in "UDP_Repeater_Config.json" to match those found in the new <paramref name="backendObject"/>. <br/><br/>
     ///
     ///  Inputs:  <br/>
-    ///  JsonData <paramref name="jsonData"/> - The JsonData update with the new settings. <br/><br/>
+    ///  Backend <paramref name="backendObject"/> - The Backend object to update with the new settings. <br/><br/>
     ///  
     ///  Returns:  None
     /// </summary>
-    public static void UpdateConfigJson(JsonData jsonData)
+    public static void UpdateConfigJson(Backend backendObject)
     {
         string jsonString = File.ReadAllText("UDP_Repeater_Config.json");
 
         JObject jsonObject = JObject.Parse(jsonString);
 
         // This checks to see if the selected option was to to change the defaults
-        if (jsonData.sendPort == -1 || jsonData.receivePort == -1)
+        if (backendObject.sendPort == -1 || backendObject.receivePort == -1)
         {
-            if (jsonData.sendPort == -1)    // if the reconfigure default RECEIVE was chosen
+            if (backendObject.sendPort == -1)    // if the reconfigure default RECEIVE was chosen
             {
-                jsonObject["defaultSettings"]["receiveFrom"]["ip"] = jsonData.receiveIp;
-                jsonObject["defaultSettings"]["receiveFrom"]["port"] = jsonData.receivePort.ToString();
+                jsonObject["defaultSettings"]["receiveFrom"]["ip"]    =   backendObject.receiveIp;
+                jsonObject["defaultSettings"]["receiveFrom"]["port"]  =   backendObject.receivePort.ToString();
             }
-            else if (jsonData.receivePort == -1)    // if the reconfigure default SEND was chosen
+            else if (backendObject.receivePort == -1)    // if the reconfigure default SEND was chosen
             {
-                jsonObject["defaultSettings"]["sendTo"]["ip"] = jsonData.sendIp;
-                jsonObject["defaultSettings"]["sendTo"]["port"] = jsonData.sendPort.ToString();
+                jsonObject["defaultSettings"]["sendTo"]["ip"]   =  backendObject.sendIp;
+                jsonObject["defaultSettings"]["sendTo"]["port"] =  backendObject.sendPort.ToString();
             }
         }
         else              // normal (non-default changing) configuration was chosen
         {
-            jsonObject["currentConfig"]["receiveFrom"]["ip"] = jsonData.receiveIp;
-            jsonObject["currentConfig"]["receiveFrom"]["port"] = jsonData.receivePort.ToString();
-            jsonObject["currentConfig"]["sendTo"]["ip"] = jsonData.sendIp;
-            jsonObject["currentConfig"]["sendTo"]["port"] = jsonData.sendPort.ToString();
+            jsonObject["currentConfig"]["receiveFrom"]["ip"]    =   backendObject.receiveIp;
+            jsonObject["currentConfig"]["receiveFrom"]["port"]  =   backendObject.receivePort.ToString();
+            jsonObject["currentConfig"]["sendTo"]["ip"]         =   backendObject.sendIp;
+            jsonObject["currentConfig"]["sendTo"]["port"]       =   backendObject.sendPort.ToString();
         }
+                        // always updates the inactivitySettings
+        jsonObject["inactivitySettings"]["frequency"]  =  backendObject.frequency.ToString();
+        jsonObject["inactivitySettings"]["interval"]   =  backendObject.interval;
 
         var stringThing = JsonConvert.SerializeObject(jsonObject, Formatting.Indented);
         File.WriteAllText("UDP_Repeater_Config.json", stringThing);
@@ -219,8 +227,9 @@ class TheMainProgram
     ///  Class Name: TheMainProgram  <br/><br/> 
     ///
     ///  Description: Runs the main part of the whole repeater service. Turns on the repeater thread <br/>
-    ///  and then continutes listening until input is received from the GUI. At which point, the "UDP_Repeater_Config.json <br/>
-    ///  and the JsonData Object is updated. It then restarts the repeater thread with the updated settings. <br/><br/>
+    ///  and then continutes listening until a new configuraton is received from the GUI. At which point, <br/>
+    ///  the "UDP_Repeater_Config.json and the Backend Object is updated. It then restarts the repeater <br/>
+    ///  thread with the updated settings. <br/><br/>
     ///
     ///  Inputs: None <br/><br/>
     ///  
@@ -229,31 +238,31 @@ class TheMainProgram
     public static async void main()
     {
         CancellationTokenSource cts = new CancellationTokenSource();
-        JsonData jsonData = SetConfig();
+        Backend backendObject = SetConfig();
 
         while (true)
         {
-            // Starts the Sending/Receiving thread
-            Thread repeaterThread = new Thread(() => RepeaterClass.main(jsonData, cts.Token));
+                    // Starts the Sending/Receiving thread
+            Thread repeaterThread = new Thread(() => RepeaterClass.main(backendObject, cts.Token));
             repeaterThread.Start();
 
-            // Use Task<T> to call the method asynchronously and get the result
-            Task<JsonData> receiveFromGUITask = Task.Run(() => ReceiveFromGUI.main(jsonData));
-            JsonData newjsonData = await receiveFromGUITask; // Await the task to get the result
+                    // Use Task<Backend> to call the method asynchronously and get the backend object it returns
+            Task<Backend> receiveFromGUITask = Task.Run(() => ReceiveFromGUI.main(backendObject));
+            Backend newbackendObject = await receiveFromGUITask; 
 
             cts.Cancel();                           // Signal the send thread to stop
             repeaterThread.Join();                  // Wait for the send thread to complete
             cts = new CancellationTokenSource();    // Reset the cancellation token for the next iteration
 
-            
-            if (jsonData.Equals(newjsonData))       // this checks to see if the option was to restore defaults, if not it updates jsonData
+                    // this checks to see if the option was to restore defaultst
+            if (backendObject.Equals(newbackendObject))       
             {
-                RestoreToDefaults(jsonData);
+                RestoreToDefaults(backendObject);
             }
-            else
+            else    // otherwise, some settings were changed, so we need to update our things
             {
-                UpdateConfigJson(newjsonData);
-                jsonData = SetConfig();             // updates jsonData to match what's in config.json
+                UpdateConfigJson(newbackendObject);  // updates config.json
+                backendObject = SetConfig();         // updates backendObject to match what's in config.json
             }
         }
     }

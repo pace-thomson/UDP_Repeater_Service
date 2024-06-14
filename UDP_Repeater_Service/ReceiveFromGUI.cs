@@ -8,13 +8,13 @@
 //
 // Language:         Visual C#
 // Target:           Windows PC
-// Operating System: Windows 10 Enterprise
+// Operating System: Windows 11 Enterprise
 // Compiler:         Visual Studio .Net 2022
 //
 //          Change History:
 //
-// Version  Date    Author          Description
-// 1.0      ---     Jade Thomson    Initial Release
+// Version  Date        Author           Description
+// 1.0      ---     Jade Pace Thomson    Initial Release
 //---------------------------------------------------
 
 
@@ -22,7 +22,7 @@ using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using JsonDataNameSpace;
+using BackendClassNameSpace;
 
 namespace GUIreceiver
 {
@@ -60,27 +60,28 @@ namespace GUIreceiver
             }
             catch ( Exception e ) 
             {
-                JsonData.Logger(e);
+                Backend.Logger(e);
                 return "Exception met".Split(',');
             }
         }
+
         /// <summary> 
         ///  Class Name: ReceiveFromGUI  <br/><br/> 
         ///
         ///  Description: The main function of the ReceiveFromGUI class. Listens for information, and then updates <br/>
-        ///  jsonData based on the request fromthe GUI.<br/><br/>
+        ///  backendObject based on the request fromthe GUI.<br/><br/>
         ///
         ///  Inputs:  <br/>
-        ///  JsonData <paramref name="jsonData"/> - The JsonData object to supply configuraiton information <br/><br/>
+        ///  Backend <paramref name="backendObject"/> - The Backend object to supply configuraiton information <br/><br/>
         ///  
-        ///  Returns:  JsonData newjsonData - The new and updated JsonData object.
+        ///  Returns:  Backend newbackendObject - The new and updated Backend object.
         /// </summary>
-        public static JsonData main(JsonData jsonData)
+        public static Backend main(Backend backendObject)
         {
-            JsonData newjsonData = new JsonData(jsonData.receiveIp, 
-                                                jsonData.receivePort.ToString(), 
-                                                jsonData.sendIp, 
-                                                jsonData.sendPort.ToString());
+                    // a new backendObject gets made to compare to the old one when this function returns
+            Backend newbackendObject = new Backend(backendObject.receiveIp, backendObject.receivePort.ToString(),
+                                                   backendObject.sendIp, backendObject.sendPort.ToString(),
+                                                   backendObject.frequency, backendObject.interval);
 
                     // This resets the send or receive data if those options are selected
                     // and does nothing if defaults is selected, which is handled where this is called
@@ -89,27 +90,31 @@ namespace GUIreceiver
                     // dataParts[2] is mode 
             switch (dataParts[2])
             {
-                case "Receive":
-                    newjsonData.receiveIp = dataParts[0];
-                    newjsonData.receivePort = int.Parse(dataParts[1]);
+                case "Receiving From":
+                    newbackendObject.receiveIp = dataParts[0];
+                    newbackendObject.receivePort = int.Parse(dataParts[1]);
                     break;
-                case "Send":
-                    newjsonData.sendIp = dataParts[0];
-                    newjsonData.sendPort = int.Parse(dataParts[1]);
+                case "Sending To":
+                    newbackendObject.sendIp = dataParts[0];
+                    newbackendObject.sendPort = int.Parse(dataParts[1]);
                     break;
-                case "Default_Send":
-                    newjsonData.sendIp = dataParts[0];
-                    newjsonData.sendPort = int.Parse(dataParts[1]);
-                    newjsonData.receivePort = -1;                       // setting the untouched port to -1 lets UpdateConfigJson 
-                    break;                                              // know that we want to change the defaults
-                case "Default_Receive":
-                    newjsonData.receiveIp = dataParts[0];
-                    newjsonData.receivePort = int.Parse(dataParts[1]);
-                    newjsonData.sendPort = -1;                          // setting the untouched port to -1 lets UpdateConfigJson 
-                    break;                                              // know that we want to change the defaults
+                case "Default Send":
+                    newbackendObject.sendIp = dataParts[0];
+                    newbackendObject.sendPort = int.Parse(dataParts[1]);
+                    newbackendObject.receivePort = -1;                       // setting the untouched port to -1 lets UpdateConfigJson 
+                    break;                                                   // know that we want to change the defaults
+                case "Default Receive":
+                    newbackendObject.receiveIp = dataParts[0];
+                    newbackendObject.receivePort = int.Parse(dataParts[1]);
+                    newbackendObject.sendPort = -1;                          // setting the untouched port to -1 lets UpdateConfigJson 
+                    break;                                                   // know that we want to change the defaults
+                case "inactive":
+                    newbackendObject.frequency = int.Parse(dataParts[0]);
+                    newbackendObject.interval = dataParts[1];
+                    break;
             }
 
-            return newjsonData; 
+            return newbackendObject; 
         }
     }
 }
