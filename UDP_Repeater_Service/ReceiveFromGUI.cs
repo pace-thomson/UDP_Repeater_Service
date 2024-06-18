@@ -60,7 +60,7 @@ namespace GUIreceiver
             }
             catch ( Exception e ) 
             {
-                Backend.Logger(e);
+                Backend.ExceptionLogger(e);
                 return "Exception met".Split(',');
             }
         }

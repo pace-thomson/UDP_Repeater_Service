@@ -23,11 +23,12 @@
 using System.Threading;
 using System.Threading.Tasks;
 using System.Net.Sockets;
-using System.Net;
 using System.Text;
 using BackendClassNameSpace;
 using System;
 using System.Timers;
+using SharpPcap;
+using System.Linq;
 
 
 namespace Repeater
@@ -108,8 +109,6 @@ namespace Repeater
                 mostRecentTimestamp = DateTime.Now;
 
                 Backend.InactivityLogger(consecutiveEventsFired, backendObject.frequency, backendObject.interval);
-
-                Console.WriteLine("\n\n Logged a new Inactive Period at {0}\n consecutiveEventsFired = {1}\n", DateTime.Now, consecutiveEventsFired);
             }
         }
 
@@ -138,18 +137,24 @@ namespace Repeater
     /// </summary>
     class RepeaterClass
     {
+                /// <summary> A Backend object that we use to get the configuration settings. </summary>
+        public static Backend backendObject { get; set; }
+
+                /// <summary> A timerClass object that we use to get the update the last received packet time. </summary>
+        public static TimerClass timer { get; set; }
+
+
         /// <summary> 
         ///  Class Name: RepeaterClass  <br/> <br/>
         ///
         ///  Description: Sends the processed package out <br/><br/>
         ///
         ///  Inputs:  <br/>
-        ///  byte[] <paramref name="messageBytes"/> - The byte array payload of the received packet <br/>
-        ///  Backend <paramref name="backendObject"/> - The Backend object to supply our send IP and Port <br/><br/>
+        ///  byte[] <paramref name="messageBytes"/> - The byte array payload of the received packet <br/><br/>
         ///  
         ///  Returns:  None
         /// </summary>
-        public static void SendMessageOut(byte[] messageBytes, Backend backendObject)
+        public static void SendMessageOut(byte[] messageBytes)
         {
             using (UdpClient sender = new UdpClient())
             {
@@ -159,27 +164,7 @@ namespace Repeater
                 }
                 catch (Exception e)
                 {
-                    Backend.Logger(e);
-                }
-                sender.Close();
-            }
-        }
-
-                // just the testing sender, stands in for network that has the threats
-        public static void TestingSender()
-        {
-            using (UdpClient sender = new UdpClient())
-            {
-                try
-                {
-                    byte[] bytes = Encoding.ASCII.GetBytes("987.6.5.4,4567,722 and whatever");
-
-                    sender.Send(bytes, bytes.Length, "127.0.0.255", 7654);
-
-                }
-                catch (Exception e)
-                {
-                    Backend.Logger(e);
+                    Backend.ExceptionLogger(e);
                 }
                 sender.Close();
             }
@@ -192,22 +177,21 @@ namespace Repeater
         ///  Description: Sends packet information to the GUI <br/><br/>
         ///
         ///  Inputs:  <br/>
-        ///  byte[] <paramref name="messageBytes"/> - The byte array payload of the received packet <br/>
-        ///  Backend <paramref name="backendObject"/> - The Backend object to supply our configuration information <br/><br/>
+        ///  byte[] <paramref name="messageBytes"/> - The byte array payload of the received packet <br/><br/>
         ///  
         ///  Returns:  None
         /// </summary>
-        public static void SendToGUI(byte[] messageBytes, Backend backendObject)
+        public static void SendToGUI(byte[] messageBytes)
         {
             using (UdpClient sender = new UdpClient())
             {
                 try
                 {
-                    string ipSentTo = backendObject.sendIp;
-                    string portSentTo = backendObject.sendPort.ToString();
+                    string receiveIp = backendObject.receiveIp;
+                    string receivePort = backendObject.receivePort.ToString();
                     string dataLength = messageBytes.Length.ToString();
 
-                    byte[] bytes = Encoding.ASCII.GetBytes(ipSentTo + "," + portSentTo + "," + dataLength);
+                    byte[] bytes = Encoding.ASCII.GetBytes(receiveIp + "," + receivePort + "," + dataLength);
 
 
                     sender.Send(bytes, bytes.Length, "127.0.0.1", 50000);
@@ -215,7 +199,7 @@ namespace Repeater
                 }
                 catch (Exception e)
                 {
-                    Backend.Logger(e);
+                    Backend.ExceptionLogger(e);
                 }
                 sender.Close();
             }
@@ -224,90 +208,113 @@ namespace Repeater
         /// <summary> 
         ///  Class Name: RepeaterClass  <br/><br/>
         ///
-        ///  Description: Continually listens for packets. Whenver a packet<br/>
-        ///  is received, one packet is sent out to the target machine, and another is sent to the GUI.<br/><br/>
+        ///  Description: Continually listens for packets in promiscuous mode. Whenver a packet is received, <br/>
+        ///  a packet is sent out to the target machine, and another one is sent to the GUI. <br/><br/>
         ///
         ///  Inputs:  <br/>
-        ///  CancellationToken <paramref name="token"/> - A token that signal a configuration change was made, so this task need to restart. <br/>
-        ///  Backend <paramref name="backendObject"/> - The Backend object to supply IP and Port Configurations. <br/>
-        ///  TimerClass <paramref name="timer"/> - The timer oject, so that we can update it when we send new packets. <br/><br/>
+        ///  CancellationToken <paramref name="token"/> - A token that signal a configuration change was made, so this task need to restart. <br/><br/>
         ///  
         ///  Returns:  None
         /// </summary>
-        public static void StartReceiver(Backend backendObject, CancellationToken token, TimerClass timer)
+        public static void StartReceiver(CancellationToken token)
         {
+
             Thread.Sleep(1000);     // This HAS TO STAY or else the old port won't be closed by the time this runs
 
-            UdpClient listener = new UdpClient(backendObject.receivePort);
-            IPEndPoint senderEndPoint = new IPEndPoint(IPAddress.Any, 0);
+            var devices = CaptureDeviceList.Instance;
 
-            try
+                // If no devices were found, log an error
+            if (devices.Count < 1)
             {
-                while (true)
+                Backend.ExceptionLogger(new Exception("No network devices found on current machine."));
+                return;
+            }
+
+                // gets the ethernet device
+            var device = devices.FirstOrDefault(dev => dev.Description.Contains("Ethernet"));
+
+
+                // Register our handler function to the 'packet arrival' event
+            device.OnPacketArrival += new PacketArrivalEventHandler(device_OnPacketArrival);
+
+                // Open the device for capturing
+            int readTimeoutMilliseconds = 1000;
+            device.Open(DeviceModes.Promiscuous, readTimeoutMilliseconds);
+
+                // filters for out listening port
+            device.Filter = String.Format("udp port {0}", backendObject.receivePort);
+
+            Thread captureThread = new Thread(() =>
+            {
+                // Start the capturing process
+                device.StartCapture();
+
+                try
                 {
-                            // checks each time to make sure calling function hasn't told this one to stop
-                    if (token.IsCancellationRequested)      
+                    while (!token.IsCancellationRequested)
                     {
-                        listener.Close();
-                        return;
+                        Thread.Sleep(1000);
                     }
-
-                    byte[] messageBytes = listener.Receive(ref senderEndPoint);
-
-                            // actual sending section
-                    SendMessageOut(messageBytes, backendObject);
-
-                            // sending to GUI section
-                    SendToGUI(messageBytes, backendObject);
-
-                            // updates our most received packet time 
-                    timer.UpdateLastReceivedTime(DateTime.Now);
-
                 }
-            }
-            catch (Exception e)
-            {
-                Backend.Logger(e);
-            }
+                finally
+                {
+                    device.StopCapture();
+                    device.Close();
+                }
+            });
 
-            finally 
-            { 
-                listener.Close(); 
-            }
-            
+            captureThread.Start();
+            captureThread.Join();
+
+            return;
+        }
+
+        /// <summary> 
+        ///  Class Name: RepeaterClass  <br/><br/>
+        ///
+        ///  Description: Continually listens for packets in promiscuous mode. Whenver a packet is received, <br/>
+        ///  a packet is sent out to the target machine, and another one is sent to the GUI. <br/><br/>
+        ///
+        ///  Inputs:  <br/>
+        ///  object <paramref name="sender"/> - The sender oject, I don't us it. <br/>
+        ///  PacketCapture <paramref name="e"/> - The captured packet. <br/><br/>
+        ///  
+        ///  Returns:  None
+        /// </summary>
+        private static void device_OnPacketArrival(object sender, PacketCapture e)
+        {
+
+            RawCapture rawPacket = e.GetPacket();
+            byte[] payload = rawPacket.Data;
+
+                // actual sending section
+            SendMessageOut(payload);
+
+                // sending to GUI section
+            SendToGUI(payload);
+
+                // update last received
+            timer.UpdateLastReceivedTime(DateTime.Now);
         }
 
         /// <summary> 
         ///  Class Name: RepeaterClass  <br/><br/> 
         ///
-        ///  Description: The main function of the RepeaterClass. Starts and runs the StartReceiver funtion in it's own task. <br/><br/>
+        ///  Description: The main function of the RepeaterClass. Starts and runs the StartReceiver funtion <br/>
+        ///  in it's own task. Also initializes the backendOjbect and timer data members. <br/><br/>
         ///
         ///  Inputs:  <br/>
-        ///  Backend <paramref name="backendObject"/> - The Backend object to supply confiiguraiton information <br/>
-        ///  CancellationToken <paramref name="token"/> - A token that signal a configuration change was made, so this task need to restart. <br/><br/>
+        ///  Backend <paramref name="BackendObject"/> - The Backend object to supply confiiguraiton information <br/>
+        ///  CancellationToken <paramref name="token"/> - A token that signals a configuration change was made, so this task needs to restart. <br/><br/>
         ///  
         ///  Returns:  None
         /// </summary>
-        public async static void main(Backend backendObject, CancellationToken token)
+        public async static void main(Backend BackendObject, CancellationToken token)
         {
-            TimerClass timer = new TimerClass(backendObject);
+            backendObject = BackendObject;
+            timer = new TimerClass(BackendObject);
 
-            Task.Run(() => StartReceiver(backendObject, token, timer));
-
-            Thread.Sleep(500);
-            Thread test_sender = new Thread(() => {
-                for (int i = 0; i < 20; i++)
-                {
-                    if (token.IsCancellationRequested)
-                    {
-                        Backend.Logger(new Exception("Cancellation Requested"));
-                        break;
-                    }
-                    TestingSender();
-                    Thread.Sleep(1000);
-                }
-            });
-            test_sender.Start();
+            Task.Run(() => StartReceiver(token));
 
             return;
         }

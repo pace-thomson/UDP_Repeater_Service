@@ -77,6 +77,7 @@
             this.timeColumn});
             this.dataGridView1.Location = new System.Drawing.Point(20, 139);
             this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.ReadOnly = true;
             this.dataGridView1.RowHeadersVisible = false;
             this.dataGridView1.RowHeadersWidth = 70;
             this.dataGridView1.Size = new System.Drawing.Size(604, 251);
@@ -86,26 +87,31 @@
             // 
             this.indexColumn.HeaderText = "Packet Number";
             this.indexColumn.Name = "indexColumn";
+            this.indexColumn.ReadOnly = true;
             // 
             // ipColumn
             // 
             this.ipColumn.HeaderText = "IP Address";
             this.ipColumn.Name = "ipColumn";
+            this.ipColumn.ReadOnly = true;
             // 
             // portColumn
             // 
             this.portColumn.HeaderText = "Port";
             this.portColumn.Name = "portColumn";
+            this.portColumn.ReadOnly = true;
             // 
             // payloadColumn
             // 
             this.payloadColumn.HeaderText = "Payload Length (Bytes)";
             this.payloadColumn.Name = "payloadColumn";
+            this.payloadColumn.ReadOnly = true;
             // 
             // timeColumn
             // 
             this.timeColumn.HeaderText = "Time Stamp";
             this.timeColumn.Name = "timeColumn";
+            this.timeColumn.ReadOnly = true;
             this.timeColumn.Width = 200;
             // 
             // title_label

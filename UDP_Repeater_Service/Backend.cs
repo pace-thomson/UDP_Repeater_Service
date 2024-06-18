@@ -104,7 +104,7 @@ namespace BackendClassNameSpace
         ///  
         ///  Returns:  None
         /// </summary>
-        public static void Logger(Exception e)
+        public static void ExceptionLogger(Exception e)
         {
                 // Create the source and log, if it does not already exist.
             if (!EventLog.SourceExists("UDP_Repeater_Backend"))
@@ -115,8 +115,20 @@ namespace BackendClassNameSpace
             EventLog eventLog = new EventLog();
             Thread.Sleep(1000);     // this makes sure the Event log is created before being written to
             eventLog.Source = "UDP_Repeater_Backend";
-                // Write an entry to the event log.
-            eventLog.WriteEntry(e.Message, EventLogEntryType.Error);
+
+
+            // Get stack trace for the exception with source file information
+            var st = new StackTrace(e, true);
+            // Get the top stack frame
+            var frame = st.GetFrame(0);
+            // Get the line number from the stack frame
+            string lineNum = frame.GetFileLineNumber().ToString();
+            string fileName = frame.GetFileName();
+
+            string message = String.Format($"{e.Message} At line {lineNum} in {fileName}");
+
+            // Write an entry to the event log.
+            eventLog.WriteEntry(message, EventLogEntryType.Error);
         }
 
 
@@ -146,10 +158,11 @@ namespace BackendClassNameSpace
 
 
             // this whole section is just to find if the interval word in the log message should have an 's' or not 
+            // this has to be so much more complicated than it should be
             int totalTime = consecutiveEvents * frequency;
             string message;
             interval += "s";
-            // this has to be so much more complicated than it should be
+
             if (totalTime > 1 && frequency > 1)
             {
                 message = string.Format("It has been {0} {1} since last packet was received. ", totalTime, interval);

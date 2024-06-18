@@ -99,7 +99,7 @@ namespace UDP_Test_GUI
             currentSendIp.Text       =  (string)jsonObject["currentConfig"]["sendTo"]["ip"];
             currentSendPort.Text     =  (string)jsonObject["currentConfig"]["sendTo"]["port"];
             currentFrequency.Text    =  (string)jsonObject["inactivitySettings"]["frequency"];
-            currentInterval.Text     =  (string)jsonObject["inactivitySettings"]["interval"];
+            currentInterval.Text     =  FirstLetterCapital((string)jsonObject["inactivitySettings"]["interval"]);
         }
 
         /// <summary> 
@@ -119,12 +119,12 @@ namespace UDP_Test_GUI
         /// </summary>
         public void UpdateCurrentConfigGroup(string mode, string ip, string port)
         {
-            if (mode == "Receive")
+            if (mode == "Receiving From")
             {
                 currentReceiveIp.Text = ip;
                 currentReceivePort.Text = port;
             }
-            else if (mode == "Send")
+            else if (mode == "Sending To")
             {
                 currentSendIp.Text = ip;
                 currentSendPort.Text = port;
@@ -272,7 +272,7 @@ namespace UDP_Test_GUI
         /// </summary>
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            if (MessageBox.Show("Are you sure you want to close?",
+            if (MessageBox.Show("Are you sure you want to close? You will have to manually restart this interface.",
                                 "UDP Packet Repeater",
                                  MessageBoxButtons.YesNo,
                                  MessageBoxIcon.Information) == DialogResult.No)
@@ -287,7 +287,7 @@ namespace UDP_Test_GUI
         ///  Description: Handles clicking of the system tray icon. <br/><br/>
         ///
         ///  Inputs:  <br/>
-        ///  object <paramref name="Sender"/> - Whoever sent this i think? <br/>
+        ///  object <paramref name="Sender"/> - Whoever sent this, I think? <br/>
         ///  FormClosingEventArgs <paramref name="e"/> - The form closing event arg. <br/><br/>
         ///  
         ///  Returns: None
@@ -353,6 +353,16 @@ namespace UDP_Test_GUI
         {
             LogForm logForm = new LogForm(this);
             logForm.ShowDialog();
+        }
+        
+        /// <summary>
+        /// Capitlizes the first letter of the string. 
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns>The string with the first letter capitilized.</returns>
+        private string FirstLetterCapital(string str)
+        {
+            return Char.ToUpper(str[0]) + str.Remove(0, 1);
         }
     }
 }
