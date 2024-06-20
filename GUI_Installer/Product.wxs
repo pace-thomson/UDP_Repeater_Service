@@ -1,0 +1,96 @@
+﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+	<Package Name="UDP Repeater GUI" Language="1033" Version="1.0.0.0" Manufacturer="JT4 LLC" UpgradeCode="6773dfd7-d5ea-42eb-9ca8-fc957c781d9c" InstallerVersion="200">
+		
+		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+		<MediaTemplate EmbedCab="yes" />
+		
+		<Feature Id="ProductFeature" Title="GUI_Installer" Level="1">
+			<ComponentGroupRef Id="GUI_DependencyFiles" />
+			<ComponentGroupRef Id="GUI_ConfigFiles" />
+			<ComponentGroupRef Id="GUI_Actual_Program_Installer" />
+		</Feature>
+		
+	</Package>
+
+	<Fragment>
+		<StandardDirectory Id="ProgramFilesFolder">
+			<Directory Id="INSTALLFOLDER" Name="UDP_Repeater_GUI" />
+		</StandardDirectory>
+		<Directory Id="ProgramMenuFolder">
+			<Directory Id="ApplicationProgramsFolder" Name="UDP_Repeater_GUI"/>
+		</Directory>
+	</Fragment>
+
+	<Fragment>
+		<DirectoryRef Id="TARGETDIR">
+			<Component Id="RegistryEntries" Guid="PUT-GUID-HERE">
+				<RegistryKey Root="HKCU"
+							 Key="Software\MyCompany\MyApplicationName"
+					  Action="createAndRemoveOnUninstall">
+					<RegistryValue Type="integer" Name="SomeIntegerValue" Value="1" KeyPath="yes"/>
+					<RegistryValue Type="string" Value="Default Value"/>
+				</RegistryKey>
+			</Component>
+		</DirectoryRef>
+	</Fragment>
+
+	
+	<!--DEPENDENCY FILES-->
+	<Fragment>
+		<ComponentGroup Id="GUI_DependencyFiles" Directory="INSTALLFOLDER">
+			
+			<Component Guid="5d6d3d5e-fc30-4fc4-9bbe-872f9f02a103">
+				<File Id="___var.UDP_Repeater_GUI.TargetDir_Newtonsoft.Json.dll" 
+					  Source="$(var.UDP_Repeater_GUI.TargetDir)Newtonsoft.Json.dll" 
+					  KeyPath="yes" />
+			</Component>
+			
+		</ComponentGroup>
+	</Fragment>
+
+	<!--CONFIG FILES-->
+	<Fragment>
+		<ComponentGroup Id="GUI_ConfigFiles" Directory="INSTALLFOLDER">
+			<Component Guid="6903a699-0f2c-4274-9b17-e1ccd6232aa3">
+				<File Id="___var.UDP_Repeater_GUI.TargetDir_UDP_Test_GUI.exe.config" 
+					  Source="$(var.UDP_Repeater_GUI.TargetDir)UDP_Test_GUI.exe.config" 
+					  KeyPath="yes" />
+			</Component>
+			<Component Guid="ffae1a37-eb14-43be-b85c-de2d5a89e11d">
+				<File Id="___var.UDP_Repeater_GUI.TargetDir_jt4-logo.ico"
+					  Source="$(var.UDP_Repeater_GUI.TargetDir)jt4-logo.ico"
+					  KeyPath="yes" />
+			</Component>
+		</ComponentGroup>
+	</Fragment>
+	
+	<!--REGISTRY WRITER-->
+	<Fragment>
+		<Component Id="Register" Guid="4431b119-6971-42ee-b094-a4e260b8b300">
+			<RegistryValue Id="MerAs.rst" Root="HKMU" Action="write"
+							Key="Software\Microsoft\Windows\CurrentVersion\Run"
+							Name="Merlinia Assistance Client"
+							Value="[INSTALLDIR]Assistance.exe"
+							Type="string" />
+		</Component>
+	</Fragment>
+
+
+
+	<!--PROGRAM-->
+	<Fragment>
+		<ComponentGroup Id="GUI_Actual_Program_Installer" Directory="INSTALLFOLDER">
+			<Component Guid="9343b74f-a17d-4731-9586-dd0456cf00fc">
+				<File Id="___var.UDP_Repeater_GUI.TargetDir_UDP_Repeater_GUI.exe" Source="$(var.UDP_Repeater_GUI.TargetDir)UDP_Repeater_GUI.exe" KeyPath="yes" />
+				<ServiceInstall Id="ServiceInstaller"
+								Type="ownProcess"
+								Name="UDP_Repeater_GUI"
+								DisplayName="UDP Packet Repeater Service"
+								Description="A UDP Packet Sniffer and Repeater."
+								Start="auto"
+								ErrorControl="normal"
+								Account="LocalSystem" />
+			</Component>
+		</ComponentGroup>
+	</Fragment>
+</Wix>

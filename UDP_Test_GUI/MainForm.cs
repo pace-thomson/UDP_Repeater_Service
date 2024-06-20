@@ -263,27 +263,6 @@ namespace UDP_Test_GUI
         /// <summary> 
         ///  Class Name: gui_form  <br/><br/>
         ///
-        ///  Description: Opens a messagebox asking if the user is sure they want to close the GUI. <br/><br/>
-        ///
-        ///  Inputs:  <br/>
-        ///  FormClosingEventArgs <paramref name="e"/> - The form closing event arg. <br/><br/>
-        ///  
-        ///  Returns: None
-        /// </summary>
-        protected override void OnFormClosing(FormClosingEventArgs e)
-        {
-            if (MessageBox.Show("Are you sure you want to close? You will have to manually restart this interface.",
-                                "UDP Packet Repeater",
-                                 MessageBoxButtons.YesNo,
-                                 MessageBoxIcon.Information) == DialogResult.No)
-            {
-                e.Cancel = true;
-            }
-        }
-
-        /// <summary> 
-        ///  Class Name: gui_form  <br/><br/>
-        ///
         ///  Description: Handles clicking of the system tray icon. <br/><br/>
         ///
         ///  Inputs:  <br/>
@@ -320,6 +299,28 @@ namespace UDP_Test_GUI
             Activate();
         }
 
+
+        /// <summary> 
+        ///  Class Name: gui_form  <br/><br/>
+        ///
+        ///  Description: Opens a messagebox asking if the user is sure they want to close the GUI. <br/><br/>
+        ///
+        ///  Inputs:  <br/>
+        ///  FormClosingEventArgs <paramref name="e"/> - The form closing event arg. <br/><br/>
+        ///  
+        ///  Returns: None
+        /// </summary>
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            if (MessageBox.Show("Are you sure you want to close? You will have to manually restart this interface. " +
+                                "The shortcut to restart this interface can be found in the Start Menu.",
+                                "UDP Packet Repeater",
+                                 MessageBoxButtons.YesNo,
+                                 MessageBoxIcon.Information) == DialogResult.No)
+            {
+                e.Cancel = true;
+            }
+        }
 
         /// <summary> 
         ///  Class Name: gui_form  <br/><br/>

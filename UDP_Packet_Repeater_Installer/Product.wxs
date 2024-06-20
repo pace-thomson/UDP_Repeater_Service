@@ -72,8 +72,20 @@
 		<ComponentGroup Id="Repeater_ServiceInstaller" Directory="INSTALLFOLDER">
 			<Component Guid="F7E041AB-3227-4272-92C1-4A12685F30AF">
 				<File Id="___var.UDP_Repeater_Service.TargetDir_UDP_Repeater_Service.exe" Source="$(var.UDP_Repeater_Service.TargetDir)UDP_Repeater_Service.exe" KeyPath="yes" />
-				<ServiceInstall Id="ServiceInstaller" Type="ownProcess" Name="UDP_Repeater_Service" DisplayName="UDP Packet Repeater Service" Description="A UDP Packet Sniffer and Repeater." Start="auto" ErrorControl="normal" Account="LocalSystem" />
-				<ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="UDP_Repeater_Service" Wait="yes" />
+				<ServiceInstall Id="ServiceInstaller" 
+								Type="ownProcess" 
+								Name="UDP_Repeater_Service" 
+								DisplayName="UDP Packet Repeater Service" 
+								Description="A UDP Packet Sniffer and Repeater." 
+								Start="auto" 
+								ErrorControl="normal" 
+				Account="LocalSystem" />
+				<ServiceControl Id="StartService" 
+								Start="install"
+								Stop="both"
+								Remove="uninstall"
+								Name="UDP_Repeater_Service"
+								Wait="yes" />
 			</Component>
 		</ComponentGroup>
 	</Fragment>
