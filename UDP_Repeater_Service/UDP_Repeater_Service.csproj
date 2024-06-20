@@ -111,12 +111,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Backend.cs" />
-    <Compile Include="ProjectInstaller.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="ProjectInstaller.Designer.cs">
-      <DependentUpon>ProjectInstaller.cs</DependentUpon>
-    </Compile>
     <Compile Include="ReceiveFromGUI.cs" />
     <Compile Include="Repeater.cs" />
     <Compile Include="UDP_Service.cs">
@@ -146,9 +140,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="ProjectInstaller.resx">
-      <DependentUpon>ProjectInstaller.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Service1.resx">
       <DependentUpon>UDP_Service.cs</DependentUpon>
     </EmbeddedResource>

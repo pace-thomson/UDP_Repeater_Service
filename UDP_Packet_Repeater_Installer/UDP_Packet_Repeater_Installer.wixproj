@@ -4,9 +4,9 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>3.10</ProductVersion>
-    <ProjectGuid>5498c725-13ec-46f7-97a5-19b1b7917586</ProjectGuid>
+    <ProjectGuid>382b6427-88c5-43f5-8692-5f55725f5dea</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
-    <OutputName>UDP_Repeater_Installer</OutputName>
+    <OutputName>Packet_Repeater_Installer</OutputName>
     <OutputType>Package</OutputType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">

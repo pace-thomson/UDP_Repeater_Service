@@ -1,8 +1,101 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Product Id="*" Name="UDP Repeater Service" Language="1033" Version="1.0.0.0" Manufacturer="JT4 LLC" UpgradeCode="07b96bd4-d109-4c22-a924-70f8326a1be9">
+		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
 
-<!-- Define the variables in "$(var.*) expressions" -->
+		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+		<MediaTemplate EmbedCab="yes" />
+
+		<Feature Id="ProductFeature" Title="Installer" Level="1">
+			<ComponentGroupRef Id="Repeater_ConfigFiles" />
+			<ComponentGroupRef Id="Repeater_ServiceInstaller" />
+		</Feature>
+	</Product>
+
+	<Fragment>
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="ProgramFilesFolder">
+				<Directory Id="INSTALLFOLDER" Name="UDP_Repeater_Service" />
+			</Directory>
+		</Directory>
+	</Fragment>
+
+
+	<!--DEPENDENCY FILES-->
+	<Fragment>
+		<ComponentGroup Id="CG_DependencyFiles" Directory="INSTALLFOLDER">
+			<Component Guid="CB0604BE-202F-4A0B-BBEF-F4C962CE463A">
+				<File Source="$(var.WinService.TargetDir)Microsoft.Bcl.AsyncInterfaces.dll" KeyPath="yes"/>
+			</Component>
+			<Component Guid="ABA12169-33E8-4140-A547-1268DA306C61">
+				<File Source="$(var.WinService.TargetDir)Newtonsoft.Json.dll" KeyPath="yes"/>
+			</Component>
+			<Component Guid="4A1DA99A-DC08-4E9E-9C05-88987C18D6D4">
+				<File Source="$(var.WinService.TargetDir)Persistence.dll" KeyPath="yes"/>
+			</Component>
+		</ComponentGroup>
+	</Fragment>
+
+	<!--CONFIG FILES-->
+	<Fragment>
+		<ComponentGroup Id="CG_ConfigFiles" Directory="INSTALLFOLDER">
+			<Component Guid="17C70FC2-4AF5-4381-9FBE-B9C4D062E74A">
+				<File Source="$(var.UDP_Repeater_Service.TargetDir)UDP_Repeater_Service.exe.config" KeyPath="yes"/>
+			</Component>
+		</ComponentGroup>
+	</Fragment>
+
+	<!--SERVICE-->
+	<Fragment>
+		<ComponentGroup Id="CG_ServiceInstaller" Directory="INSTALLFOLDER">
+			<Component Guid="F7E041AB-3227-4272-92C1-4A12685F30AF" >
+				<File Source="$(var.UDP_Repeater_Service.TargetDir)UDP_Repeater_Service.exe" KeyPath="yes"/>
+				<ServiceInstall Id="ServiceInstaller"
+								Type="ownProcess"
+								Name="UDP_Repeater_Service"
+								DisplayName="UDP Packet Repeater Service"
+								Description="A UDP Packet Sniffer and Repeater. Communicates with an interface to display 
+											 statistical information and allow for users to reconfigure system settings"
+								Start="auto"
+								ErrorControl="normal"
+								Account="LocalSystem"/>
+				<ServiceControl Id="StartService" Start="install" Stop="both"
+								Remove="uninstall" Name="UDP_Repeater_Service" Wait="yes" />
+			</Component>
+		</ComponentGroup>
+	</Fragment>
+</Wix>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--<?xml version="1.0" encoding="UTF-8"?>
+
+--><!-- Define the variables in "$(var.*) expressions" --><!--
 <?define Name = "UDP Repeater Service" ?>
-<?define Manufacturer = "JT4 LLc" ?>
+<?define Manufacturer = "JT4_LLC" ?>
 <?define Version = "1.0.0.0" ?>
 <?define UpgradeCode = "9ED3FF33-8718-444E-B44B-69A2344B7E98" ?>
 
@@ -13,48 +106,50 @@
              UpgradeCode="$(var.UpgradeCode)"
              Compressed="true">
 
-		<!-- Allow upgrades and prevent downgrades -->
+		--><!-- Allow upgrades and prevent downgrades --><!--
 		<MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." />
 
-		<!-- Define the directory structure -->
-		<Directory Id="TARGETDIR" Name="SourceDir">
+		<MediaTemplate EmbedCab="yes" />
+
+		--><!-- Define the directory structure --><!--
+		<Directory Id="override TARGETDIR" Name="SourceDir">
 			<Directory Id="ProgramFiles64Folder">
 
-				<!-- Create a folder inside program files -->
+				--><!-- Create a folder inside program files --><!--
 				<Directory Id="ROOTDIRECTORY" Name="$(var.Manufacturer)">
 
-					<!-- Create a folder within the parent folder given the name -->
+					--><!-- Create a folder within the parent folder given the name --><!--
 					<Directory Id="INSTALLFOLDER" Name="$(Name)" />
 				</Directory>
 			</Directory>
 		</Directory>
 
-		<!-- The files inside this DirectoryRef are linked to
-             the UDP_Repeater_Service directory via INSTALLFOLDER -->
+		--><!-- The files inside this DirectoryRef are linked to
+             the UDP_Repeater_Service directory via INSTALLFOLDER --><!--
 		<DirectoryRef Id="INSTALLFOLDER">
 
-			<!-- Create a single component which is the UDP_Repeater_Service.exe file -->
+			--><!-- Create a single component which is the UDP_Repeater_Service.exe file --><!--
 			<Component Id="ServiceExecutable" Bitness="always64">
 
-				<!-- Copies the UDP_Repeater_Service.exe file using the
-                     project reference preprocessor variables -->
+				--><!-- Copies the UDP_Repeater_Service.exe file using the
+                     project reference preprocessor variables --><!--
 				<File Id="UDP_Repeater_Service.exe"
                       Source="$(var.UDP_Repeater_Service.TargetDir)app.publish\UDP_Repeater_Service.exe"
                       KeyPath="true" />
 
-				<!-- Remove all files from the INSTALLFOLDER on uninstall -->
+				--><!-- Remove all files from the INSTALLFOLDER on uninstall --><!--
 				<RemoveFile Id="ALLFILES" Name="*.*" On="both" />
 
-				<!-- Tell WiX to install the Service -->
+				--><!-- Tell WiX to install the Service --><!--
 				<ServiceInstall Id="ServiceInstaller"
                                 Type="ownProcess"
                                 Name="UDP_Repeater_Service"
                                 DisplayName="$(Name)"
-                                Description="The UDP Repeater"
+                                Description="A UDP Packet sniffer and Repeater"
                                 Start="auto"
                                 ErrorControl="normal" />
 
-				<!-- Tell WiX to start the Service -->
+				--><!-- Tell WiX to start the Service --><!--
 				<ServiceControl Id="StartService"
                                 Start="install"
                                 Stop="both"
@@ -64,10 +159,10 @@
 			</Component>
 		</DirectoryRef>
 
-		<!-- Tell WiX to install the files -->
+		--><!-- Tell WiX to install the files --><!--
 		<Feature Id="Service" Title="UDP_Repeater_Service Setup" Level="1">
 			<ComponentRef Id="ServiceExecutable" />
 		</Feature>
 
 	</Package>
-</Wix>
+</Wix>-->
