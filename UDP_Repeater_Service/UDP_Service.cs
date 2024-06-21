@@ -112,6 +112,10 @@ class TheMainProgram
                             ""ip"": ""132.58.202.157"",
                             ""port"": ""722""
                         }
+                    },
+                    ""inactivitySettings"": {
+                        ""frequency"": ""1"",
+                        ""interval"": ""minute""
                     }
                 }";
 

@@ -4,6 +4,9 @@
 		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
 		<MediaTemplate EmbedCab="yes" />
 		
+		<Icon Id="JT4_Installer_Icon" SourceFile="C:\Users\pthomson01.ctr\source\repos\pace-thomson\UDP_Repeater_Service\UDP_Test_GUI\bin\Debug\jt4_logo.ico"/>
+		<Property Id="ARPPRODUCTICON" Value="JT4_Installer_Icon" />
+		
 		<Feature Id="ProductFeature" Title="GUI_Installer" Level="1">
 			<ComponentGroupRef Id="GUI_IncludeFiles" />
 			<ComponentGroupRef Id="GUI_Actual_Program_Installer" />
