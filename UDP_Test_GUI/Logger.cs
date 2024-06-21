@@ -22,7 +22,7 @@ using System.IO;
 using System.Linq;
 
 
-namespace UDP_Test_GUI
+namespace UDP_Repeater_GUI
 {
     /// <summary>
     /// This class handles all of the logging for the front end.

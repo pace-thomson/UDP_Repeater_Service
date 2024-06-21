@@ -30,7 +30,7 @@ using System.IO;
 using Newtonsoft.Json.Linq;
 
 
-namespace UDP_Test_GUI
+namespace UDP_Repeater_GUI
 {
     public partial class gui_form : Form
     {
@@ -63,7 +63,7 @@ namespace UDP_Test_GUI
 
                 // The Icon property sets the icon that will appear
                 // in the systray for this application.
-            notifyIcon1.Icon = new Icon("jt4-logo.ico");
+            notifyIcon1.Icon = new Icon("jt4_logo.ico");
 
                 // The Text property sets the text that will be displayed,
                 // in a tooltip, when the mouse hovers over the systray icon.

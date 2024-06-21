@@ -23,7 +23,7 @@ using System.Net;
 using System.Text;
 using System.Windows.Forms;
 
-namespace UDP_Test_GUI
+namespace UDP_Repeater_GUI
 {
     /// <summary>
     /// The class for the form with the inputs for reconfiguring the 

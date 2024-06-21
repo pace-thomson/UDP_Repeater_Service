@@ -26,7 +26,7 @@ using System.Text;
 using System.Diagnostics;
 
 
-namespace UDP_Test_GUI
+namespace UDP_Repeater_GUI
 {
     /// <summary>
     /// The class for the form that shows the logs. It also has some

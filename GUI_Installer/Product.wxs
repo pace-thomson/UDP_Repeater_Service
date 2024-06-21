@@ -1,95 +1,94 @@
 ﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
-	<Package Name="UDP Repeater GUI" Language="1033" Version="1.0.0.0" Manufacturer="JT4 LLC" UpgradeCode="6773dfd7-d5ea-42eb-9ca8-fc957c781d9c" InstallerVersion="200">
+	<Package Name="UDP Repeater Interface" Language="1033" Version="1.0.0.0" Manufacturer="JT4 LLC" UpgradeCode="6773dfd7-d5ea-42eb-9ca8-fc957c781d9c" InstallerVersion="200">
 		
 		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
 		<MediaTemplate EmbedCab="yes" />
 		
 		<Feature Id="ProductFeature" Title="GUI_Installer" Level="1">
-			<ComponentGroupRef Id="GUI_DependencyFiles" />
-			<ComponentGroupRef Id="GUI_ConfigFiles" />
+			<ComponentGroupRef Id="GUI_IncludeFiles" />
 			<ComponentGroupRef Id="GUI_Actual_Program_Installer" />
+			<ComponentRef Id="AppStartMenuShortcut"/>
+			<ComponentRef Id="AppStartupFolderShortcut"/>
 		</Feature>
-		
 	</Package>
 
 	<Fragment>
-		<StandardDirectory Id="ProgramFilesFolder">
-			<Directory Id="INSTALLFOLDER" Name="UDP_Repeater_GUI" />
-		</StandardDirectory>
-		<Directory Id="ProgramMenuFolder">
-			<Directory Id="ApplicationProgramsFolder" Name="UDP_Repeater_GUI"/>
+		<!--ACTUAL INSTALL FOLDER, INSIDE OF PROGRAMFILES(X86)-->
+		<Directory Id="ProgramFilesFolder">
+			<Directory Id="INSTALLFOLDER" Name="UDP_Repeater_Service" />
 		</Directory>
+
+		<!--START MENU\PROGRAMS DIRECTORY-->
+		<StandardDirectory Id="ProgramMenuFolder"></StandardDirectory>
+
+		<!--START MENU\PROGRAMS\STARTUP DIRECTORY-->
+		<StandardDirectory Id="StartupFolder"></StandardDirectory>
+
 	</Fragment>
 
+	
+	<!--ADDS SHORTCUTS TO START MENU-->
 	<Fragment>
-		<DirectoryRef Id="TARGETDIR">
-			<Component Id="RegistryEntries" Guid="PUT-GUID-HERE">
-				<RegistryKey Root="HKCU"
-							 Key="Software\MyCompany\MyApplicationName"
-					  Action="createAndRemoveOnUninstall">
-					<RegistryValue Type="integer" Name="SomeIntegerValue" Value="1" KeyPath="yes"/>
-					<RegistryValue Type="string" Value="Default Value"/>
-				</RegistryKey>
+		<DirectoryRef Id="ProgramMenuFolder">
+			<Component Id="AppStartMenuShortcut" Guid="a7621f1e-a77e-409e-a893-7aa25af85085" >
+				<Shortcut Id="ApplicationStartMenuShortcut"
+						  Name="UDP Packet Repeater"
+						  Description="A UDP Packet Sniffer and Repeater."
+						  Target="[INSTALLFOLDER]UDP_Test_GUI.exe"
+						  WorkingDirectory="INSTALLFOLDER">
+					<Icon Id="JT4_Icon" SourceFile="jt4_logo.ico"/>
+				</Shortcut>
+				<RegistryValue Root="HKCU" Key="Software\JT4_LLC\UDP_Repeater_Interface" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+			</Component>
+		</DirectoryRef>
+	</Fragment>
+	
+	<!--ADDS SHORTCUTS TO STARTUP FOLDER-->
+	<Fragment>
+		<DirectoryRef Id="StartupFolder">
+			<Component Id="AppStartupFolderShortcut" Guid="a3d3eb8b-be6c-4ce9-a4b4-ebbd506eb089">
+				<Shortcut Id="ApplicationStartupFolderShortcut"
+						  Name="UDP Packet Repeater"
+						  Description="A UDP Packet Sniffer and Repeater."
+						  Target="[INSTALLFOLDER]UDP_Test_GUI.exe"
+						  WorkingDirectory="INSTALLFOLDER">
+					<Icon Id="JT4_Logo" SourceFile="jt4_logo.ico"/>
+				</Shortcut>
+				<RegistryValue Root="HKCU" Key="Software\JT4_LLC\UDP_Repeater_Interface" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
 			</Component>
 		</DirectoryRef>
 	</Fragment>
 
-	
-	<!--DEPENDENCY FILES-->
+
+	<!--CONFIG AND DEPENDENCY FILES-->
 	<Fragment>
-		<ComponentGroup Id="GUI_DependencyFiles" Directory="INSTALLFOLDER">
-			
+		<ComponentGroup Id="GUI_IncludeFiles" Directory="INSTALLFOLDER">
 			<Component Guid="5d6d3d5e-fc30-4fc4-9bbe-872f9f02a103">
-				<File Id="___var.UDP_Repeater_GUI.TargetDir_Newtonsoft.Json.dll" 
-					  Source="$(var.UDP_Repeater_GUI.TargetDir)Newtonsoft.Json.dll" 
+				<File Id="___var.UDP_Repeater_GUI.TargetDir_Newtonsoft.Json.dll"
+					  Source="$(var.UDP_Repeater_GUI.TargetDir)Newtonsoft.Json.dll"
 					  KeyPath="yes" />
 			</Component>
-			
-		</ComponentGroup>
-	</Fragment>
-
-	<!--CONFIG FILES-->
-	<Fragment>
-		<ComponentGroup Id="GUI_ConfigFiles" Directory="INSTALLFOLDER">
 			<Component Guid="6903a699-0f2c-4274-9b17-e1ccd6232aa3">
-				<File Id="___var.UDP_Repeater_GUI.TargetDir_UDP_Test_GUI.exe.config" 
-					  Source="$(var.UDP_Repeater_GUI.TargetDir)UDP_Test_GUI.exe.config" 
+				<File Id="___var.UDP_Repeater_GUI.TargetDir_UDP_Test_GUI.exe.config"
+					  Source="$(var.UDP_Repeater_GUI.TargetDir)UDP_Test_GUI.exe.config"
 					  KeyPath="yes" />
 			</Component>
 			<Component Guid="ffae1a37-eb14-43be-b85c-de2d5a89e11d">
-				<File Id="___var.UDP_Repeater_GUI.TargetDir_jt4-logo.ico"
-					  Source="$(var.UDP_Repeater_GUI.TargetDir)jt4-logo.ico"
+				<File Id="___var.UDP_Repeater_GUI.TargetDir_jt4_logo.ico"
+					  Source="$(var.UDP_Repeater_GUI.TargetDir)jt4_logo.ico"
 					  KeyPath="yes" />
 			</Component>
 		</ComponentGroup>
 	</Fragment>
 	
-	<!--REGISTRY WRITER-->
-	<Fragment>
-		<Component Id="Register" Guid="4431b119-6971-42ee-b094-a4e260b8b300">
-			<RegistryValue Id="MerAs.rst" Root="HKMU" Action="write"
-							Key="Software\Microsoft\Windows\CurrentVersion\Run"
-							Name="Merlinia Assistance Client"
-							Value="[INSTALLDIR]Assistance.exe"
-							Type="string" />
-		</Component>
-	</Fragment>
 
-
-
-	<!--PROGRAM-->
+	<!--ACTUAL PROGRAM-->
 	<Fragment>
 		<ComponentGroup Id="GUI_Actual_Program_Installer" Directory="INSTALLFOLDER">
 			<Component Guid="9343b74f-a17d-4731-9586-dd0456cf00fc">
-				<File Id="___var.UDP_Repeater_GUI.TargetDir_UDP_Repeater_GUI.exe" Source="$(var.UDP_Repeater_GUI.TargetDir)UDP_Repeater_GUI.exe" KeyPath="yes" />
-				<ServiceInstall Id="ServiceInstaller"
-								Type="ownProcess"
-								Name="UDP_Repeater_GUI"
-								DisplayName="UDP Packet Repeater Service"
-								Description="A UDP Packet Sniffer and Repeater."
-								Start="auto"
-								ErrorControl="normal"
-								Account="LocalSystem" />
+				<File Id="___var.UDP_Repeater_GUI.TargetDir_UDP_Repeater_GUI.exe"
+					  Source="$(var.UDP_Repeater_GUI.TargetDir)UDP_Test_GUI.exe"
+					  KeyPath="yes" />
 			</Component>
 		</ComponentGroup>
 	</Fragment>

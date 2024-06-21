@@ -2,7 +2,7 @@
 using System.Windows.Forms;
 using System.IO;
 
-namespace UDP_Test_GUI
+namespace UDP_Repeater_GUI
 {
     internal static class Program
     {

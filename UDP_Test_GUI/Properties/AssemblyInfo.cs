@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("UDP_Test_GUI")]
+[assembly: AssemblyTitle("UDP_Repeater_GUI")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("USAF/JT3")]
-[assembly: AssemblyProduct("UDP_Test_GUI")]
+[assembly: AssemblyProduct("UDP_Repeater_GUI")]
 [assembly: AssemblyCopyright("Copyright © USAF/JT3 2024")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace UDP_Test_GUI.Properties
+namespace UDP_Repeater_GUI.Properties
 {
 
 

@@ -1,4 +1,4 @@
-﻿namespace UDP_Test_GUI
+﻿namespace UDP_Repeater_GUI
 {
     partial class configDialog
     {
