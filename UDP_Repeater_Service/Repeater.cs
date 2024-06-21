@@ -231,7 +231,7 @@ namespace Repeater
             }
 
                 // gets the ethernet device
-            var device = devices.FirstOrDefault(dev => dev.Description.Contains("Ethernet"));
+            var device = devices.FirstOrDefault(dev => dev.Description.Contains("Ethernet Connection"));
 
 
                 // Register our handler function to the 'packet arrival' event

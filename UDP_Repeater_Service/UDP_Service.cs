@@ -113,6 +113,7 @@ class TheMainProgram
                             ""port"": ""722""
                         }
                     },
+
                     ""inactivitySettings"": {
                         ""frequency"": ""1"",
                         ""interval"": ""minute""
