@@ -280,7 +280,6 @@ namespace UDP_Repeater_GUI
             {
                 WindowState = FormWindowState.Normal;
                 this.Focus();
-
             }
 
             else if (WindowState == FormWindowState.Normal)
@@ -312,14 +311,8 @@ namespace UDP_Repeater_GUI
         /// </summary>
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            if (MessageBox.Show("Are you sure you want to close? You will have to manually restart this interface. " +
-                                "The shortcut to restart this interface can be found in the Start Menu.",
-                                "UDP Packet Repeater",
-                                 MessageBoxButtons.YesNo,
-                                 MessageBoxIcon.Information) == DialogResult.No)
-            {
-                e.Cancel = true;
-            }
+            e.Cancel = true;
+            WindowState = FormWindowState.Minimized;
         }
 
         /// <summary> 

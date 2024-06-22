@@ -8,17 +8,33 @@
 		<Property Id="ARPPRODUCTICON" Value="JT4_Installer_Icon" />
 
 		<Feature Id="ProductFeature" Title="Installer" Level="1">
+			
+			
 			<ComponentGroupRef Id="Repeater_DependencyFiles" />
 			<ComponentGroupRef Id="Repeater_ConfigFiles" />
 			<ComponentGroupRef Id="Repeater_ServiceInstaller" />
+			
+			<ComponentGroupRef Id="GUI_Actual_Program_Installer" />
+			<ComponentRef Id="AppStartMenuShortcut"/>
+			<ComponentRef Id="AppStartupFolderShortcut"/>
 		</Feature>
 	</Package>
 
+	
 	<Fragment>
-			<StandardDirectory Id="ProgramFilesFolder">
-				<Directory Id="INSTALLFOLDER" Name="UDP_Repeater_Service" />
-			</StandardDirectory>
-		</Fragment>
+		
+		<!--ACTUAL INSTALL FOLDER, INSIDE OF PROGRAMFILES(X86)-->
+		<Directory Id="ProgramFilesFolder">
+			<Directory Id="INSTALLFOLDER" Name="UDP_Repeater_Service" />
+		</Directory>
+
+		<!--START MENU\PROGRAMS DIRECTORY-->
+		<StandardDirectory Id="ProgramMenuFolder"></StandardDirectory>
+
+		<!--START MENU\PROGRAMS\STARTUP DIRECTORY-->
+		<StandardDirectory Id="StartupFolder"></StandardDirectory>
+
+	</Fragment>
 
 
 	<!--DEPENDENCY FILES-->
@@ -57,6 +73,11 @@
 			<Component Guid="b346745e-8a0e-4984-a611-0285d8b154a1">
 				<File Id="___var.UDP_Repeater_Service.TargetDir_System.ValueTuple.dll" Source="$(var.UDP_Repeater_Service.TargetDir)System.ValueTuple.dll" KeyPath="yes" />
 			</Component>
+			<Component Guid="ffae1a37-eb14-43be-b85c-de2d5a89e11d">
+				<File Id="___var.UDP_Repeater_GUI.TargetDir_jt4_logo.ico"
+					  Source="C:\Users\pthomson01.ctr\source\repos\pace-thomson\UDP_Repeater_Service\UDP_Test_GUI\bin\Debug\jt4_logo.ico"
+					  KeyPath="yes" />
+			</Component>
 		</ComponentGroup>
 	</Fragment>
 
@@ -66,9 +87,72 @@
 			<Component Guid="17C70FC2-4AF5-4381-9FBE-B9C4D062E74A">
 				<File Id="___var.UDP_Repeater_Service.TargetDir_UDP_Repeater_Service.exe.config" Source="$(var.UDP_Repeater_Service.TargetDir)UDP_Repeater_Service.exe.config" KeyPath="yes" />
 			</Component>
+			<Component Guid="6903a699-0f2c-4274-9b17-e1ccd6232aa3">
+				<File Id="___var.UDP_Repeater_GUI.TargetDir_UDP_Test_GUI.exe.config"
+					  Source="C:\Users\pthomson01.ctr\source\repos\pace-thomson\UDP_Repeater_Service\UDP_Test_GUI\bin\Debug\UDP_Test_GUI.exe.config"
+					  KeyPath="yes" />
+			</Component>
 		</ComponentGroup>
 	</Fragment>
 
+
+	<!--ADDS SHORTCUTS TO START MENU-->
+	<Fragment>
+		<DirectoryRef Id="ProgramMenuFolder">
+			<Component Id="AppStartMenuShortcut" Guid="a7621f1e-a77e-409e-a893-7aa25af85085" >
+				<Shortcut Id="ApplicationStartMenuShortcut"
+						  Name="UDP Packet Repeater"
+						  Description="A UDP Packet Sniffer and Repeater."
+						  Target="[INSTALLFOLDER]UDP_Test_GUI.exe"
+						  WorkingDirectory="INSTALLFOLDER">
+					<Icon Id="JT4_Icon" SourceFile="C:\Users\pthomson01.ctr\source\repos\pace-thomson\UDP_Repeater_Service\UDP_Test_GUI\bin\Debug\jt4_logo.ico"/>
+				</Shortcut>
+				<RegistryValue Root="HKCU" Key="Software\JT4_LLC\UDP_Repeater_Interface" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+			</Component>
+		</DirectoryRef>
+	</Fragment>
+
+	<!--ADDS SHORTCUTS TO STARTUP FOLDER-->
+	<Fragment>
+		<DirectoryRef Id="StartupFolder">
+			<Component Id="AppStartupFolderShortcut" Guid="a3d3eb8b-be6c-4ce9-a4b4-ebbd506eb089">
+				<Shortcut Id="ApplicationStartupFolderShortcut"
+						  Name="UDP Packet Repeater"
+						  Description="A UDP Packet Sniffer and Repeater."
+						  Target="[INSTALLFOLDER]UDP_Test_GUI.exe"
+						  WorkingDirectory="INSTALLFOLDER">
+					<Icon Id="JT4_Logo" SourceFile="C:\Users\pthomson01.ctr\source\repos\pace-thomson\UDP_Repeater_Service\UDP_Test_GUI\bin\Debug\jt4_logo.ico"/>
+				</Shortcut>
+				<RegistryValue Root="HKCU" Key="Software\JT4_LLC\UDP_Repeater_Interface" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+			</Component>
+		</DirectoryRef>
+	</Fragment>
+	
+	
+	
+	<!--GUI-->
+	<Fragment>
+		<ComponentGroup Id="GUI_Actual_Program_Installer" Directory="INSTALLFOLDER">
+			<Component Guid="9343b74f-a17d-4731-9586-dd0456cf00fc">
+				<File Id="___var.UDP_Repeater_GUI.TargetDir_UDP_Repeater_GUI.exe"
+					  Source="C:\Users\pthomson01.ctr\source\repos\pace-thomson\UDP_Repeater_Service\UDP_Test_GUI\bin\Debug\UDP_Test_GUI.exe"
+					  KeyPath="yes" />
+			</Component>
+		</ComponentGroup>
+
+		<CustomAction Id="EXECUTE_AFTER_FINALIZE"
+					  Execute="immediate"
+					  Impersonate="no"
+					  Return="asyncNoWait"
+					  Directory="INSTALLFOLDER"
+					  ExeCommand="[INSTALLDIR]UDP_Test_GUI.exe" />
+
+		<InstallExecuteSequence>
+			<Custom Action="EXECUTE_AFTER_FINALIZE" After="InstallFinalize" Condition="NOT Installed" />
+		</InstallExecuteSequence>
+	</Fragment>
+	
+	
 	<!--SERVICE-->
 	<Fragment>
 		<ComponentGroup Id="Repeater_ServiceInstaller" Directory="INSTALLFOLDER">
