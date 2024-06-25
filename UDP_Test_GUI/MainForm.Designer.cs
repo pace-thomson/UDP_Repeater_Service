@@ -59,6 +59,8 @@
             this.label12 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.statusLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -118,7 +120,7 @@
             // 
             this.title_label.AutoSize = true;
             this.title_label.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.title_label.Location = new System.Drawing.Point(26, 29);
+            this.title_label.Location = new System.Drawing.Point(14, 9);
             this.title_label.Name = "title_label";
             this.title_label.Size = new System.Drawing.Size(301, 31);
             this.title_label.TabIndex = 5;
@@ -136,13 +138,13 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(17, 79);
+            this.label2.Location = new System.Drawing.Point(14, 85);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(310, 39);
+            this.label2.Size = new System.Drawing.Size(313, 39);
             this.label2.TabIndex = 8;
             this.label2.Text = "This interface only begins running when the current user logs in. \r\nThe Packet Re" +
-    "peater runs whenever this machine is on, so this \r\n is not a complete record of " +
-    "all packets sent by the service.";
+    "peater runs whenever this computer is on, so this \r\n is not a complete record of" +
+    " all packets sent by the service.";
             // 
             // panel1
             // 
@@ -354,11 +356,33 @@
             this.label10.TabIndex = 11;
             this.label10.Text = "Inactivity";
             // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label13.Location = new System.Drawing.Point(81, 53);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(99, 16);
+            this.label13.TabIndex = 22;
+            this.label13.Text = "Service Status: ";
+            // 
+            // statusLabel
+            // 
+            this.statusLabel.AutoSize = true;
+            this.statusLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.statusLabel.Location = new System.Drawing.Point(186, 53);
+            this.statusLabel.Name = "statusLabel";
+            this.statusLabel.Size = new System.Drawing.Size(75, 16);
+            this.statusLabel.TabIndex = 23;
+            this.statusLabel.Text = "Checking ";
+            // 
             // gui_form
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(644, 450);
+            this.Controls.Add(this.statusLabel);
+            this.Controls.Add(this.label13);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.logButton);
             this.Controls.Add(this.showConfigbutton);
@@ -412,6 +436,8 @@
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label currentInterval;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label statusLabel;
     }
 }
 

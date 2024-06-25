@@ -28,6 +28,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using Newtonsoft.Json.Linq;
+using System.ServiceProcess;
 
 
 namespace UDP_Repeater_GUI
@@ -42,6 +43,8 @@ namespace UDP_Repeater_GUI
         private int index = 0;
             /// <summary> Puts the icon in the system tray </summary>
         private NotifyIcon notifyIcon1;
+        /// <summary> Our Service </summary>
+        private ServiceController ourService;
 
         /// <summary> 
         ///  Class Name: gui_form  <br/><br/>
@@ -77,6 +80,8 @@ namespace UDP_Repeater_GUI
             WindowState = FormWindowState.Minimized;
                 
             UpdateCurrentConfigGroup();
+
+            SetupTimerForServiceStatus();
         }
 
         /// <summary> 
@@ -296,6 +301,57 @@ namespace UDP_Repeater_GUI
                 
             // Activate the form
             Activate();
+        }
+
+        /// <summary> 
+        ///  Class Name: gui_form  <br/><br/>
+        ///
+        ///  Description: Sets ups the timer that handles the service status thing <br/><br/>
+        ///
+        ///  Inputs: None <br/><br/>
+        ///  
+        ///  Returns: None
+        /// </summary>
+        private void SetupTimerForServiceStatus()
+        {
+                    // this is the System.Windows.Forms.Timer, not System.Timers.Timer
+                    // if i use the latter option, it gets mad at multi-threading
+                    // using the windows forms timer makes it work
+            Timer timer = new Timer();  
+
+            timer.Enabled = true;
+
+            timer.Tick += new EventHandler(TimerEventProcessor);
+
+            timer.Interval = 5000;      // checks every 5 seconds
+
+            timer.Start();
+        }
+        /// <summary> 
+        ///  Class Name: gui_form  <br/><br/>
+        ///
+        ///  Description: Checks if the service side is running and dipsplays the corresponding label <br/><br/>
+        ///
+        ///  Inputs:  <br/>
+        ///  object <paramref name="source"/> - Whoever sent this, I think? <br/>
+        ///  EventArgs <paramref name="e"/> - The form closing event arg. <br/><br/>
+        ///  
+        ///  Returns: None
+        /// </summary>
+        public void TimerEventProcessor(Object source, EventArgs e)
+        {
+            ourService = new ServiceController("UDP_Repeater_Service");
+
+            if (ourService.Status == ServiceControllerStatus.Running)
+            {
+                statusLabel.Text = "Running";
+                statusLabel.ForeColor = Color.Green;
+            }
+            else
+            {
+                statusLabel.Text = "Not Running";
+                statusLabel.ForeColor = Color.Red;
+            }
         }
 
 
