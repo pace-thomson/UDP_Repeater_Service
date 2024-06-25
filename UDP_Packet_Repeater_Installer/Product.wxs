@@ -92,6 +92,11 @@
 					  Source="C:\Users\pthomson01.ctr\source\repos\pace-thomson\UDP_Repeater_Service\UDP_Test_GUI\bin\Debug\UDP_Test_GUI.exe.config"
 					  KeyPath="yes" />
 			</Component>
+			<Component Guid="198a0fb1-7d0a-44d1-89fe-2549ba4c6027">
+				<File Id="Repeater_GUI_Log.txt"
+					  Source="C:\Users\pthomson01.ctr\source\repos\pace-thomson\UDP_Repeater_Service\UDP_Test_GUI\bin\Debug\Repeater_GUI_Log.txt"
+					  KeyPath="yes" />
+			</Component>
 		</ComponentGroup>
 	</Fragment>
 
@@ -142,10 +147,10 @@
 
 		<CustomAction Id="EXECUTE_AFTER_FINALIZE"
 					  Execute="immediate"
-					  Impersonate="no"
+					  Impersonate="yes"
 					  Return="asyncNoWait"
 					  Directory="INSTALLFOLDER"
-					  ExeCommand="[INSTALLDIR]UDP_Test_GUI.exe" />
+					  ExeCommand="[INSTALLFOLDER]UDP_Test_GUI.exe" />
 
 		<InstallExecuteSequence>
 			<Custom Action="EXECUTE_AFTER_FINALIZE" After="InstallFinalize" Condition="NOT Installed" />

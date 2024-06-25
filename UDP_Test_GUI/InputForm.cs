@@ -34,6 +34,8 @@ namespace UDP_Repeater_GUI
     {
             /// <summary>The main form's object.</summary>
         private gui_form theMainForm;
+            /// <summary> Keeps track of if the user has provided valid ip/port/profile </summary>
+        private bool inputValid;
 
         /// <summary> 
         ///  Class Name: configDialog  <br/><br/>
@@ -50,6 +52,7 @@ namespace UDP_Repeater_GUI
         {
             InitializeComponent();
             theMainForm = mainForm;
+            inputValid = true;
         }
 
         /// <summary> 
@@ -67,13 +70,9 @@ namespace UDP_Repeater_GUI
         /// </summary>
         private void dialogOkButton_Click(object sender, EventArgs e)
         {
-            
             string ip = ip_field.Text;
             string port = port_field.Text;
             string mode = profileDropDown.Text;
-
-            
-
                 
             IPAddress address;              // this validates if the ip address is legit
             if (ip.Count(c => c == '.') == 3 && IPAddress.TryParse(ip, out address))
@@ -92,6 +91,7 @@ namespace UDP_Repeater_GUI
                         else
                         {
                             MessageBox.Show("No profile chosen, please try again.");
+                            inputValid = false;
                             return;
                         }
 
@@ -110,11 +110,13 @@ namespace UDP_Repeater_GUI
                     ip_field.Text = "";
                     port_field.Text = "";      
                     sendRequest.Close();
+                    inputValid = true;
                 }
             }
             else
             {
                 MessageBox.Show("Invalid IP or Port, please try again.");
+                inputValid = false;
                 return;
             }
         }
@@ -152,6 +154,26 @@ namespace UDP_Repeater_GUI
                 ip_field.Text = "";
                 port_field.Text = "";
                 sendRequest.Close();
+            }
+        }
+
+        /// <summary> 
+        ///  Class Name: configDialog  <br/><br/>
+        ///
+        ///  Description: If inputs are not valid, then it doesn't close the window. <br/><br/>
+        ///
+        ///  Inputs:  <br/>
+        ///  object <paramref name="sender"/> - Necessary for handling the button, but I don't use it. <br/>
+        ///  FormClosingEventArgs <paramref name="e"/> - Form closing is cancelled if inputs aren't valid. <br/><br/>
+        ///  
+        ///  Returns: None
+        /// </summary>
+
+        private void configDialog_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (!inputValid)
+            {
+                e.Cancel = true;
             }
         }
     }

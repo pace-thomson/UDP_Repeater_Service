@@ -146,6 +146,7 @@
             this.Name = "configDialog";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Configuration";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.configDialog_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();
 
