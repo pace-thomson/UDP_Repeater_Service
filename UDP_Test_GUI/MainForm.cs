@@ -31,6 +31,7 @@ using Newtonsoft.Json.Linq;
 using System.ServiceProcess;
 using System.Security.AccessControl;
 using System.Security.Principal;
+using System.Diagnostics;
 
 
 namespace UDP_Repeater_GUI
@@ -77,10 +78,17 @@ namespace UDP_Repeater_GUI
 
                 // Handle the Click event to activate the form.
             notifyIcon1.Click += new EventHandler(notifyIcon1_Click);
-                
+
+            if (!EventLog.SourceExists("UDP_Repeater_Frontend"))
+            {
+                EventLog.CreateEventSource("UDP_Repeater_Frontend", "UDP Packet Repeater");
+            }
+
             UpdateCurrentConfigGroup();
 
             SetupTimerForServiceStatus();
+
+            Logger.StartStopLogger("start");
         }
 
         /// <summary> 
@@ -326,6 +334,7 @@ namespace UDP_Repeater_GUI
 
             timer.Start();
         }
+
         /// <summary> 
         ///  Class Name: gui_form  <br/><br/>
         ///
@@ -373,10 +382,26 @@ namespace UDP_Repeater_GUI
         /// <summary> 
         ///  Class Name: gui_form  <br/><br/>
         ///
+        ///  Description: Logs that the form is being closed. <br/><br/>
+        ///
+        ///  Inputs:  <br/>
+        ///  object <paramref name="sender"/> - I don't use this, i'm not sure. <br/>
+        ///  FormClosingEventArgs <paramref name="e"/> - The form closed event arg. <br/><br/>
+        ///  
+        ///  Returns: None
+        /// </summary>
+        private void gui_form_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Logger.StartStopLogger("stop");
+        }
+
+        /// <summary> 
+        ///  Class Name: gui_form  <br/><br/>
+        ///
         ///  Description: Opens the IP/Port reconfiguration form. <br/><br/>
         ///
         ///  Inputs:  <br/>
-        ///  object <paramref name="Sender"/> - I don't use this, i'm not sure. <br/>
+        ///  object <paramref name="sender"/> - I don't use this, i'm not sure. <br/>
         ///  EventArgs <paramref name="e"/> - The event arg. <br/><br/>
         ///  
         ///  Returns: None
@@ -393,7 +418,7 @@ namespace UDP_Repeater_GUI
         ///  Description: Opens the Log form. <br/><br/>
         ///
         ///  Inputs:  <br/>
-        ///  object <paramref name="Sender"/> - I don't use this, i'm not sure. <br/>
+        ///  object <paramref name="sender"/> - I don't use this, i'm not sure. <br/>
         ///  EventArgs <paramref name="e"/> - The event arg. <br/><br/>
         ///  
         ///  Returns: None

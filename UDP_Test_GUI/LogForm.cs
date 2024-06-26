@@ -74,42 +74,14 @@ namespace UDP_Repeater_GUI
         /// </summary>
         public void PopulateTable()
         {
-            // section for reading and inputting entries from "Repeater_GUI_Log.txt"
-            var lines = File.ReadLines("Repeater_GUI_Log.txt");
-            foreach (string line in lines)
-            {
-                string[] splitLine = line.Split(',');
-
-                int rowNum = reconfigLog.Rows.Add();
-                DataGridViewRow row = reconfigLog.Rows[rowNum];
-
-                row.Cells["entryType"].Value = splitLine[0];
-                row.Cells["messageColumn"].Value = splitLine[1];   
-                row.Cells["timeStampColumn"].Value = DateTime.Parse(splitLine[2]);
-            }
-
-            // section for reading and inputting entries from "UDP Packet Repeater"
             EventLog eventLog = new EventLog("UDP Packet Repeater");
             foreach (EventLogEntry entry in eventLog.Entries)
             {
-                int rowNum = reconfigLog.Rows.Add();
-                DataGridViewRow row = reconfigLog.Rows[rowNum];
-
-                if (entry.EntryType == EventLogEntryType.Warning)
-                {
-                    row.Cells["entryType"].Value = "Inactive Period";
-                }
-                else if (entry.EntryType == EventLogEntryType.Error)
-                {
-                    row.Cells["entryType"].Value = "Repeater Error";
-                }
-
-                row.Cells["messageColumn"].Value = entry.Message;
-                row.Cells["timeStampColumn"].Value = entry.TimeWritten;
+                AddNewRow(entry);
             }
 
-                    // and finally, we sort by newest entry first
-            reconfigLog.Sort(reconfigLog.Columns[2], ListSortDirection.Descending);
+            // sort by newest entry first
+            reconfigLog.Sort(reconfigLog.Columns["timeStampColumn"], ListSortDirection.Descending);
         }
 
 
@@ -186,22 +158,13 @@ namespace UDP_Repeater_GUI
 
             eventLog.EntryWritten += new EntryWrittenEventHandler(OnEntryWritten);
             eventLog.EnableRaisingEvents = true;
-
-            var watcher = new FileSystemWatcher("C:\\Program Files (x86)\\UDP_Repeater_Service");
-            watcher.Changed += new FileSystemEventHandler(OnTextFileChanged);
-            watcher.EnableRaisingEvents = true;
-            watcher.Filter = "*.txt";
         }
 
-        /// <summary> When an entry to the backend log is written, repopulates table. </summary>
+        /// <summary> When an entry to the event log is written, repopulates table. </summary>
         public void OnEntryWritten(object source, EntryWrittenEventArgs e)
         {
             Invoke(new Action(() => AddNewRow(e.Entry)));
-        }
-        /// <summary> When an entry to the frontend log is written, repopulates table. </summary>
-        public void OnTextFileChanged(object sender, FileSystemEventArgs e)
-        {
-            Invoke(new Action(() => AddNewRow()));
+            Invoke(new Action(() => reconfigLog.Sort(reconfigLog.Columns[2], ListSortDirection.Descending)));
         }
 
 
@@ -210,39 +173,40 @@ namespace UDP_Repeater_GUI
             int rowNum = reconfigLog.Rows.Add();
             DataGridViewRow row = reconfigLog.Rows[rowNum];
 
-            if (entry.EntryType == EventLogEntryType.Warning)
+            switch (entry.EventID)
             {
-                row.Cells["entryType"].Value = "Inactive Period";
-            }
-            else if (entry.EntryType == EventLogEntryType.Error)
-            {
-                row.Cells["entryType"].Value = "Repeater Error";
-            }
-            else 
-            {
-                row.Cells["entryType"].Value = "Service Start/Stop";
+                case 1:
+                    row.Cells["entryType"].Value = "Error/Exception";
+                    row.Cells["frontOrBack"].Value = "Service";
+                    break;
+                case 2:
+                    row.Cells["entryType"].Value = "Error/Exception";
+                    row.Cells["frontOrBack"].Value = "Interface";
+                    break;
+                case 3:
+                    row.Cells["entryType"].Value = "Inactive Period";
+                    row.Cells["frontOrBack"].Value = "General";
+                    break;
+                case 4:
+                    row.Cells["entryType"].Value = "Start/Stop";
+                    row.Cells["frontOrBack"].Value = "Service";
+                    break;
+                case 5:
+                    row.Cells["entryType"].Value = "Start/Stop";
+                    row.Cells["frontOrBack"].Value = "Interface";
+                    break;
+                case 6:
+                    row.Cells["entryType"].Value = "IP/Port Change";
+                    row.Cells["frontOrBack"].Value = "General";
+                    break;
+                case 7:
+                    row.Cells["entryType"].Value = "Inactivity Change";
+                    row.Cells["frontOrBack"].Value = "General";
+                    break;
             }
 
             row.Cells["messageColumn"].Value = entry.Message;
             row.Cells["timeStampColumn"].Value = entry.TimeWritten;
-
-            reconfigLog.Sort(reconfigLog.Columns[2], ListSortDirection.Descending);
-        }
-
-        public void AddNewRow()
-        {
-            string lastLine = File.ReadLines("Repeater_GUI_Log.txt").Last();
-
-            string[] splitLine = lastLine.Split(',');
-
-            int rowNum = reconfigLog.Rows.Add();
-            DataGridViewRow row = reconfigLog.Rows[rowNum];
-
-            row.Cells["entryType"].Value = splitLine[0];
-            row.Cells["messageColumn"].Value = splitLine[1];
-            row.Cells["timeStampColumn"].Value = DateTime.Parse(splitLine[2]);
-
-            reconfigLog.Sort(reconfigLog.Columns[2], ListSortDirection.Descending);
         }
     }
 }

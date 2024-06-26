@@ -18,9 +18,10 @@
 
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
+using System.Threading;
 
 
 namespace UDP_Repeater_GUI
@@ -31,9 +32,39 @@ namespace UDP_Repeater_GUI
     internal class Logger
     {
         /// <summary> 
+        ///  Class Name: Logger  <br/> <br/>
+        ///
+        ///  Description: Logs all of the GUI's Exceptions into the event log. <br/><br/>
+        ///
+        ///  Inputs:  <br/>
+        ///  Exception <paramref name="e"/> - An Exception to be logged <br/><br/>
+        ///  
+        ///  Returns:  None
+        /// </summary>
+        public static void LogException(Exception e)
+        {
+            // Create an EventLog instance and assign its source.
+            EventLog eventLog = new EventLog("UDP_Repeater_Backend");
+
+            // Get stack trace for the exception with source file information
+            var st = new StackTrace(e, true);
+            // Get the top stack frame
+            var frame = st.GetFrame(0);
+            // Get the line number from the stack frame
+            string fileName = frame.GetFileName();
+
+            string message = String.Format($"{e.Message} in {fileName} of source code. This " +
+                                           $"is an error in the frontend/user interface.");
+
+            // Write an entry to the event log.
+            eventLog.WriteEntry(message, EventLogEntryType.Error, 2);       // 2 is id for frontend errors
+        }
+
+
+        /// <summary> 
         ///  Class Name: Logger  <br/><br/>
         ///
-        ///  Description: Logs IP/Port changes into "Repeater_GUI_Log.txt". <br/><br/>
+        ///  Description: Logs IP/Port changes into the event log. <br/><br/>
         ///
         ///  Inputs:  <br/>
         ///  string <paramref name="editType"/> - What profile was changed. <br/>
@@ -44,33 +75,22 @@ namespace UDP_Repeater_GUI
         /// </summary>
         public static void LogConfigChange(string editType, string ip, string port)
         {
-            var lineCount = File.ReadLines("C:\\Program Files (x86)\\UDP_Repeater_Service\\Repeater_GUI_Log.txt").Count();
+                // Create an EventLog instance and assign its source.
+            EventLog eventLog = new EventLog("UDP_Repeater_Frontend");
 
-            using (StreamWriter stream = File.AppendText("C:\\Program Files (x86)\\UDP_Repeater_Service\\Repeater_GUI_Log.txt"))
-            {
-                if (lineCount > 250)        // To make sure it doesn't get too big, it's capped at 250 entries
-                {
-                    var lines = File.ReadAllLines("C:\\Program Files (x86)\\UDP_Repeater_Service\\Repeater_GUI_Log.txt");
-                    File.WriteAllLines("C:\\Program Files (x86)\\UDP_Repeater_Service\\Repeater_GUI_Log.txt", lines.Skip(1).ToArray());
-                }
+            string message = String.Format("The {0} settings were changed. New settings - " +
+                                "IP Address: {1} and Port: {2}", editType, ip, port);
 
-                string message = String.Format("The {0} settings were changed. New settings - " +
-                                                "IP Address: {1} and Port: {2}", editType, ip, port);
+            string entry = "IP/Port Change" + ",\t" + message + ",\t" + DateTime.Now.ToString();
 
-                string entry = "IP/Port Change" + ",\t" + message + ",\t" + DateTime.Now.ToString();
-
-                stream.WriteLine(entry);
-
-                
-            }
-            
+            eventLog.WriteEntry(entry, EventLogEntryType.Information, 6);  // 6 is id for ip/port config change
         }
 
 
         /// <summary> 
         ///  Class Name: Logger  <br/><br/>
         ///
-        ///  Description: Logs Inactivity settings changes into "Repeater_GUI_Log.txt". <br/><br/>
+        ///  Description: Logs Inactivity settings changes into the event log. <br/><br/>
         ///
         ///  Inputs:  <br/>
         ///  int <paramref name="frequency"/> - The new frequency value. <br/>
@@ -80,51 +100,45 @@ namespace UDP_Repeater_GUI
         /// </summary>
         public static void LogInactivityChange(int frequency, string interval)
         {
-            var lineCount = File.ReadLines("Repeater_GUI_Log.txt").Count();
+            // Create an EventLog instance and assign its source.
+            EventLog eventLog = new EventLog("UDP_Repeater_Frontend");
 
-            using (StreamWriter stream = File.AppendText("Repeater_GUI_Log.txt"))
-            {
-                if (lineCount > 250)        // To make sure it doesn't get too big, it's capped at 250 entries
-                {
-                    var lines = File.ReadAllLines("Repeater_GUI_Log.txt");
-                    File.WriteAllLines("Repeater_GUI_Log.txt", lines.Skip(1).ToArray());
-                }
-
-                string message = String.Format("The Inactivity settings were changed. New settings - " +
+            string message = String.Format("The Inactivity settings were changed. New settings - " +
                                                 "Frequency: {0} and Interval: {1}", frequency, interval);
 
-                string entry = "Inactivity Settings Change" + ",\t" + message + ",\t" + DateTime.Now.ToString();
-                stream.WriteLine(entry);
-            }
+            string entry = "Inactivity Settings Change" + ",\t" + message + ",\t" + DateTime.Now.ToString();
+
+            eventLog.WriteEntry(entry, EventLogEntryType.Information, 7);  // 7 is an inactivity config change
         }
 
+
         /// <summary> 
-        ///  Class Name: Logger  <br/> <br/>
+        ///  Class Name: Logger  <br/><br/>
         ///
-        ///  Description: Logs all of the GUI's Exceptions into "Repeater_GUI_Log.txt". <br/><br/>
+        ///  Description: Logs whever the front end starts or stops. <br/><br/>
         ///
         ///  Inputs:  <br/>
-        ///  Exception <paramref name="e"/> - An Exception to be logged <br/><br/>
+        ///  string <paramref name="mode"/> - If it's a start or stop being logged, mode can only be "start"
+        ///                                   or "stop". <br/><br/>
         ///  
         ///  Returns:  None
         /// </summary>
-        public static void LogException(Exception e)
+        public static void StartStopLogger(string mode)
         {
-            var lineCount = File.ReadLines("Repeater_GUI_Log.txt").Count();
-
-            using (StreamWriter stream = File.AppendText("Repeater_GUI_Log.txt"))
+            string message = "";
+            if (mode == "start")
             {
-                if (lineCount > 250)        // To make sure it doesn't get too big, it's capped at 250 entries
-                {
-                    var lines = File.ReadAllLines("Repeater_GUI_Log.txt");
-                    File.WriteAllLines("Repeater_GUI_Log.txt", lines.Skip(1).ToArray());
-                }
-
-                string message = String.Format("The frontend/user interface has suffered an error: " + e.Message);
-
-                string entry = "Interface Error" + ",\t" + message + ",\t" + DateTime.Now.ToString();
-                stream.WriteLine(entry);
+                message = String.Format("User Interface started.");
+            }                                         
+            else if (mode == "stop")                  
+            {                                         
+                message = String.Format("UDP Repeater user interface stopped.");
             }
+
+            // Create an EventLog instance and assign its source.
+            EventLog eventLog = new EventLog("UDP_Repeater_Backend");
+
+            eventLog.WriteEntry(message, EventLogEntryType.Information, 5);     // 5 is id for frontend start/stop
         }
     }
 }

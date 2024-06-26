@@ -47,6 +47,7 @@ namespace BackendClassNameSpace
         public string interval { get; set; }
 
 
+
         /// <summary> 
         ///  Class Name: Backend  <br/><br/> 
         ///
@@ -70,6 +71,13 @@ namespace BackendClassNameSpace
             this.sendPort = Convert.ToInt32(SendPort);
             this.frequency = newFrequency;
             this.interval = newInterval;
+
+                    // Create the source and log, if it does not already exist.
+            if (!EventLog.SourceExists("UDP_Repeater_Backend"))
+            {
+                EventLog.CreateEventSource("UDP_Repeater_Backend", "UDP Packet Repeater");
+            }
+
         }
 
 
@@ -106,15 +114,8 @@ namespace BackendClassNameSpace
         /// </summary>
         public static void ExceptionLogger(Exception e)
         {
-                // Create the source and log, if it does not already exist.
-            if (!EventLog.SourceExists("UDP_Repeater_Backend"))
-            {
-                EventLog.CreateEventSource("UDP_Repeater_Backend", "UDP Packet Repeater");
-            }
-                // Create an EventLog instance and assign its source.
-            EventLog eventLog = new EventLog();
-            Thread.Sleep(1000);     // this makes sure the Event log is created before being written to
-            eventLog.Source = "UDP_Repeater_Backend";
+            // Create an EventLog instance and assign its source.
+            EventLog eventLog = new EventLog("UDP_Repeater_Backend");
 
 
             // Get stack trace for the exception with source file information
@@ -122,13 +123,12 @@ namespace BackendClassNameSpace
             // Get the top stack frame
             var frame = st.GetFrame(0);
             // Get the line number from the stack frame
-            string lineNum = frame.GetFileLineNumber().ToString();
             string fileName = frame.GetFileName();
 
-            string message = String.Format($"{e.Message} At line {lineNum} in {fileName}");
+            string message = String.Format($"{e.Message} in {fileName} of source code.");
 
             // Write an entry to the event log.
-            eventLog.WriteEntry(message, EventLogEntryType.Error);
+            eventLog.WriteEntry(message, EventLogEntryType.Error, 1);  // 1 is our id for backend errors
         }
 
 
@@ -146,15 +146,8 @@ namespace BackendClassNameSpace
         /// </summary>
         public static void InactivityLogger(int consecutiveEvents, int frequency, string interval)
         {
-            // Create the source and log, if it does not already exist.
-            if (!EventLog.SourceExists("UDP_Repeater_Backend"))
-            {
-                EventLog.CreateEventSource("UDP_Repeater_Backend", "UDP Packet Repeater");
-            }
             // Create an EventLog instance and assign its source.
-            EventLog eventLog = new EventLog();
-            Thread.Sleep(100);     // this makes sure the Event log is created before being written to
-            eventLog.Source = "UDP_Repeater_Backend";
+            EventLog eventLog = new EventLog("UDP_Repeater_Backend");
 
 
             // this whole section is just to find if the interval word in the log message should have an 's' or not 
@@ -182,9 +175,20 @@ namespace BackendClassNameSpace
             }
 
             // Write an entry to the event log.
-            eventLog.WriteEntry(message, EventLogEntryType.Warning);
+            eventLog.WriteEntry(message, EventLogEntryType.Warning, 3);     // 3 is the id for backend inactivity
         }
 
+        /// <summary> 
+        ///  Class Name: Backend  <br/><br/>
+        ///
+        ///  Description: Logs whever the service backend starts or stops. <br/><br/>
+        ///
+        ///  Inputs:  <br/>
+        ///  string <paramref name="mode"/> - If it's a start or stop being logged, mode can only be "start"
+        ///                                   or "stop". <br/><br/>
+        ///  
+        ///  Returns:  None
+        /// </summary>
         public static void StartStopLogger(string mode)
         {
             string message = "";
@@ -197,19 +201,11 @@ namespace BackendClassNameSpace
                 message = String.Format("UDP Repeater Service stopped.");
             }
 
-            if (!EventLog.SourceExists("UDP_Repeater_Backend"))
-            {
-                EventLog.CreateEventSource("UDP_Repeater_Backend", "UDP Packet Repeater");
-            }
+            // Create an EventLog instance and assign its source.
+            EventLog eventLog = new EventLog("UDP_Repeater_Backend");
 
-                                    // Create an EventLog instance and assign its source.
-            EventLog eventLog = new EventLog();
-            Thread.Sleep(1000);     // this makes sure the Event log is created before being written to
-            eventLog.Source = "UDP_Repeater_Backend";
-
-            eventLog.WriteEntry(message, EventLogEntryType.Information);
+            eventLog.WriteEntry(message, EventLogEntryType.Information, 4);     // 4 is id for backend start/stop
         }
-
     }
 }
 

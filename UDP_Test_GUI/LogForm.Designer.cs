@@ -32,9 +32,6 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LogForm));
             this.reconfigLog = new System.Windows.Forms.DataGridView();
-            this.entryType = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.messageColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.timeStampColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.inactivityButton = new System.Windows.Forms.Button();
@@ -42,6 +39,10 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.inactivityInputBox = new System.Windows.Forms.NumericUpDown();
+            this.entryType = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.frontOrBack = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.messageColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.timeStampColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.reconfigLog)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.inactivityInputBox)).BeginInit();
             this.SuspendLayout();
@@ -54,6 +55,7 @@
             this.reconfigLog.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.reconfigLog.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.entryType,
+            this.frontOrBack,
             this.messageColumn,
             this.timeStampColumn});
             this.reconfigLog.Location = new System.Drawing.Point(20, 103);
@@ -65,28 +67,6 @@
             this.reconfigLog.RowTemplate.DefaultCellStyle.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.reconfigLog.Size = new System.Drawing.Size(773, 321);
             this.reconfigLog.TabIndex = 1;
-            // 
-            // entryType
-            // 
-            this.entryType.HeaderText = "Entry Type";
-            this.entryType.Name = "entryType";
-            this.entryType.ReadOnly = true;
-            // 
-            // messageColumn
-            // 
-            this.messageColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.messageColumn.DefaultCellStyle = dataGridViewCellStyle1;
-            this.messageColumn.HeaderText = "Message";
-            this.messageColumn.Name = "messageColumn";
-            this.messageColumn.ReadOnly = true;
-            // 
-            // timeStampColumn
-            // 
-            this.timeStampColumn.HeaderText = "Timestamp";
-            this.timeStampColumn.Name = "timeStampColumn";
-            this.timeStampColumn.ReadOnly = true;
-            this.timeStampColumn.Width = 150;
             // 
             // label2
             // 
@@ -171,11 +151,39 @@
             0,
             0});
             // 
+            // entryType
+            // 
+            this.entryType.HeaderText = "Entry Type";
+            this.entryType.Name = "entryType";
+            this.entryType.ReadOnly = true;
+            // 
+            // frontOrBack
+            // 
+            this.frontOrBack.HeaderText = "Location";
+            this.frontOrBack.Name = "frontOrBack";
+            this.frontOrBack.ReadOnly = true;
+            // 
+            // messageColumn
+            // 
+            this.messageColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.messageColumn.DefaultCellStyle = dataGridViewCellStyle1;
+            this.messageColumn.HeaderText = "Message";
+            this.messageColumn.Name = "messageColumn";
+            this.messageColumn.ReadOnly = true;
+            // 
+            // timeStampColumn
+            // 
+            this.timeStampColumn.HeaderText = "Timestamp";
+            this.timeStampColumn.Name = "timeStampColumn";
+            this.timeStampColumn.ReadOnly = true;
+            this.timeStampColumn.Width = 150;
+            // 
             // LogForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(805, 436);
+            this.ClientSize = new System.Drawing.Size(818, 436);
             this.Controls.Add(this.inactivityInputBox);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label1);
@@ -204,6 +212,7 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.NumericUpDown inactivityInputBox;
         private System.Windows.Forms.DataGridViewTextBoxColumn entryType;
+        private System.Windows.Forms.DataGridViewTextBoxColumn frontOrBack;
         private System.Windows.Forms.DataGridViewTextBoxColumn messageColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn timeStampColumn;
     }

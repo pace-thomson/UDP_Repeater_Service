@@ -1,4 +1,8 @@
-﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+﻿
+
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+	 xmlns:util="http://wixtoolset.org/schemas/v4/wxs/util">
+	
 	<Package Name="UDP Repeater Service" Language="1033" Version="1.0.0.0" Manufacturer="JT4 LLC" UpgradeCode="07b96bd4-d109-4c22-a924-70f8326a1be9" InstallerVersion="200">
 		
 
@@ -8,8 +12,6 @@
 		<Property Id="ARPPRODUCTICON" Value="JT4_Installer_Icon" />
 
 		<Feature Id="ProductFeature" Title="Installer" Level="1">
-			
-			
 			<ComponentGroupRef Id="Repeater_DependencyFiles" />
 			<ComponentGroupRef Id="Repeater_ConfigFiles" />
 			<ComponentGroupRef Id="Repeater_ServiceInstaller" />
@@ -85,20 +87,18 @@
 	<Fragment>
 		<ComponentGroup Id="Repeater_ConfigFiles" Directory="INSTALLFOLDER">
 			<Component Guid="17C70FC2-4AF5-4381-9FBE-B9C4D062E74A">
-				<File Id="___var.UDP_Repeater_Service.TargetDir_UDP_Repeater_Service.exe.config" Source="$(var.UDP_Repeater_Service.TargetDir)UDP_Repeater_Service.exe.config" KeyPath="yes" />
+				<File Id="___var.UDP_Repeater_Service.TargetDir_UDP_Repeater_Service.exe.config" 
+					  Source="$(var.UDP_Repeater_Service.TargetDir)UDP_Repeater_Service.exe.config" 
+					  KeyPath="yes" />
 			</Component>
 			<Component Guid="6903a699-0f2c-4274-9b17-e1ccd6232aa3">
 				<File Id="___var.UDP_Repeater_GUI.TargetDir_UDP_Test_GUI.exe.config"
 					  Source="C:\Users\pthomson01.ctr\source\repos\pace-thomson\UDP_Repeater_Service\UDP_Test_GUI\bin\Debug\UDP_Test_GUI.exe.config"
 					  KeyPath="yes" />
 			</Component>
-			<Component Guid="198a0fb1-7d0a-44d1-89fe-2549ba4c6027">
-				<File Id="Repeater_GUI_Log.txt"
-					  Source="C:\Users\pthomson01.ctr\source\repos\pace-thomson\UDP_Repeater_Service\UDP_Test_GUI\bin\Debug\Repeater_GUI_Log.txt"
-					  KeyPath="yes" />
-			</Component>
 		</ComponentGroup>
 	</Fragment>
+	
 
 
 	<!--ADDS SHORTCUTS TO START MENU-->
@@ -142,6 +142,9 @@
 				<File Id="___var.UDP_Repeater_GUI.TargetDir_UDP_Repeater_GUI.exe"
 					  Source="C:\Users\pthomson01.ctr\source\repos\pace-thomson\UDP_Repeater_Service\UDP_Test_GUI\bin\Debug\UDP_Test_GUI.exe"
 					  KeyPath="yes" />
+				<util:EventSource EventMessageFile="%SystemRoot%\Microsoft.NET\Framework\v2.0.50727\EventLogMessages.dll" 
+								  Log="UDP Packet Repeater"
+								  Name="UDP_Repeater_Frontend"/>
 			</Component>
 		</ComponentGroup>
 

@@ -1,4 +1,4 @@
-<Project Sdk="WixToolset.Sdk/5.0.0">
+﻿<Project Sdk="WixToolset.Sdk/5.0.0">
   <PropertyGroup>
     <OutputName>Packet_Repeater_Installer</OutputName>
   </PropertyGroup>
@@ -6,6 +6,10 @@
     <DefineConstants>Debug</DefineConstants>
     <SuppressPdbOutput>True</SuppressPdbOutput>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="WixToolset.Util.wixext" Version="5.0.0" />
+    <PackageReference Include="WixToolset.VisualStudio.wixext" Version="5.0.0" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\UDP_Repeater_Service\UDP_Repeater_Service.csproj">
       <Name>UDP_Repeater_Service</Name>
