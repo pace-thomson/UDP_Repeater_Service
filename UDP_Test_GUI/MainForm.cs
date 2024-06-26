@@ -29,10 +29,6 @@ using System.Windows.Forms;
 using System.IO;
 using Newtonsoft.Json.Linq;
 using System.ServiceProcess;
-using System.Security.AccessControl;
-using System.Security.Principal;
-using System.Diagnostics;
-using System.Linq.Expressions;
 
 
 namespace UDP_Repeater_GUI
@@ -86,6 +82,15 @@ namespace UDP_Repeater_GUI
             SetupTimerForServiceStatus();
 
             Logger.StartStopLogger("start");
+
+            //try
+            //{
+            //    InitializeUDPListener();
+            //}
+            //catch (Exception ex)
+            //{
+            //    Logger.LogException(ex);
+            //}
         }
 
         /// <summary> 
@@ -176,12 +181,20 @@ namespace UDP_Repeater_GUI
         /// </summary>
         private async void InitializeUDPListener()
         {
-            if (!isListening)
+            try
             {
-                isListening = true;
-                udpClient = new UdpClient(50000);
-                await ReceiveDataAsync();
+                if (!isListening)
+                {
+                    isListening = true;
+                    udpClient = new UdpClient(50000);
+                    await ReceiveDataAsync();
+                }
             }
+            catch (Exception e)
+            {
+                Logger.LogException(e);
+            }
+            
         }
 
         /// <summary> 
@@ -202,10 +215,11 @@ namespace UDP_Repeater_GUI
                     UdpReceiveResult result = await udpClient.ReceiveAsync();
                     ProcessReceivedData(result.Buffer);
                 }
-                catch (ObjectDisposedException)
+                catch (ObjectDisposedException e)
                 {
                         // Handle if the UDP client is disposed
                     isListening = false;
+                    Logger.LogException(e);
                 }
                 catch (Exception ex)
                 {
@@ -229,43 +243,50 @@ namespace UDP_Repeater_GUI
         /// </summary>
         private void ProcessReceivedData(byte[] receivedBytes)
         {
-            string receivedData = Encoding.ASCII.GetString(receivedBytes);
-            string[] dataParts = receivedData.Split(',');
-            
+            try
+            {
+                string receivedData = Encoding.ASCII.GetString(receivedBytes);
+                string[] dataParts = receivedData.Split(',');
+
                 // Updates GUI from a different thread
-            dataGridView1.Invoke((MethodInvoker)delegate {
-
-                DataGridViewRow row;
-
-                if (dataGridView1.Rows.Count >= 250)
+                dataGridView1.Invoke((MethodInvoker)delegate
                 {
-                            // this caps the table at most recent 250 packets   
-                    dataGridView1.Rows.Add();
-                    dataGridView1.Rows.RemoveAt(250);
-                    row = dataGridView1.Rows[249];
-                } 
-                else
-                {
-                    int rowNum = dataGridView1.Rows.Add();
-                    row = dataGridView1.Rows[rowNum];
-                }
 
-                // Updates DataGridView with received data
+                    DataGridViewRow row;
 
-                row.Cells["indexColumn"].Value = (index+1);
-                row.Cells["ipColumn"].Value = dataParts[0];
-                row.Cells["portColumn"].Value = dataParts[1];
-                row.Cells["payloadColumn"].Value = dataParts[2];
-                row.Cells["timeColumn"].Value = DateTime.Now.ToString();
-                index++;
+                    if (dataGridView1.Rows.Count >= 250)
+                    {
+                        // this caps the table at most recent 250 packets   
+                        dataGridView1.Rows.Add();
+                        dataGridView1.Rows.RemoveAt(250);
+                        row = dataGridView1.Rows[249];
+                    }
+                    else
+                    {
+                        int rowNum = dataGridView1.Rows.Add();
+                        row = dataGridView1.Rows[rowNum];
+                    }
 
-            });
+                    // Updates DataGridView with received data
+
+                    row.Cells["indexColumn"].Value = (index + 1);
+                    row.Cells["ipColumn"].Value = dataParts[0];
+                    row.Cells["portColumn"].Value = dataParts[1];
+                    row.Cells["payloadColumn"].Value = dataParts[2];
+                    row.Cells["timeColumn"].Value = DateTime.Now.ToString();
+                    index++;
+
+                });
                 // changes sort direction to keep the most recent packet at the top.
                 // MAKE SURE IT'S SORTING INTEGERS AND NOT STRINGS.
-            dataGridView1.Sort(dataGridView1.Columns[0], ListSortDirection.Descending);
+                dataGridView1.Sort(dataGridView1.Columns[0], ListSortDirection.Descending);
 
                 // updates packet counter
-            packet_counter.Text = index.ToString();
+                packet_counter.Text = index.ToString();
+            } catch (Exception e) 
+            {
+                Logger.LogException(e);
+            }
         }
 
 
@@ -318,18 +339,25 @@ namespace UDP_Repeater_GUI
         /// </summary>
         private void SetupTimerForServiceStatus()
         {
-                    // this is the System.Windows.Forms.Timer, not System.Timers.Timer
-                    // if i use the latter option, it gets mad at multi-threading
-                    // using the windows forms timer makes it work
-            Timer timer = new Timer();  
+            try
+            {
+                        // this is the System.Windows.Forms.Timer, not System.Timers.Timer
+                        // if i use the latter option, it gets mad at multi-threading
+                        // using the windows forms timer makes it work
+                Timer timer = new Timer();  
 
-            timer.Enabled = true;
+                timer.Enabled = true;
 
-            timer.Tick += new EventHandler(TimerEventProcessor);
+                timer.Tick += new EventHandler(TimerEventProcessor);
 
-            timer.Interval = 5000;      // checks every 5 seconds
+                timer.Interval = 5000;      // checks every 5 seconds
 
-            timer.Start();
+                timer.Start();
+            }
+            catch (Exception e) 
+            {
+                Logger.LogException (e);
+            }
         }
 
         /// <summary> 
@@ -345,10 +373,9 @@ namespace UDP_Repeater_GUI
         /// </summary>
         public void TimerEventProcessor(Object source, EventArgs e)
         {
-            ourService = new ServiceController("UDP_Repeater_Service");
-
             try
             {
+                ourService = new ServiceController("UDP_Repeater_Service");
                 if (ourService.Status == ServiceControllerStatus.Running)
                 {
                     statusLabel.Text = "Running";
@@ -364,24 +391,19 @@ namespace UDP_Repeater_GUI
             {
                 statusLabel.Text = "Service Not Found";
                 statusLabel.ForeColor = Color.DarkRed;
+                Logger.LogException (notFound);
             }
         }
 
-
-        /// <summary> 
-        ///  Class Name: gui_form  <br/><br/>
-        ///
-        ///  Description: Opens a messagebox asking if the user is sure they want to close the GUI. <br/><br/>
-        ///
-        ///  Inputs:  <br/>
-        ///  FormClosingEventArgs <paramref name="e"/> - The form closing event arg. <br/><br/>
-        ///  
-        ///  Returns: None
-        /// </summary>
-        protected override void OnFormClosing(FormClosingEventArgs e)
+        private void gui_form_FormClosing(object sender, FormClosingEventArgs e)
         {
-            e.Cancel = true;
-            WindowState = FormWindowState.Minimized;
+            if (e.CloseReason == CloseReason.UserClosing)
+            {
+                e.Cancel = true;
+                WindowState = FormWindowState.Minimized;
+                return;
+            }
+            Logger.StartStopLogger("stop");
         }
 
         /// <summary> 
@@ -443,5 +465,6 @@ namespace UDP_Repeater_GUI
         {
             return Char.ToUpper(str[0]) + str.Remove(0, 1);
         }
+
     }
 }

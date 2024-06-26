@@ -74,14 +74,21 @@ namespace UDP_Repeater_GUI
         /// </summary>
         public void PopulateTable()
         {
-            EventLog eventLog = new EventLog("UDP Packet Repeater");
-            foreach (EventLogEntry entry in eventLog.Entries)
+            try
             {
-                AddNewRow(entry);
-            }
+                EventLog eventLog = new EventLog("UDP Packet Repeater");
+                foreach (EventLogEntry entry in eventLog.Entries)
+                {
+                    AddNewRow(entry);
+                }
 
-            // sort by newest entry first
-            reconfigLog.Sort(reconfigLog.Columns["timeStampColumn"], ListSortDirection.Descending);
+                // sort by newest entry first
+                reconfigLog.Sort(reconfigLog.Columns["timeStampColumn"], ListSortDirection.Descending);
+            }
+            catch (Exception e)
+            {
+                Logger.LogException(e);
+            }
         }
 
 
@@ -153,10 +160,17 @@ namespace UDP_Repeater_GUI
         /// </summary>
         public void SetCheckerForLogChanges()
         {
-            EventLog eventLog = new EventLog("UDP Packet Repeater");
+            try
+            {
+                EventLog eventLog = new EventLog("UDP Packet Repeater");    
 
-            eventLog.EntryWritten += new EntryWrittenEventHandler(OnEntryWritten);
-            eventLog.EnableRaisingEvents = true;
+                eventLog.EntryWritten += new EntryWrittenEventHandler(OnEntryWritten);
+                eventLog.EnableRaisingEvents = true;
+            }
+            catch ( Exception e)
+            {
+                Logger.LogException(e);
+            }
         }
 
         /// <summary> When an entry to the event log is written, repopulates table. </summary>

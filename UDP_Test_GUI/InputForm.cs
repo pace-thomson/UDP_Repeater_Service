@@ -171,7 +171,6 @@ namespace UDP_Repeater_GUI
         ///  
         ///  Returns: None
         /// </summary>
-
         private void configDialog_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (!inputValid)

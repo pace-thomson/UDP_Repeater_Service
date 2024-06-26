@@ -19,9 +19,8 @@
 
 using System;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Threading;
+using System.Windows.Forms;
+
 
 
 namespace UDP_Repeater_GUI
@@ -47,15 +46,10 @@ namespace UDP_Repeater_GUI
             EventLog eventLog = new EventLog();
             eventLog.Source = "UDP_Repeater_Frontend";
 
-            // Get stack trace for the exception with source file information
-            var st = new StackTrace(e, true);
-            // Get the top stack frame
-            var frame = st.GetFrame(0);
-            // Get the line number from the stack frame
-            string fileName = frame.GetFileName();
+            //MessageBox.Show(e.Source + "\n\n" + e.StackTrace);  
 
-            string message = String.Format($"{e.Message} in {fileName} of source code. This " +
-                                           $"is an error in the frontend/user interface.");
+
+            string message = String.Format($"{e.Message}. Error location: Frontend/User Interface.");
 
             // Write an entry to the event log.
             eventLog.WriteEntry(message, EventLogEntryType.Error, 2);       // 2 is id for frontend errors

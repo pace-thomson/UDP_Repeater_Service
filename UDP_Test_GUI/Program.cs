@@ -12,11 +12,6 @@ namespace UDP_Repeater_GUI
         [STAThread]
         static void Main()
         {
-            if (!File.Exists("Repeater_GUI_Log.txt"))
-            {
-                File.Create("Repeater_GUI_Log.txt");
-            }
-
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new gui_form());

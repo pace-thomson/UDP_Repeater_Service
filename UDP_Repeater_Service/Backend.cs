@@ -116,16 +116,7 @@ namespace BackendClassNameSpace
             EventLog eventLog = new EventLog();
             eventLog.Source = "UDP_Repeater_Backend";
 
-
-
-            // Get stack trace for the exception with source file information
-            var st = new StackTrace(e, true);
-            // Get the top stack frame
-            var frame = st.GetFrame(0);
-            // Get the line number from the stack frame
-            string fileName = frame.GetFileName();
-
-            string message = String.Format($"{e.Message} in {fileName} of source code.");
+            string message = String.Format($"{e.Message}. Error location: Backend/Service.");
 
             // Write an entry to the event log.
             eventLog.WriteEntry(message, EventLogEntryType.Error, 1);  // 1 is our id for backend errors
