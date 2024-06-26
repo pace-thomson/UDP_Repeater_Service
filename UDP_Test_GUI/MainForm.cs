@@ -29,6 +29,8 @@ using System.Windows.Forms;
 using System.IO;
 using Newtonsoft.Json.Linq;
 using System.ServiceProcess;
+using System.Security.AccessControl;
+using System.Security.Principal;
 
 
 namespace UDP_Repeater_GUI
@@ -75,9 +77,6 @@ namespace UDP_Repeater_GUI
 
                 // Handle the Click event to activate the form.
             notifyIcon1.Click += new EventHandler(notifyIcon1_Click);
-
-                // gui starts minimized but running
-            WindowState = FormWindowState.Minimized;
                 
             UpdateCurrentConfigGroup();
 
@@ -402,7 +401,7 @@ namespace UDP_Repeater_GUI
         private void logButton_Click(object sender, EventArgs e)
         {
             LogForm logForm = new LogForm(this);
-            logForm.ShowDialog();
+            logForm.Show();
         }
         
         /// <summary>

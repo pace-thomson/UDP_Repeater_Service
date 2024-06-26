@@ -165,25 +165,51 @@ namespace BackendClassNameSpace
 
             if (totalTime > 1 && frequency > 1)
             {
-                message = string.Format("It has been {0} {1} since last packet was received. ", totalTime, interval);
-                message += string.Format("The Service is currenty configured to log inactivity every {0} {1}.", frequency, interval);
+                message = String.Format("It has been {0} {1} since last packet was received. ", totalTime, interval);
+                message += String.Format("The Service is currenty configured to log inactivity every {0} {1}.", frequency, interval);
             }
             else if (totalTime > 1 && frequency == 1)
             {
-                message = string.Format("It has been {0} {1} since last packet was received. ", totalTime, interval);
+                message = String.Format("It has been {0} {1} since last packet was received. ", totalTime, interval);
                 interval = interval.Remove(interval.Length - 1);
-                message += string.Format("The Service is currenty configured to log inactivity every {0} {1}.", frequency, interval);
+                message += String.Format("The Service is currenty configured to log inactivity every {0} {1}.", frequency, interval);
             }
             else
             {
                 interval = interval.Remove(interval.Length - 1);
-                message = string.Format("It has been {0} {1} since last packet was received. ", totalTime, interval);
-                message += string.Format("The Service is currenty configured to log inactivity every {0} {1}.", frequency, interval);
+                message = String.Format("It has been {0} {1} since last packet was received. ", totalTime, interval);
+                message += String.Format("The Service is currenty configured to log inactivity every {0} {1}.", frequency, interval);
             }
 
             // Write an entry to the event log.
             eventLog.WriteEntry(message, EventLogEntryType.Warning);
         }
+
+        public static void StartStopLogger(string mode)
+        {
+            string message = "";
+            if (mode == "start")
+            {
+                message = String.Format("UDP Repeater Service started.");   
+            } 
+            else if (mode == "stop")
+            {
+                message = String.Format("UDP Repeater Service stopped.");
+            }
+
+            if (!EventLog.SourceExists("UDP_Repeater_Backend"))
+            {
+                EventLog.CreateEventSource("UDP_Repeater_Backend", "UDP Packet Repeater");
+            }
+
+                                    // Create an EventLog instance and assign its source.
+            EventLog eventLog = new EventLog();
+            Thread.Sleep(1000);     // this makes sure the Event log is created before being written to
+            eventLog.Source = "UDP_Repeater_Backend";
+
+            eventLog.WriteEntry(message, EventLogEntryType.Information);
+        }
+
     }
 }
 

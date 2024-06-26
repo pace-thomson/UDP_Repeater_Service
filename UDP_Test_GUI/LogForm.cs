@@ -24,6 +24,7 @@ using System.Windows.Forms;
 using System.Net.Sockets;
 using System.Text;
 using System.Diagnostics;
+using System.Linq;
 
 
 namespace UDP_Repeater_GUI
@@ -56,6 +57,8 @@ namespace UDP_Repeater_GUI
             theMainForm = mainForm;
                     // this makes sure that the rows can fit if there's multiple lines of text
             reconfigLog.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+
+            SetCheckerForLogChanges();
         }
 
         /// <summary> 
@@ -71,10 +74,10 @@ namespace UDP_Repeater_GUI
         /// </summary>
         public void PopulateTable()
         {
+            // section for reading and inputting entries from "Repeater_GUI_Log.txt"
             var lines = File.ReadLines("Repeater_GUI_Log.txt");
             foreach (string line in lines)
             {
-                        // section for reading and inputting entries from "Repeater_GUI_Log.txt"
                 string[] splitLine = line.Split(',');
 
                 int rowNum = reconfigLog.Rows.Add();
@@ -85,9 +88,8 @@ namespace UDP_Repeater_GUI
                 row.Cells["timeStampColumn"].Value = DateTime.Parse(splitLine[2]);
             }
 
-                    // section for reading and inputting entries from "UDP Packet Repeater"
-            EventLog eventLog = new EventLog();
-            eventLog.Log = "UDP Packet Repeater";
+            // section for reading and inputting entries from "UDP Packet Repeater"
+            EventLog eventLog = new EventLog("UDP Packet Repeater");
             foreach (EventLogEntry entry in eventLog.Entries)
             {
                 int rowNum = reconfigLog.Rows.Add();
@@ -137,7 +139,7 @@ namespace UDP_Repeater_GUI
                     try
                     {
                                 // we want interval to still have the first letter uppcase here
-                                // so that we can use it to display 
+                                // so that we can use it to display prettily? idk if that's a word
                         theMainForm.UpdateCurrentConfigGroup(frequency.ToString(), interval);
                         Logger.LogInactivityChange(frequency, interval);
 
@@ -147,8 +149,8 @@ namespace UDP_Repeater_GUI
                         byte[] bytes = Encoding.ASCII.GetBytes(frequency + "," + interval + "," + "inactive");
                         sendRequest.Send(bytes, bytes.Length, "127.0.0.1", 50001);
 
-                                // repopulates table since we just made a new log entry
-                        PopulateTable();
+                                // updates table since we just made a new log entry             not needed now?
+                        // AddNewRow();
                     }
                     catch (Exception exception)
                     {
@@ -166,6 +168,81 @@ namespace UDP_Repeater_GUI
             {
                 MessageBox.Show("Invalid Entries. Please try again.");
             }
+        }
+
+        /// <summary> 
+        ///  Class Name: configDialog  <br/><br/>
+        ///
+        ///  Description: Sets up events for the backend/frontend logs changing. Updates table for both events. <br/><br/>
+        ///
+        ///  Inputs: None <br/><br/>
+        ///  
+        ///  Returns: None
+        /// </summary>
+        public void SetCheckerForLogChanges()
+        {
+            EventLog eventLog = new EventLog();
+            eventLog.Log = "UDP Packet Repeater";
+
+            eventLog.EntryWritten += new EntryWrittenEventHandler(OnEntryWritten);
+            eventLog.EnableRaisingEvents = true;
+
+            var watcher = new FileSystemWatcher("C:\\Program Files (x86)\\UDP_Repeater_Service");
+            watcher.Changed += new FileSystemEventHandler(OnTextFileChanged);
+            watcher.EnableRaisingEvents = true;
+            watcher.Filter = "*.txt";
+        }
+
+        /// <summary> When an entry to the backend log is written, repopulates table. </summary>
+        public void OnEntryWritten(object source, EntryWrittenEventArgs e)
+        {
+            Invoke(new Action(() => AddNewRow(e.Entry)));
+        }
+        /// <summary> When an entry to the frontend log is written, repopulates table. </summary>
+        public void OnTextFileChanged(object sender, FileSystemEventArgs e)
+        {
+            Invoke(new Action(() => AddNewRow()));
+        }
+
+
+        public void AddNewRow(EventLogEntry entry)
+        {
+            int rowNum = reconfigLog.Rows.Add();
+            DataGridViewRow row = reconfigLog.Rows[rowNum];
+
+            if (entry.EntryType == EventLogEntryType.Warning)
+            {
+                row.Cells["entryType"].Value = "Inactive Period";
+            }
+            else if (entry.EntryType == EventLogEntryType.Error)
+            {
+                row.Cells["entryType"].Value = "Repeater Error";
+            }
+            else 
+            {
+                row.Cells["entryType"].Value = "Service Start/Stop";
+            }
+
+            row.Cells["messageColumn"].Value = entry.Message;
+            row.Cells["timeStampColumn"].Value = entry.TimeWritten;
+
+            reconfigLog.Sort(reconfigLog.Columns[2], ListSortDirection.Descending);
+        }
+
+        public void AddNewRow()
+        {
+            string lastLine = File.ReadLines("Repeater_GUI_Log.txt").Last();
+
+            string[] splitLine = lastLine.Split(',');
+
+            int rowNum = reconfigLog.Rows.Add();
+            DataGridViewRow row = reconfigLog.Rows[rowNum];
+
+            row.Cells["entryType"].Value = splitLine[0];
+            row.Cells["messageColumn"].Value = splitLine[1];
+            row.Cells["timeStampColumn"].Value = DateTime.Parse(splitLine[2]);
+
+            reconfigLog.Sort(reconfigLog.Columns[2], ListSortDirection.Descending);
         }
     }
 }

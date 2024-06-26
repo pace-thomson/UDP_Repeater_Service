@@ -65,6 +65,12 @@ namespace UDP_Repeater_Service
         protected override void OnStart(string[] args)
         {
             TheMainProgram.main();
+            Backend.StartStopLogger("start");
+        }
+
+        protected override void OnStop()
+        {
+            Backend.StartStopLogger("stop");
         }
     }
 }

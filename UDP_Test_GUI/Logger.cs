@@ -20,6 +20,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 
 
 namespace UDP_Repeater_GUI
@@ -43,14 +44,14 @@ namespace UDP_Repeater_GUI
         /// </summary>
         public static void LogConfigChange(string editType, string ip, string port)
         {
-            var lineCount = File.ReadLines("Repeater_GUI_Log.txt").Count();
+            var lineCount = File.ReadLines("C:\\Program Files (x86)\\UDP_Repeater_Service\\Repeater_GUI_Log.txt").Count();
 
-            using (StreamWriter stream = File.AppendText("Repeater_GUI_Log.txt"))
+            using (StreamWriter stream = File.AppendText("C:\\Program Files (x86)\\UDP_Repeater_Service\\Repeater_GUI_Log.txt"))
             {
                 if (lineCount > 250)        // To make sure it doesn't get too big, it's capped at 250 entries
                 {
-                    var lines = File.ReadAllLines("Repeater_GUI_Log.txt");
-                    File.WriteAllLines("Repeater_GUI_Log.txt", lines.Skip(1).ToArray());
+                    var lines = File.ReadAllLines("C:\\Program Files (x86)\\UDP_Repeater_Service\\Repeater_GUI_Log.txt");
+                    File.WriteAllLines("C:\\Program Files (x86)\\UDP_Repeater_Service\\Repeater_GUI_Log.txt", lines.Skip(1).ToArray());
                 }
 
                 string message = String.Format("The {0} settings were changed. New settings - " +
@@ -59,7 +60,10 @@ namespace UDP_Repeater_GUI
                 string entry = "IP/Port Change" + ",\t" + message + ",\t" + DateTime.Now.ToString();
 
                 stream.WriteLine(entry);
+
+                
             }
+            
         }
 
 

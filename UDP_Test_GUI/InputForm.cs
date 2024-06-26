@@ -98,7 +98,6 @@ namespace UDP_Repeater_GUI
                         // we communicate back and forth with the Service with comma seperated strings
                         byte[] bytes = Encoding.ASCII.GetBytes(ip + "," + port + "," + mode);
                         sendRequest.Send(bytes, bytes.Length, "127.0.0.1", 50001);
-                        Logger.LogConfigChange(mode, ip, port);
                     }
                     catch (Exception exception)
                     {
@@ -106,9 +105,13 @@ namespace UDP_Repeater_GUI
                         Logger.LogException(exception);
                         return;
                     }
-                                // this section resets the inputs
+                    // this section resets the inputs
+
+                    Logger.LogConfigChange(mode, ip, port);
+
                     ip_field.Text = "";
-                    port_field.Text = "";      
+                    port_field.Text = "";   
+                    
                     sendRequest.Close();
                     inputValid = true;
                 }

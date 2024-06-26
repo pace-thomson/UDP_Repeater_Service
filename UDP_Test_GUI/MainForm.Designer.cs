@@ -243,7 +243,7 @@
             // currentSendIp
             // 
             this.currentSendIp.AutoSize = true;
-            this.currentSendIp.Location = new System.Drawing.Point(123, 65);
+            this.currentSendIp.Location = new System.Drawing.Point(130, 65);
             this.currentSendIp.Name = "currentSendIp";
             this.currentSendIp.Size = new System.Drawing.Size(88, 13);
             this.currentSendIp.TabIndex = 8;
@@ -261,7 +261,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(108, 65);
+            this.label8.Location = new System.Drawing.Point(114, 65);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(23, 13);
             this.label8.TabIndex = 5;
@@ -305,7 +305,7 @@
             this.panel2.Controls.Add(this.label8);
             this.panel2.Controls.Add(this.label9);
             this.panel2.Controls.Add(this.label4);
-            this.panel2.Location = new System.Drawing.Point(333, 20);
+            this.panel2.Location = new System.Drawing.Point(333, 12);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(308, 113);
             this.panel2.TabIndex = 21;
@@ -313,7 +313,7 @@
             // currentInterval
             // 
             this.currentInterval.AutoSize = true;
-            this.currentInterval.Location = new System.Drawing.Point(255, 85);
+            this.currentInterval.Location = new System.Drawing.Point(261, 85);
             this.currentInterval.Name = "currentInterval";
             this.currentInterval.Size = new System.Drawing.Size(44, 13);
             this.currentInterval.TabIndex = 15;
@@ -322,7 +322,7 @@
             // currentFrequency
             // 
             this.currentFrequency.AutoSize = true;
-            this.currentFrequency.Location = new System.Drawing.Point(278, 65);
+            this.currentFrequency.Location = new System.Drawing.Point(283, 65);
             this.currentFrequency.Name = "currentFrequency";
             this.currentFrequency.Size = new System.Drawing.Size(13, 13);
             this.currentFrequency.TabIndex = 14;
@@ -331,7 +331,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(213, 85);
+            this.label12.Location = new System.Drawing.Point(220, 85);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(45, 13);
             this.label12.TabIndex = 13;
@@ -340,7 +340,7 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(217, 65);
+            this.label11.Location = new System.Drawing.Point(224, 65);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(60, 13);
             this.label11.TabIndex = 12;
@@ -350,7 +350,7 @@
             // 
             this.label10.AutoSize = true;
             this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label10.Location = new System.Drawing.Point(219, 42);
+            this.label10.Location = new System.Drawing.Point(229, 42);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(62, 15);
             this.label10.TabIndex = 11;
