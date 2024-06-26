@@ -156,7 +156,7 @@ namespace UDP_Repeater_GUI
         /// </summary>
         public void UpdateCurrentConfigGroup(string frequency, string interval)
         {
-            if (frequency == "1") 
+            if (frequency != "1") 
             {
                 interval += "s";
             }
