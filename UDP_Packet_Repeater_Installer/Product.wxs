@@ -1,7 +1,8 @@
 ﻿
 
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
-	 xmlns:util="http://wixtoolset.org/schemas/v4/wxs/util">
+	 xmlns:util="http://wixtoolset.org/schemas/v4/wxs/util"
+	 xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
 	
 	<Package Name="UDP Repeater Service" Language="1033" Version="1.0.0.0" Manufacturer="JT4 LLC" UpgradeCode="07b96bd4-d109-4c22-a924-70f8326a1be9" InstallerVersion="200">
 		
@@ -80,6 +81,11 @@
 					  Source="C:\Users\pthomson01.ctr\source\repos\pace-thomson\UDP_Repeater_Service\UDP_Test_GUI\bin\Debug\jt4_logo.ico"
 					  KeyPath="yes" />
 			</Component>
+			<!--<Component Guid="ffae1a37-eb14-43be-b85c-de2d5a89e11d">
+				<File Id="EventLogMessages.dll"
+					  Source="C:\Users\pthomson01.ctr\source\repos\pace-thomson\UDP_Repeater_Service\UDP_Test_GUI\bin\Debug\jt4_logo.ico"
+					  KeyPath="yes" />
+			</Component>-->
 		</ComponentGroup>
 	</Fragment>
 
@@ -142,9 +148,9 @@
 				<File Id="___var.UDP_Repeater_GUI.TargetDir_UDP_Repeater_GUI.exe"
 					  Source="C:\Users\pthomson01.ctr\source\repos\pace-thomson\UDP_Repeater_Service\UDP_Test_GUI\bin\Debug\UDP_Test_GUI.exe"
 					  KeyPath="yes" />
-				<util:EventSource EventMessageFile="%SystemRoot%\Microsoft.NET\Framework\v2.0.50727\EventLogMessages.dll" 
-								  Log="UDP Packet Repeater"
-								  Name="UDP_Repeater_Frontend"/>
+				<util:EventSource Log="UDP Packet Repeater"
+								  Name="UDP_Repeater_Frontend"
+								  EventMessageFile="C:\Windows\Microsoft.NET\Framework64\v4.0.30319\EventLogMessages.dll"/>
 			</Component>
 		</ComponentGroup>
 

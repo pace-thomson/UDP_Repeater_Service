@@ -153,8 +153,7 @@ namespace UDP_Repeater_GUI
         /// </summary>
         public void SetCheckerForLogChanges()
         {
-            EventLog eventLog = new EventLog();
-            eventLog.Log = "UDP Packet Repeater";
+            EventLog eventLog = new EventLog("UDP Packet Repeater");
 
             eventLog.EntryWritten += new EntryWrittenEventHandler(OnEntryWritten);
             eventLog.EnableRaisingEvents = true;
@@ -164,7 +163,7 @@ namespace UDP_Repeater_GUI
         public void OnEntryWritten(object source, EntryWrittenEventArgs e)
         {
             Invoke(new Action(() => AddNewRow(e.Entry)));
-            Invoke(new Action(() => reconfigLog.Sort(reconfigLog.Columns[2], ListSortDirection.Descending)));
+            Invoke(new Action(() => reconfigLog.Sort(reconfigLog.Columns["timeStampColumn"], ListSortDirection.Descending)));
         }
 
 

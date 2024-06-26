@@ -19,8 +19,6 @@
 
 using System;
 using System.Diagnostics;
-using System.Threading;
-
 
     
 namespace BackendClassNameSpace
@@ -115,7 +113,9 @@ namespace BackendClassNameSpace
         public static void ExceptionLogger(Exception e)
         {
             // Create an EventLog instance and assign its source.
-            EventLog eventLog = new EventLog("UDP_Repeater_Backend");
+            EventLog eventLog = new EventLog();
+            eventLog.Source = "UDP_Repeater_Backend";
+
 
 
             // Get stack trace for the exception with source file information
@@ -147,7 +147,8 @@ namespace BackendClassNameSpace
         public static void InactivityLogger(int consecutiveEvents, int frequency, string interval)
         {
             // Create an EventLog instance and assign its source.
-            EventLog eventLog = new EventLog("UDP_Repeater_Backend");
+            EventLog eventLog = new EventLog();
+            eventLog.Source = "UDP_Repeater_Backend";
 
 
             // this whole section is just to find if the interval word in the log message should have an 's' or not 
@@ -194,15 +195,17 @@ namespace BackendClassNameSpace
             string message = "";
             if (mode == "start")
             {
-                message = String.Format("UDP Repeater Service started.");   
+                message = String.Format("Repeater Service started.");   
             } 
             else if (mode == "stop")
             {
-                message = String.Format("UDP Repeater Service stopped.");
+                message = String.Format("Repeater Service stopped.");
             }
 
             // Create an EventLog instance and assign its source.
-            EventLog eventLog = new EventLog("UDP_Repeater_Backend");
+            EventLog eventLog = new EventLog();
+            eventLog.Source = "UDP_Repeater_Backend";
+
 
             eventLog.WriteEntry(message, EventLogEntryType.Information, 4);     // 4 is id for backend start/stop
         }

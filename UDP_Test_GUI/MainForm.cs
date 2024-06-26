@@ -32,6 +32,7 @@ using System.ServiceProcess;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Diagnostics;
+using System.Linq.Expressions;
 
 
 namespace UDP_Repeater_GUI
@@ -79,10 +80,6 @@ namespace UDP_Repeater_GUI
                 // Handle the Click event to activate the form.
             notifyIcon1.Click += new EventHandler(notifyIcon1_Click);
 
-            if (!EventLog.SourceExists("UDP_Repeater_Frontend"))
-            {
-                EventLog.CreateEventSource("UDP_Repeater_Frontend", "UDP Packet Repeater");
-            }
 
             UpdateCurrentConfigGroup();
 
@@ -350,15 +347,23 @@ namespace UDP_Repeater_GUI
         {
             ourService = new ServiceController("UDP_Repeater_Service");
 
-            if (ourService.Status == ServiceControllerStatus.Running)
+            try
             {
-                statusLabel.Text = "Running";
-                statusLabel.ForeColor = Color.Green;
+                if (ourService.Status == ServiceControllerStatus.Running)
+                {
+                    statusLabel.Text = "Running";
+                    statusLabel.ForeColor = Color.Green;
+                }
+                else
+                {
+                    statusLabel.Text = "Not Running";
+                    statusLabel.ForeColor = Color.Red;
+                }
             }
-            else
+            catch (Exception notFound)
             {
-                statusLabel.Text = "Not Running";
-                statusLabel.ForeColor = Color.Red;
+                statusLabel.Text = "Service Not Found";
+                statusLabel.ForeColor = Color.DarkRed;
             }
         }
 

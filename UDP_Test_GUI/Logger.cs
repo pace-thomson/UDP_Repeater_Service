@@ -44,7 +44,8 @@ namespace UDP_Repeater_GUI
         public static void LogException(Exception e)
         {
             // Create an EventLog instance and assign its source.
-            EventLog eventLog = new EventLog("UDP_Repeater_Backend");
+            EventLog eventLog = new EventLog();
+            eventLog.Source = "UDP_Repeater_Frontend";
 
             // Get stack trace for the exception with source file information
             var st = new StackTrace(e, true);
@@ -76,7 +77,9 @@ namespace UDP_Repeater_GUI
         public static void LogConfigChange(string editType, string ip, string port)
         {
                 // Create an EventLog instance and assign its source.
-            EventLog eventLog = new EventLog("UDP_Repeater_Frontend");
+            EventLog eventLog = new EventLog();
+            eventLog.Source = "UDP_Repeater_Frontend";
+
 
             string message = String.Format("The {0} settings were changed. New settings - " +
                                 "IP Address: {1} and Port: {2}", editType, ip, port);
@@ -101,7 +104,9 @@ namespace UDP_Repeater_GUI
         public static void LogInactivityChange(int frequency, string interval)
         {
             // Create an EventLog instance and assign its source.
-            EventLog eventLog = new EventLog("UDP_Repeater_Frontend");
+            EventLog eventLog = new EventLog();
+            eventLog.Source = "UDP_Repeater_Frontend";
+
 
             string message = String.Format("The Inactivity settings were changed. New settings - " +
                                                 "Frequency: {0} and Interval: {1}", frequency, interval);
@@ -132,11 +137,13 @@ namespace UDP_Repeater_GUI
             }                                         
             else if (mode == "stop")                  
             {                                         
-                message = String.Format("UDP Repeater user interface stopped.");
+                message = String.Format("User Interface stopped.");
             }
 
             // Create an EventLog instance and assign its source.
-            EventLog eventLog = new EventLog("UDP_Repeater_Backend");
+            EventLog eventLog = new EventLog();
+            eventLog.Source = "UDP_Repeater_Frontend";
+
 
             eventLog.WriteEntry(message, EventLogEntryType.Information, 5);     // 5 is id for frontend start/stop
         }
