@@ -386,6 +386,18 @@ namespace UDP_Repeater_GUI
             }
         }
 
+        /// <summary> 
+        ///  Class Name: gui_form  <br/><br/>
+        ///
+        ///  Description: If the user presses the X, then it dones't close. <br/>
+        ///               Otherwise it logs stopping. <br/><br/>
+        ///
+        ///  Inputs:  <br/>
+        ///  object <paramref name="sender"/> - I don't use this, i'm not sure. <br/>
+        ///  FormClosingEventArgs <paramref name="e"/> - The form closed event arg. <br/><br/>
+        ///  
+        ///  Returns: None
+        /// </summary>
         private void gui_form_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (e.CloseReason == CloseReason.UserClosing)
@@ -397,21 +409,6 @@ namespace UDP_Repeater_GUI
             Logger.StartStopLogger("stop");
         }
 
-        /// <summary> 
-        ///  Class Name: gui_form  <br/><br/>
-        ///
-        ///  Description: Logs that the form is being closed. <br/><br/>
-        ///
-        ///  Inputs:  <br/>
-        ///  object <paramref name="sender"/> - I don't use this, i'm not sure. <br/>
-        ///  FormClosingEventArgs <paramref name="e"/> - The form closed event arg. <br/><br/>
-        ///  
-        ///  Returns: None
-        /// </summary>
-        private void gui_form_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            Logger.StartStopLogger("stop");
-        }
 
         /// <summary> 
         ///  Class Name: gui_form  <br/><br/>
@@ -456,6 +453,5 @@ namespace UDP_Repeater_GUI
         {
             return Char.ToUpper(str[0]) + str.Remove(0, 1);
         }
-
     }
 }
