@@ -19,12 +19,11 @@
 
 using System;
 using System.ComponentModel;
-using System.IO;
 using System.Windows.Forms;
 using System.Net.Sockets;
 using System.Text;
 using System.Diagnostics;
-using System.Linq;
+using System.Threading;
 
 
 namespace UDP_Repeater_GUI
@@ -53,6 +52,7 @@ namespace UDP_Repeater_GUI
         public LogForm(gui_form mainForm)
         {
             InitializeComponent();
+
             PopulateTable();
             theMainForm = mainForm;
                     // this makes sure that the rows can fit if there's multiple lines of text
@@ -76,6 +76,8 @@ namespace UDP_Repeater_GUI
         {
             try
             {
+                CheckForOurLog();
+
                 EventLog eventLog = new EventLog("UDP Packet Repeater");
                 foreach (EventLogEntry entry in eventLog.Entries)
                 {
@@ -84,6 +86,32 @@ namespace UDP_Repeater_GUI
 
                 // sort by newest entry first
                 reconfigLog.Sort(reconfigLog.Columns["timeStampColumn"], ListSortDirection.Descending);
+            }
+            catch (Exception e)
+            {
+                Logger.LogException(e);
+            }
+        }
+
+        private void CheckForOurLog()
+        {
+            try
+            {
+                bool logExists = false;
+
+                EventLog[] logs = EventLog.GetEventLogs();
+                while (!logExists)
+                {
+                    foreach (EventLog log in logs)
+                    {
+                        if (log.Log == "UDP Packet Repeater")
+                        {
+                            logExists = true;
+                            break;
+                        }
+                    }
+                    Thread.Sleep(1000);
+                }
             }
             catch (Exception e)
             {
