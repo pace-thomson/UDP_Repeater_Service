@@ -71,13 +71,6 @@ namespace BackendClassNameSpace
             this.sendPort = Convert.ToInt32(SendPort);
             this.frequency = newFrequency;
             this.interval = newInterval;
-
-                    // Create the source and log, if it does not already exist.
-            if (!EventLog.SourceExists("UDP_Repeater_Backend"))
-            {
-                EventLog.CreateEventSource("UDP_Repeater_Backend", "UDP Packet Repeater");
-            }
-
         }
 
 
