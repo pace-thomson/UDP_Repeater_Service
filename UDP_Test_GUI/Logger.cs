@@ -19,6 +19,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows.Forms;
 
 
@@ -46,10 +47,11 @@ namespace UDP_Repeater_GUI
             EventLog eventLog = new EventLog();
             eventLog.Source = "UDP_Repeater_Frontend";
 
-            //MessageBox.Show(e.Source + "\n\n" + e.StackTrace);  
+            string[] formattedStackString = e.StackTrace.Split('\n');
 
-
-            string message = String.Format($"{e.Message}. Error location: Frontend/User Interface.");
+            string message = String.Format($"{e.Message}.\n" +
+                                           $"Error location: Frontend/User Interface. \n" + 
+                                           $"{formattedStackString.Last().TrimStart()}.");
 
             // Write an entry to the event log.
             eventLog.WriteEntry(message, EventLogEntryType.Error, 2);       // 2 is id for frontend errors

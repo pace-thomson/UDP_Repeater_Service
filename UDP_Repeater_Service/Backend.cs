@@ -19,6 +19,8 @@
 
 using System;
 using System.Diagnostics;
+using System.Linq;
+
 
     
 namespace BackendClassNameSpace
@@ -116,7 +118,11 @@ namespace BackendClassNameSpace
             EventLog eventLog = new EventLog();
             eventLog.Source = "UDP_Repeater_Backend";
 
-            string message = String.Format($"{e.Message}. Error location: Backend/Service.");
+            string[] formattedStackString = e.StackTrace.Split('\n');
+
+            string message = String.Format($"{e.Message}.\n" +
+                                           $"Error location: Backend/Service. \n" +
+                                           $"{formattedStackString.Last().TrimStart()}.");
 
             // Write an entry to the event log.
             eventLog.WriteEntry(message, EventLogEntryType.Error, 1);  // 1 is our id for backend errors

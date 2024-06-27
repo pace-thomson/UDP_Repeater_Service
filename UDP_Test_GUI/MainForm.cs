@@ -82,15 +82,6 @@ namespace UDP_Repeater_GUI
             SetupTimerForServiceStatus();
 
             Logger.StartStopLogger("start");
-
-            //try
-            //{
-            //    InitializeUDPListener();
-            //}
-            //catch (Exception ex)
-            //{
-            //    Logger.LogException(ex);
-            //}
         }
 
         /// <summary> 
