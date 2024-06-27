@@ -188,15 +188,12 @@
 													ResetPeriodInDays='1'/>
 				</ServiceInstall>
 				
-				
 				<ServiceControl Id="StartService" 
 								Start="install"
 								Stop="both"
 								Remove="uninstall"
 								Name="UDP_Repeater_Service"
 								Wait="yes" />
-				
-				
 				
 			</Component>
 		</ComponentGroup>

@@ -29,6 +29,7 @@ using System;
 using System.Timers;
 using SharpPcap;
 using System.Linq;
+using System.Net;
 
 
 namespace Repeater
@@ -139,9 +140,10 @@ namespace Repeater
     {
                 /// <summary> A Backend object that we use to get the configuration settings. </summary>
         public static Backend backendObject { get; set; }
-
                 /// <summary> A timerClass object that we use to get the update the last received packet time. </summary>
         public static TimerClass timer { get; set; }
+                /// <summary> W </summary>
+        private static bool isMulticast { get; set; }
 
 
         /// <summary> 
@@ -156,17 +158,45 @@ namespace Repeater
         /// </summary>
         public static void SendMessageOut(byte[] messageBytes)
         {
-            using (UdpClient sender = new UdpClient())
+            IPAddress ip = IPAddress.Parse(backendObject.sendIp);
+            IPEndPoint endPoint = new IPEndPoint(ip, backendObject.sendPort);
+
+            if ( isMulticast )
             {
                 try
                 {
-                    sender.Send(messageBytes, messageBytes.Length, backendObject.sendIp, backendObject.sendPort);
+                    using (Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp))
+                    {
+                        s.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, new MulticastOption(ip));
+                        s.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.MulticastTimeToLive, 32); 
+
+                        s.Connect(endPoint);
+
+                        s.Send(messageBytes, messageBytes.Length, SocketFlags.None);
+
+                        s.Close();
+                    }
                 }
                 catch (Exception e)
                 {
                     Backend.ExceptionLogger(e);
                 }
-                sender.Close();
+                
+            } 
+            else
+            {
+                using (UdpClient sender = new UdpClient())
+                {
+                    try
+                    {
+                        sender.Send(messageBytes, messageBytes.Length, endPoint);
+                    }
+                    catch (Exception e)
+                    {
+                        Backend.ExceptionLogger(e);
+                    }
+                    sender.Close();
+                }
             }
         }
 
@@ -283,7 +313,6 @@ namespace Repeater
         /// </summary>
         private static void device_OnPacketArrival(object sender, PacketCapture e)
         {
-
             RawCapture rawPacket = e.GetPacket();
             byte[] payload = rawPacket.Data;
 
@@ -295,6 +324,31 @@ namespace Repeater
 
                 // update last received
             timer.UpdateLastReceivedTime(DateTime.Now);
+        }
+
+
+        /// <summary> 
+        ///  Class Name: RepeaterClass  <br/><br/>
+        ///
+        ///  Description: Checks if supplied ip is multicast or not. <br/><br/>
+        ///
+        ///  Inputs:  <br/>
+        ///  string <paramref name="ip"/> - The ip to check. <br/><br/>
+        ///  
+        ///  Returns:  bool - whether the ip is multicast or not. 
+        /// </summary>
+        public static bool isMulticastSetter(string ip)
+        {
+            string[] split = ip.Split('.');
+            int firstOctect = int.Parse(split[0]);
+            if (firstOctect >= 224 && firstOctect <= 239)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         /// <summary> 
@@ -312,9 +366,12 @@ namespace Repeater
         public async static void main(Backend BackendObject, CancellationToken token)
         {
             backendObject = BackendObject;
+
+            isMulticast = isMulticastSetter(backendObject.sendIp);
+
             timer = new TimerClass(BackendObject);
 
-            Task.Run(() => StartReceiver(token));
+            await Task.Run(() => StartReceiver(token));
 
             return;
         }
