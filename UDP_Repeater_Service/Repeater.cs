@@ -30,6 +30,7 @@ using System.Timers;
 using SharpPcap;
 using System.Linq;
 using System.Net;
+using System.IO;
 
 
 namespace Repeater
@@ -128,6 +129,11 @@ namespace Repeater
         {
             mostRecentTimestamp = timeStamp;
             consecutiveEventsFired = 0;
+        }
+
+        public void DisposeOfTimerObject()
+        {
+            timer.Dispose();
         }
     }
 
@@ -248,55 +254,67 @@ namespace Repeater
         /// </summary>
         public static void StartReceiver(CancellationToken token)
         {
+            try
+            {
+                Thread.Sleep(1000);     // This HAS TO STAY or else the old port won't be closed by the time this runs
 
-            Thread.Sleep(1000);     // This HAS TO STAY or else the old port won't be closed by the time this runs
-
-            var devices = CaptureDeviceList.Instance;
+                File.AppendAllText( "mylilfile.txt", "line 261 of startreceiver");
+                var devices = CaptureDeviceList.Instance;
+                File.AppendAllText("mylilfile.txt", "line 263 of startreceiver");
 
                 // If no devices were found, log an error
-            if (devices.Count < 1)
-            {
-                Backend.ExceptionLogger(new Exception("No network devices found on current machine."));
-                return;
-            }
+                if (devices.Count < 1)
+                {
+                    Backend.ExceptionLogger(new Exception("No network devices found on current machine."));
+                    return;
+                }
+                File.AppendAllText("mylilfile.txt", "line 271 of startreceiver");
+
 
                 // gets the ethernet device
-            var device = devices.FirstOrDefault(dev => dev.Description.Contains("Ethernet Connection"));
+                var device = devices.FirstOrDefault(dev => dev.Description.Contains("Ethernet Connection"));
+
+                File.AppendAllText( "mylilfile.txt", "line 277 of startreceiver");
 
 
                 // Register our handler function to the 'packet arrival' event
-            device.OnPacketArrival += new PacketArrivalEventHandler(device_OnPacketArrival);
+                device.OnPacketArrival += new PacketArrivalEventHandler(device_OnPacketArrival);
 
-                // Open the device for capturing
-            int readTimeoutMilliseconds = 1000;
-            device.Open(DeviceModes.Promiscuous, readTimeoutMilliseconds);
+                    // Open the device for capturing
+                int readTimeoutMilliseconds = 1000;
+                device.Open(DeviceModes.Promiscuous, readTimeoutMilliseconds);
 
-                // filters for out listening port
-            device.Filter = String.Format("udp port {0}", backendObject.receivePort);
+                    // filters for out listening port
+                device.Filter = String.Format("udp port {0}", backendObject.receivePort);
 
-            Thread captureThread = new Thread(() =>
-            {
-                // Start the capturing process
-                device.StartCapture();
-
-                try
+                Thread captureThread = new Thread(() =>
                 {
-                    while (!token.IsCancellationRequested)
+                    // Start the capturing process
+                    device.StartCapture();
+
+                    try
                     {
-                        Thread.Sleep(1000);
+                        while (!token.IsCancellationRequested)
+                        {
+                            Thread.Sleep(1000);
+                        }
                     }
-                }
-                finally
-                {
-                    device.StopCapture();
-                    device.Close();
-                }
-            });
+                    finally
+                    {
+                        device.StopCapture();
+                        device.Close();
+                    }
+                });
 
-            captureThread.Start();
-            captureThread.Join();
+                captureThread.Start();
+                captureThread.Join();
 
-            return;
+                return;
+            }
+            catch (Exception e)
+            {
+                Backend.ExceptionLogger(e);
+            }
         }
 
         /// <summary> 
@@ -313,17 +331,26 @@ namespace Repeater
         /// </summary>
         private static void device_OnPacketArrival(object sender, PacketCapture e)
         {
-            RawCapture rawPacket = e.GetPacket();
-            byte[] payload = rawPacket.Data;
 
-                // actual sending section
-            SendMessageOut(payload);
+            try
+            {
+                RawCapture rawPacket = e.GetPacket();
+                byte[] payload = rawPacket.Data;
 
-                // sending to GUI section
-            SendToGUI(payload);
+                    // actual sending section
+                SendMessageOut(payload);
 
-                // update last received
-            timer.UpdateLastReceivedTime(DateTime.Now);
+                    // sending to GUI section
+                SendToGUI(payload);
+
+                    // update last received
+                timer.UpdateLastReceivedTime(DateTime.Now);
+            }
+            catch (Exception ex)
+            {
+                Backend.ExceptionLogger(ex);
+            }
+
         }
 
 
@@ -339,14 +366,22 @@ namespace Repeater
         /// </summary>
         public static bool IsMulticastSetter(string ip)
         {
-            string[] split = ip.Split('.');
-            int firstOctect = int.Parse(split[0]);
-            if (firstOctect >= 224 && firstOctect <= 239)
+            try
             {
-                return true;
+                string[] split = ip.Split('.');
+                int firstOctect = int.Parse(split[0]);
+                if (firstOctect >= 224 && firstOctect <= 239)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
-            else
+            catch (Exception e)
             {
+                Backend.ExceptionLogger(e);
                 return false;
             }
         }
@@ -365,15 +400,24 @@ namespace Repeater
         /// </summary>
         public async static void main(Backend BackendObject, CancellationToken token)
         {
-            backendObject = BackendObject;
+            try
+            {
+                backendObject = BackendObject;
 
-            isMulticast = IsMulticastSetter(backendObject.sendIp);
+                isMulticast = IsMulticastSetter(backendObject.sendIp);
 
-            timer = new TimerClass(BackendObject);
+                timer = new TimerClass(BackendObject);
 
-            Task.Run(() => StartReceiver(token));
+                await Task.Run(() => StartReceiver(token));
 
-            return;
+                timer.DisposeOfTimerObject();
+
+                return;
+            }
+            catch (Exception e)
+            {
+                Backend.ExceptionLogger(e);
+            }
         }
     }
 }

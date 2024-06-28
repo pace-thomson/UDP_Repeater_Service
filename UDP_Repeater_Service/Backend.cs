@@ -20,9 +20,11 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.IO;
 
 
-    
+
+
 namespace BackendClassNameSpace
 {
     /// <summary>
@@ -107,13 +109,21 @@ namespace BackendClassNameSpace
         /// </summary>
         public static void ExceptionLogger(Exception e)
         {
+            File.AppendAllText("mylilfile.txt", "line 112 of exceptionlogger");
+
             // Create an EventLog instance and assign its source.
             EventLog eventLog = new EventLog();
+            File.AppendAllText("mylilfile.txt", "line 116 of exceptionlogger");
+
             eventLog.Source = "UDP_Repeater_Backend";
+            File.AppendAllText("mylilfile.txt", "line 119 of exceptionlogger");
 
             string[] formattedStackString = e.StackTrace.Split('\n');
 
-            string message = String.Format($"{e.Message}.\n" +
+
+            string message = String.Format($"{e.StackTrace}.\n" +
+                                                    $"{e.TargetSite}\n" +    // THIS ONE TOO
+                                                    $"{e.Message} \n" +      // CHANGED THIS FOR FIGURING OUT WPCAP, CHANGE WHEN YOU'RE DONE
                                            $"Error location: Backend/Service. \n" +
                                            $"{formattedStackString.Last().TrimStart()}.");
 
@@ -205,6 +215,14 @@ namespace BackendClassNameSpace
 
             eventLog.Dispose();
         }
+            //try
+            //{
+
+            //}
+            //catch (Exception e)
+            //{
+            //    Backend.ExceptionLogger(e);
+            //}
     }
 }
 

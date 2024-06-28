@@ -404,7 +404,7 @@ namespace UDP_Repeater_GUI
         /// </summary>
         private void gui_form_FormClosing(object sender, FormClosingEventArgs e)
         {
-            DialogResult dialogResult = MessageBox.Show("Are you sure you want to close this Interface?" +
+            DialogResult dialogResult = MessageBox.Show("Are you sure you want to close this Interface? " +
                                                         "Just minimize it if you would like it out of the way.", 
                                                         "Closing Confirmation",
                                                         MessageBoxButtons.YesNo);

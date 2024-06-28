@@ -132,7 +132,31 @@
 			</Component>
 		</DirectoryRef>
 	</Fragment>
-	
+
+
+	<!--NpCap Installer
+	<Fragment>
+		<ComponentGroup Id="TheNpCapInstaller" Directory="INSTALLFOLDER">
+			<Component Id="NpCapInstaller" Guid="fbf32a72-c668-489e-a4a7-3d0f7b13208c">
+				<File Id="pcap"
+					  Source="C:\Users\pthomson01.ctr\source\repos\pace-thomson\UDP_Repeater_Service\UDP_Packet_Repeater_Installer\bin\x86\Debug\npcap-1.79.exe" 
+					  KeyPath="yes"/>
+			</Component>
+			
+		</ComponentGroup>
+
+		<CustomAction Id="RunNpCapInstaller"
+					  Execute="deferred"
+					  Return="check"
+					  Impersonate="no" 
+					  Directory="INSTALLFOLDER"
+					  ExeCommand="[INSTALLFOLDER]npcap-1.79.exe"/>
+
+		<InstallExecuteSequence>
+			<Custom Action="RunNpCapInstaller" After="InstallInitialize" Condition="NOT Installed" />
+		</InstallExecuteSequence>
+
+	</Fragment-->
 	
 	
 	<!--GUI-->
