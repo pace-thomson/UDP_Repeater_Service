@@ -53,6 +53,11 @@ namespace UDP_Repeater_Service
             InitializeComponent();
         }
 
+        public void DebuggerProcess()
+        {
+            TheMainProgram.main();
+        }
+
         /// <summary> 
         ///  Class Name: UDP_Service  <br/><br/> 
         ///  Parent Class: ServiceBase  <br/><br/> 

@@ -31,6 +31,7 @@ using SharpPcap;
 using System.Linq;
 using System.Net;
 using System.IO;
+using System.Diagnostics;
 
 
 namespace Repeater
@@ -258,9 +259,8 @@ namespace Repeater
             {
                 Thread.Sleep(1000);     // This HAS TO STAY or else the old port won't be closed by the time this runs
 
-                File.AppendAllText( "mylilfile.txt", "line 261 of startreceiver");
+                
                 var devices = CaptureDeviceList.Instance;
-                File.AppendAllText("mylilfile.txt", "line 263 of startreceiver");
 
                 // If no devices were found, log an error
                 if (devices.Count < 1)
@@ -268,13 +268,10 @@ namespace Repeater
                     Backend.ExceptionLogger(new Exception("No network devices found on current machine."));
                     return;
                 }
-                File.AppendAllText("mylilfile.txt", "line 271 of startreceiver");
 
 
                 // gets the ethernet device
                 var device = devices.FirstOrDefault(dev => dev.Description.Contains("Ethernet Connection"));
-
-                File.AppendAllText( "mylilfile.txt", "line 277 of startreceiver");
 
 
                 // Register our handler function to the 'packet arrival' event

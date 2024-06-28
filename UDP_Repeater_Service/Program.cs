@@ -16,6 +16,7 @@
 //   1.0    6/21/24   Jade Pace Thomson   Initial Release
 //---------------------------------------------------
 
+using System;
 using System.ServiceProcess;
 
 
@@ -28,12 +29,24 @@ namespace UDP_Repeater_Service
         /// </summary>
         static void Main()
         {
-            ServiceBase[] ServicesToRun;
-            ServicesToRun = new ServiceBase[]
+            var myService = new UDP_Service();
+
+            if (Environment.UserInteractive)
             {
-                new UDP_Service()
-            };
-            ServiceBase.Run(ServicesToRun);
+                myService.DebuggerProcess();
+            }
+            else
+            {
+                ServiceBase.Run(myService);
+            }
+
+
+            //ServiceBase[] ServicesToRun;
+            //ServicesToRun = new ServiceBase[]
+            //{
+            //    new UDP_Service()
+            //};
+            //ServiceBase.Run(ServicesToRun);
         }
     }
 
