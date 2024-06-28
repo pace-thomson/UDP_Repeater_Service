@@ -23,7 +23,6 @@ using System.Windows.Forms;
 using System.Net.Sockets;
 using System.Text;
 using System.Diagnostics;
-using System.Threading;
 
 
 namespace UDP_Repeater_GUI
@@ -76,8 +75,6 @@ namespace UDP_Repeater_GUI
         {
             try
             {
-                CheckForOurLog();
-
                 EventLog eventLog = new EventLog("UDP Packet Repeater");
                 foreach (EventLogEntry entry in eventLog.Entries)
                 {
@@ -92,33 +89,6 @@ namespace UDP_Repeater_GUI
                 Logger.LogException(e);
             }
         }
-
-        private void CheckForOurLog()
-        {
-            try
-            {
-                bool logExists = false;
-
-                EventLog[] logs = EventLog.GetEventLogs();
-                while (!logExists)
-                {
-                    foreach (EventLog log in logs)
-                    {
-                        if (log.Log == "UDP Packet Repeater")
-                        {
-                            logExists = true;
-                            break;
-                        }
-                    }
-                    Thread.Sleep(1000);
-                }
-            }
-            catch (Exception e)
-            {
-                Logger.LogException(e);
-            }
-        }
-
 
         /// <summary> 
         ///  Class Name: configDialog  <br/><br/>
@@ -155,9 +125,6 @@ namespace UDP_Repeater_GUI
                                 // we don't want interval to be uppcase here
                         byte[] bytes = Encoding.ASCII.GetBytes(frequency + "," + interval + "," + "inactive");
                         sendRequest.Send(bytes, bytes.Length, "127.0.0.1", 50001);
-
-                                // updates table since we just made a new log entry             not needed now?
-                        // AddNewRow();
                     }
                     catch (Exception exception)
                     {

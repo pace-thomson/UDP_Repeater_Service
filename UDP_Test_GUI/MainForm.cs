@@ -105,6 +105,10 @@ namespace UDP_Repeater_GUI
             currentSendPort.Text     =  (string)jsonObject["currentConfig"]["sendTo"]["port"];
             currentFrequency.Text    =  (string)jsonObject["inactivitySettings"]["frequency"];
             currentInterval.Text     =  FirstLetterCapital((string)jsonObject["inactivitySettings"]["interval"]);
+            if (currentFrequency.Text != "1")
+            {
+                currentInterval.Text += "s";
+            }
         }
 
         /// <summary> 
@@ -382,7 +386,7 @@ namespace UDP_Repeater_GUI
             {
                 statusLabel.Text = "Service Not Found";
                 statusLabel.ForeColor = Color.DarkRed;
-                Logger.LogException (notFound);
+                Logger.LogException(notFound);
             }
         }
 
@@ -400,6 +404,9 @@ namespace UDP_Repeater_GUI
         /// </summary>
         private void gui_form_FormClosing(object sender, FormClosingEventArgs e)
         {
+            DialogResult = MessageBox.Show("Are you sure you want to close this Interface?" +
+                                           "Just minimize it if you would like it out of the way.");
+
             if (e.CloseReason == CloseReason.UserClosing)
             {
                 e.Cancel = true;
@@ -447,8 +454,7 @@ namespace UDP_Repeater_GUI
         /// <summary>
         /// Capitlizes the first letter of the string. 
         /// </summary>
-        /// <param name="str"></param>
-        /// <returns>The supplied string with the first letter capitilized.</returns>
+        /// <returns> <paramref name="str"/> with the first letter capitilized.</returns>
         private string FirstLetterCapital(string str)
         {
             return Char.ToUpper(str[0]) + str.Remove(0, 1);

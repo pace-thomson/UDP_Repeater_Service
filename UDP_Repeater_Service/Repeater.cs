@@ -337,7 +337,7 @@ namespace Repeater
         ///  
         ///  Returns:  bool - whether the ip is multicast or not. 
         /// </summary>
-        public static bool isMulticastSetter(string ip)
+        public static bool IsMulticastSetter(string ip)
         {
             string[] split = ip.Split('.');
             int firstOctect = int.Parse(split[0]);
@@ -367,11 +367,11 @@ namespace Repeater
         {
             backendObject = BackendObject;
 
-            isMulticast = isMulticastSetter(backendObject.sendIp);
+            isMulticast = IsMulticastSetter(backendObject.sendIp);
 
             timer = new TimerClass(BackendObject);
 
-            await Task.Run(() => StartReceiver(token));
+            Task.Run(() => StartReceiver(token));
 
             return;
         }

@@ -248,32 +248,6 @@ class TheMainProgram
         File.WriteAllText("UDP_Repeater_Config.json", stringThing);
     }
 
-    /// <summary> 
-    ///  Class Name: TheMainProgram  <br/><br/> 
-    ///
-    ///  Description: Checks for our event log, and creates it with the "UDP_Repeater_Backend"
-    ///               source if it needs to. <br/><br/>
-    ///
-    ///  Inputs: None <br/><br/>
-    ///  
-    /// </summary>
-    /// <returns>  None </returns>
-    private static void CheckForEventLog()
-    {
-        try
-        {
-            // Create the source and log, if it does not already exist.
-            if (!EventLog.SourceExists("UDP_Repeater_Backend"))
-            {
-                EventLog.CreateEventSource("UDP_Repeater_Backend", "UDP Packet Repeater");
-            }
-        }
-        catch (Exception e)
-        {
-            Backend.ExceptionLogger(e);
-        }
-    }
-
 
     /// <summary> 
     ///  Class Name: TheMainProgram  <br/><br/> 
@@ -289,18 +263,15 @@ class TheMainProgram
     /// </summary>
     public static async void main()
     {
-        Backend.ExceptionLogger(new Exception("line 292"));
         try
         {
             CancellationTokenSource cts = new CancellationTokenSource();
             Backend backendObject = SetConfig();
-            Backend.ExceptionLogger(new Exception("line 296"));
             while (true)
             {
                 // Starts the Sending/Receiving thread
                 Thread repeaterThread = new Thread(() => RepeaterClass.main(backendObject, cts.Token));
                 repeaterThread.Start();
-                Backend.ExceptionLogger(new Exception("line 302"));
 
 
                 // Use Task<Backend> to call the method asynchronously and get the backend object it returns
@@ -311,7 +282,6 @@ class TheMainProgram
                 repeaterThread.Join();                  // Wait for the send thread to complete
                 cts = new CancellationTokenSource();    // Reset the cancellation token for the next iteration
 
-                Backend.ExceptionLogger(new Exception("line 313"));
 
                 // this checks to see if the option was to restore defaultst
                 if (backendObject.Equals(newbackendObject))

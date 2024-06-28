@@ -139,7 +139,7 @@
 	<Fragment>
 		<ComponentGroup Id="GUI_Actual_Program_Installer" Directory="INSTALLFOLDER">
 			<Component Guid="9343b74f-a17d-4731-9586-dd0456cf00fc">
-				<File Id="___var.UDP_Repeater_GUI.TargetDir_UDP_Repeater_GUI.exe"
+				<File Id="UDP_Repeater_GUI.exe"
 					  Source="C:\Users\pthomson01.ctr\source\repos\pace-thomson\UDP_Repeater_Service\UDP_Test_GUI\bin\Debug\UDP_Repeater_GUI.exe"
 					  KeyPath="yes" />
 				<util:EventSource Log="UDP Packet Repeater"
@@ -165,7 +165,9 @@
 	<Fragment>
 		<ComponentGroup Id="Repeater_ServiceInstaller" Directory="INSTALLFOLDER">
 			<Component Guid="F7E041AB-3227-4272-92C1-4A12685F30AF">
-				<File Id="UDP_Repeater_Service.exe" Source="$(var.UDP_Repeater_Service.TargetDir)UDP_Repeater_Service.exe" KeyPath="yes" />
+				<File Id="UDP_Repeater_Service.exe" 
+					  Source="$(var.UDP_Repeater_Service.TargetDir)UDP_Repeater_Service.exe" 
+					  KeyPath="yes" />
 
 				<util:EventSource Log="UDP Packet Repeater"
 								  Name="UDP_Repeater_Backend"
