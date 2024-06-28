@@ -39,14 +39,6 @@ namespace UDP_Repeater_Service
             {
                 ServiceBase.Run(myService);
             }
-
-
-            //ServiceBase[] ServicesToRun;
-            //ServicesToRun = new ServiceBase[]
-            //{
-            //    new UDP_Service()
-            //};
-            //ServiceBase.Run(ServicesToRun);
         }
     }
 

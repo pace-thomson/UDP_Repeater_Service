@@ -78,43 +78,51 @@ namespace GUIreceiver
         /// </summary>
         public static Backend main(Backend backendObject)
         {
-                    // a new backendObject gets made to compare to the old one when this function returns
-            Backend newbackendObject = new Backend(backendObject.receiveIp, backendObject.receivePort.ToString(),
-                                                   backendObject.sendIp, backendObject.sendPort.ToString(),
-                                                   backendObject.frequency, backendObject.interval);
-
-                    // This resets the send or receive data if those options are selected
-                    // and does nothing if defaults is selected, which is handled where this is called
-            string[] dataParts = ReceivingFromGUI();
-
-                    // dataParts[2] is mode 
-            switch (dataParts[2])
+            try
             {
-                case "Receiving From":
-                    newbackendObject.receiveIp = dataParts[0];
-                    newbackendObject.receivePort = int.Parse(dataParts[1]);
-                    break;
-                case "Sending To":
-                    newbackendObject.sendIp = dataParts[0];
-                    newbackendObject.sendPort = int.Parse(dataParts[1]);
-                    break;
-                case "Default Send":
-                    newbackendObject.sendIp = dataParts[0];
-                    newbackendObject.sendPort = int.Parse(dataParts[1]);
-                    newbackendObject.receivePort = -1;                       // setting the untouched port to -1 lets UpdateConfigJson 
-                    break;                                                   // know that we want to change the defaults
-                case "Default Receive":
-                    newbackendObject.receiveIp = dataParts[0];
-                    newbackendObject.receivePort = int.Parse(dataParts[1]);
-                    newbackendObject.sendPort = -1;                          // setting the untouched port to -1 lets UpdateConfigJson 
-                    break;                                                   // know that we want to change the defaults
-                case "inactive":
-                    newbackendObject.frequency = int.Parse(dataParts[0]);
-                    newbackendObject.interval = dataParts[1];
-                    break;
-            }
+                        // a new backendObject gets made to compare to the old one when this function returns
+                Backend newbackendObject = new Backend(backendObject.receiveIp, backendObject.receivePort.ToString(),
+                                                       backendObject.sendIp, backendObject.sendPort.ToString(),
+                                                       backendObject.frequency, backendObject.interval);
 
-            return newbackendObject; 
+                        // This resets the send or receive data if those options are selected
+                        // and does nothing if defaults is selected, which is handled where this is called
+                string[] dataParts = ReceivingFromGUI();
+
+                        // dataParts[2] is mode 
+                switch (dataParts[2])
+                {
+                    case "Receiving From":
+                        newbackendObject.receiveIp = dataParts[0];
+                        newbackendObject.receivePort = int.Parse(dataParts[1]);
+                        break;
+                    case "Sending To":
+                        newbackendObject.sendIp = dataParts[0];
+                        newbackendObject.sendPort = int.Parse(dataParts[1]);
+                        break;
+                    case "Default Send":
+                        newbackendObject.sendIp = dataParts[0];
+                        newbackendObject.sendPort = int.Parse(dataParts[1]);
+                        newbackendObject.receivePort = -1;                       // setting the untouched port to -1 lets UpdateConfigJson 
+                        break;                                                   // know that we want to change the defaults
+                    case "Default Receive":
+                        newbackendObject.receiveIp = dataParts[0];
+                        newbackendObject.receivePort = int.Parse(dataParts[1]);
+                        newbackendObject.sendPort = -1;                          // setting the untouched port to -1 lets UpdateConfigJson 
+                        break;                                                   // know that we want to change the defaults
+                    case "inactive":
+                        newbackendObject.frequency = int.Parse(dataParts[0]);
+                        newbackendObject.interval = dataParts[1];
+                        break;
+                }
+
+                return newbackendObject;
+            }
+            catch (Exception e)
+            {
+                Backend.ExceptionLogger(e);
+                return null;
+            }
         }
     }
 }

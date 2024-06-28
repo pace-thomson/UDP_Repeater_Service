@@ -208,14 +208,6 @@ namespace BackendClassNameSpace
 
             eventLog.Dispose();
         }
-            //try
-            //{
-
-            //}
-            //catch (Exception e)
-            //{
-            //    Backend.ExceptionLogger(e);
-            //}
     }
 }
 

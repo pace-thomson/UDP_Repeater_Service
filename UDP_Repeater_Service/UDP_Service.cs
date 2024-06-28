@@ -71,13 +71,27 @@ namespace UDP_Repeater_Service
         /// </summary>
         protected override void OnStart(string[] args)
         {
-            TheMainProgram.main();
-            Backend.StartStopLogger("start");
+            try
+            {
+                TheMainProgram.main();
+                Backend.StartStopLogger("start");
+            }
+            catch (Exception e)
+            {
+                Backend.ExceptionLogger(e);
+            }
         }
         /// <summary> Logs that the service is stopping </summary>
         protected override void OnStop()
         {
-            Backend.StartStopLogger("stop");
+            try
+            {
+                Backend.StartStopLogger("stop");
+            }
+            catch (Exception e)
+            {
+                Backend.ExceptionLogger(e);
+            }
         }
     }
 }
@@ -220,37 +234,44 @@ class TheMainProgram
     /// </summary>
     public static void UpdateConfigJson(Backend backendObject)
     {
-        string jsonString = File.ReadAllText("UDP_Repeater_Config.json");
-
-        JObject jsonObject = JObject.Parse(jsonString);
-
-        // This checks to see if the selected option was to to change the defaults
-        if (backendObject.sendPort == -1 || backendObject.receivePort == -1)
+        try
         {
-            if (backendObject.sendPort == -1)    // if the reconfigure default RECEIVE was chosen
-            {
-                jsonObject["defaultSettings"]["receiveFrom"]["ip"]    =   backendObject.receiveIp;
-                jsonObject["defaultSettings"]["receiveFrom"]["port"]  =   backendObject.receivePort.ToString();
-            }
-            else if (backendObject.receivePort == -1)    // if the reconfigure default SEND was chosen
-            {
-                jsonObject["defaultSettings"]["sendTo"]["ip"]   =  backendObject.sendIp;
-                jsonObject["defaultSettings"]["sendTo"]["port"] =  backendObject.sendPort.ToString();
-            }
-        }
-        else              // normal (non-default changing) configuration was chosen
-        {
-            jsonObject["currentConfig"]["receiveFrom"]["ip"]    =   backendObject.receiveIp;
-            jsonObject["currentConfig"]["receiveFrom"]["port"]  =   backendObject.receivePort.ToString();
-            jsonObject["currentConfig"]["sendTo"]["ip"]         =   backendObject.sendIp;
-            jsonObject["currentConfig"]["sendTo"]["port"]       =   backendObject.sendPort.ToString();
-        }
-                        // always updates the inactivitySettings
-        jsonObject["inactivitySettings"]["frequency"]  =  backendObject.frequency.ToString();
-        jsonObject["inactivitySettings"]["interval"]   =  backendObject.interval;
+            string jsonString = File.ReadAllText("UDP_Repeater_Config.json");
 
-        var stringThing = JsonConvert.SerializeObject(jsonObject, Formatting.Indented);
-        File.WriteAllText("UDP_Repeater_Config.json", stringThing);
+            JObject jsonObject = JObject.Parse(jsonString);
+
+            // This checks to see if the selected option was to to change the defaults
+            if (backendObject.sendPort == -1 || backendObject.receivePort == -1)
+            {
+                if (backendObject.sendPort == -1)    // if the reconfigure default RECEIVE was chosen
+                {
+                    jsonObject["defaultSettings"]["receiveFrom"]["ip"]    =   backendObject.receiveIp;
+                    jsonObject["defaultSettings"]["receiveFrom"]["port"]  =   backendObject.receivePort.ToString();
+                }
+                else if (backendObject.receivePort == -1)    // if the reconfigure default SEND was chosen
+                {
+                    jsonObject["defaultSettings"]["sendTo"]["ip"]   =  backendObject.sendIp;
+                    jsonObject["defaultSettings"]["sendTo"]["port"] =  backendObject.sendPort.ToString();
+                }
+            }
+            else              // normal (non-default changing) configuration was chosen
+            {
+                jsonObject["currentConfig"]["receiveFrom"]["ip"]    =   backendObject.receiveIp;
+                jsonObject["currentConfig"]["receiveFrom"]["port"]  =   backendObject.receivePort.ToString();
+                jsonObject["currentConfig"]["sendTo"]["ip"]         =   backendObject.sendIp;
+                jsonObject["currentConfig"]["sendTo"]["port"]       =   backendObject.sendPort.ToString();
+            }
+                            // always updates the inactivitySettings
+            jsonObject["inactivitySettings"]["frequency"]  =  backendObject.frequency.ToString();
+            jsonObject["inactivitySettings"]["interval"]   =  backendObject.interval;
+
+            var stringThing = JsonConvert.SerializeObject(jsonObject, Formatting.Indented);
+            File.WriteAllText("UDP_Repeater_Config.json", stringThing);
+        }
+        catch (Exception e)
+        {
+            Backend.ExceptionLogger(e);
+        }
     }
 
 

@@ -36,6 +36,8 @@ namespace UDP_Repeater_GUI
     {
             /// <summary>The main form's object.</summary>
         private gui_form theMainForm;
+            /// <summary> Our object for logging. </summary>
+        private Logger logger;
 
         /// <summary> 
         ///  Class Name: LogForm  <br/><br/>
@@ -54,10 +56,13 @@ namespace UDP_Repeater_GUI
 
             PopulateTable();
             theMainForm = mainForm;
-                    // this makes sure that the rows can fit if there's multiple lines of text
-            reconfigLog.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+
+            logger = new Logger();
 
             SetCheckerForLogChanges();
+
+                    // this makes sure that the rows can fit if there's multiple lines of text
+            reconfigLog.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
         }
 
         /// <summary> 
@@ -86,7 +91,7 @@ namespace UDP_Repeater_GUI
             }
             catch (Exception e)
             {
-                Logger.LogException(e);
+                logger.LogException(e);
             }
         }
 
@@ -118,7 +123,7 @@ namespace UDP_Repeater_GUI
                                 // we want interval to still have the first letter uppcase here
                                 // so that we can use it to display prettily? idk if that's a word
                         theMainForm.UpdateCurrentConfigGroup(frequency.ToString(), interval);
-                        Logger.LogInactivityChange(frequency, interval);
+                        logger.LogInactivityChange(frequency, interval);
 
                         interval = interval.ToLower();
 
@@ -129,7 +134,7 @@ namespace UDP_Repeater_GUI
                     catch (Exception exception)
                     {
                         MessageBox.Show($"Error sending data: {exception.Message}");
-                        Logger.LogException(exception);
+                        logger.LogException(exception);
                         return;
                     }
                             // this section resets the inputs
@@ -164,7 +169,7 @@ namespace UDP_Repeater_GUI
             }
             catch ( Exception e)
             {
-                Logger.LogException(e);
+                logger.LogException(e);
             }
         }
 

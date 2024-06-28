@@ -23,6 +23,7 @@ using System.Net;
 using System.Text;
 using System.Windows.Forms;
 
+
 namespace UDP_Repeater_GUI
 {
     /// <summary>
@@ -36,6 +37,8 @@ namespace UDP_Repeater_GUI
         private gui_form theMainForm;
             /// <summary> Keeps track of if the user has provided valid ip/port/profile </summary>
         private bool inputValid;
+            /// <summary> Our object for logging. </summary>
+        private Logger logger;
 
         /// <summary> 
         ///  Class Name: configDialog  <br/><br/>
@@ -53,6 +56,7 @@ namespace UDP_Repeater_GUI
             InitializeComponent();
             theMainForm = mainForm;
             inputValid = true;
+            logger = new Logger();
         }
 
         /// <summary> 
@@ -102,12 +106,12 @@ namespace UDP_Repeater_GUI
                     catch (Exception exception)
                     {
                         MessageBox.Show($"Error sending data: {exception.Message}");
-                        Logger.LogException(exception);
+                        logger.LogException(exception);
                         return;
                     }
                     // this section resets the inputs
 
-                    Logger.LogConfigChange(mode, ip, port);
+                    logger.LogConfigChange(mode, ip, port);
 
                     ip_field.Text = "";
                     port_field.Text = "";   
@@ -146,12 +150,12 @@ namespace UDP_Repeater_GUI
                             // This doesn't even get read by the backend, it just is a placeholder
                     byte[] bytes = Encoding.ASCII.GetBytes(",,");
                     sendRequest.Send(bytes, bytes.Length, "127.0.0.1", 50001);
-                    Logger.LogConfigChange("Reverted to Default", "N/A", "N/A");
+                    logger.LogConfigChange("Reverted to Default", "N/A", "N/A");
                 }
                 catch (Exception exception)
                 {
                     MessageBox.Show($"Error sending data: {exception.Message}");
-                    Logger.LogException(exception);
+                    logger.LogException(exception);
                     return;
                 }
                 ip_field.Text = "";
@@ -177,6 +181,7 @@ namespace UDP_Repeater_GUI
             {
                 e.Cancel = true;
             }
+
         }
     }
 }

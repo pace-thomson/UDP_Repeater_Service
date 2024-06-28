@@ -20,18 +20,16 @@
 
 
 
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Net.Sockets;
 using System.Text;
 using BackendClassNameSpace;
-using System;
 using System.Timers;
 using SharpPcap;
 using System.Linq;
 using System.Net;
-using System.IO;
-using System.Diagnostics;
 
 
 namespace Repeater
@@ -64,30 +62,36 @@ namespace Repeater
         /// </summary>
         public TimerClass(Backend BackendObject)
         {
-
-            timer = new System.Timers.Timer(checkInterval);
-            timer.Elapsed += OnTimedEvent;
-
-            timer.AutoReset = true;     // Hook up the Elapsed event for the timer.
-
-            timer.Enabled = true;
-
-            backendObject = BackendObject;
-
-            mostRecentTimestamp = DateTime.Now;
-
-            double frequencyDouble = Convert.ToDouble(backendObject.frequency);
-            switch (backendObject.interval)
+            try
             {
-                case "minute":
-                    timeoutThreshold = (int)TimeSpan.FromMinutes(frequencyDouble).TotalMilliseconds;
-                    break;
-                case "hour":
-                    timeoutThreshold = (int)TimeSpan.FromHours(frequencyDouble).TotalMilliseconds;
-                    break;
-                case "day":
-                    timeoutThreshold = (int)TimeSpan.FromDays(frequencyDouble).TotalMilliseconds;
-                    break;
+                timer = new System.Timers.Timer(checkInterval);
+                timer.Elapsed += OnTimedEvent;
+
+                timer.AutoReset = true;     // Hook up the Elapsed event for the timer.
+
+                timer.Enabled = true;
+
+                backendObject = BackendObject;
+
+                mostRecentTimestamp = DateTime.Now;
+
+                double frequencyDouble = Convert.ToDouble(backendObject.frequency);
+                switch (backendObject.interval)
+                {
+                    case "minute":
+                        timeoutThreshold = (int)TimeSpan.FromMinutes(frequencyDouble).TotalMilliseconds;
+                        break;
+                    case "hour":
+                        timeoutThreshold = (int)TimeSpan.FromHours(frequencyDouble).TotalMilliseconds;
+                        break;
+                    case "day":
+                        timeoutThreshold = (int)TimeSpan.FromDays(frequencyDouble).TotalMilliseconds;
+                        break;
+                }
+            }
+            catch (Exception e)
+            {
+                Backend.ExceptionLogger(e);
             }
         }
 
@@ -270,11 +274,12 @@ namespace Repeater
                 }
 
 
-                // gets the ethernet device
-                var device = devices.FirstOrDefault(dev => dev.Description.Contains("Ethernet Connection"));
+                    // gets the ethernet device
+                var device = devices.FirstOrDefault(dev => dev.Description.Contains("Ethernet") &&
+                                                           !dev.Description.Contains("Hyper-V"));
 
 
-                // Register our handler function to the 'packet arrival' event
+                    // Register our handler function to the 'packet arrival' event
                 device.OnPacketArrival += new PacketArrivalEventHandler(device_OnPacketArrival);
 
                     // Open the device for capturing
@@ -293,7 +298,7 @@ namespace Repeater
                     {
                         while (!token.IsCancellationRequested)
                         {
-                            Thread.Sleep(1000);
+                            Thread.Sleep(3000);
                         }
                     }
                     finally
@@ -347,7 +352,6 @@ namespace Repeater
             {
                 Backend.ExceptionLogger(ex);
             }
-
         }
 
 

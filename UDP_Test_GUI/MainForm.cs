@@ -43,8 +43,10 @@ namespace UDP_Repeater_GUI
         private int index = 0;
             /// <summary> Puts the icon in the system tray </summary>
         private NotifyIcon notifyIcon1;
-        /// <summary> Our Service </summary>
+            /// <summary> Our Service </summary>
         private ServiceController ourService;
+            /// <summary> Our object for logging. </summary>
+        private Logger logger;
 
         /// <summary> 
         ///  Class Name: gui_form  <br/><br/>
@@ -58,6 +60,7 @@ namespace UDP_Repeater_GUI
         public gui_form()
         {
             InitializeComponent();
+
                 // starts the listening
             InitializeUDPListener();
 
@@ -76,12 +79,13 @@ namespace UDP_Repeater_GUI
                 // Handle the Click event to activate the form.
             notifyIcon1.Click += new EventHandler(notifyIcon1_Click);
 
+            logger = new Logger();
 
             UpdateCurrentConfigGroup();
 
             SetupTimerForServiceStatus();
 
-            Logger.StartStopLogger("start");
+            logger.StartStopLogger("start");
         }
 
         /// <summary> 
@@ -187,7 +191,7 @@ namespace UDP_Repeater_GUI
             }
             catch (Exception e)
             {
-                Logger.LogException(e);
+                logger.LogException(e);
             }
             
         }
@@ -214,13 +218,13 @@ namespace UDP_Repeater_GUI
                 {
                         // Handle if the UDP client is disposed
                     isListening = false;
-                    Logger.LogException(e);
+                    logger.LogException(e);
                 }
                 catch (Exception ex)
                 {
                         // Handle other exceptions
                     MessageBox.Show($"Error receiving data: {ex.Message}");
-                    Logger.LogException(ex);
+                    logger.LogException(ex);
                 }
             }
         }
@@ -280,7 +284,7 @@ namespace UDP_Repeater_GUI
                 packet_counter.Text = index.ToString();
             } catch (Exception e) 
             {
-                Logger.LogException(e);
+                logger.LogException(e);
             }
         }
 
@@ -298,9 +302,6 @@ namespace UDP_Repeater_GUI
         /// </summary>
         private void notifyIcon1_Click(object Sender, EventArgs e)
         {
-            // Show the form when the user clicks on the notify icon.
-
-            // Set the WindowState to normal if the form is minimized.
             if (WindowState == FormWindowState.Minimized)
             {
                 WindowState = FormWindowState.Normal;
@@ -316,6 +317,7 @@ namespace UDP_Repeater_GUI
                 else if (this.Focused)
                 {
                     WindowState = FormWindowState.Minimized;
+                    return;
                 }
             }
                 
@@ -351,7 +353,7 @@ namespace UDP_Repeater_GUI
             }
             catch (Exception e) 
             {
-                Logger.LogException (e);
+                logger.LogException (e);
             }
         }
 
@@ -386,7 +388,7 @@ namespace UDP_Repeater_GUI
             {
                 statusLabel.Text = "Service Not Found";
                 statusLabel.ForeColor = Color.DarkRed;
-                Logger.LogException(notFound);
+                logger.LogException(notFound);
             }
         }
 
@@ -411,7 +413,7 @@ namespace UDP_Repeater_GUI
 
             if (dialogResult == DialogResult.Yes)
             {
-                Logger.StartStopLogger("stop");
+                logger.StartStopLogger("stop");
 
             }
             else
@@ -438,6 +440,7 @@ namespace UDP_Repeater_GUI
         {
             configDialog messageDialog = new configDialog(this);
             var response = messageDialog.ShowDialog();
+            messageDialog.Dispose();
         }
 
         /// <summary> 
@@ -455,6 +458,7 @@ namespace UDP_Repeater_GUI
         {
             LogForm logForm = new LogForm(this);
             logForm.Show();
+            logForm.Dispose();
         }
         
         /// <summary>

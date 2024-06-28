@@ -30,6 +30,15 @@ namespace UDP_Repeater_GUI
     /// </summary>
     internal class Logger
     {
+        public EventLog eventLog;
+
+        public Logger()
+        {
+                // Create an EventLog instance and assign its source.
+            eventLog = new EventLog();
+            eventLog.Source = "UDP_Repeater_Frontend";
+        }
+
         /// <summary> 
         ///  Class Name: Logger  <br/> <br/>
         ///
@@ -40,12 +49,8 @@ namespace UDP_Repeater_GUI
         ///  
         ///  Returns:  None
         /// </summary>
-        public static void LogException(Exception e)
+        public void LogException(Exception e)
         {
-            // Create an EventLog instance and assign its source.
-            EventLog eventLog = new EventLog();
-            eventLog.Source = "UDP_Repeater_Frontend";
-
             string[] formattedStackString = e.StackTrace.Split('\n');
 
             string message = String.Format($"{e.Message}.\n" +
@@ -54,7 +59,6 @@ namespace UDP_Repeater_GUI
 
             // Write an entry to the event log.
             eventLog.WriteEntry(message, EventLogEntryType.Error, 2);       // 2 is id for frontend errors
-            eventLog.Dispose();
         }
 
 
@@ -70,19 +74,12 @@ namespace UDP_Repeater_GUI
         ///  
         ///  Returns:  None
         /// </summary>
-        public static void LogConfigChange(string editType, string ip, string port)
+        public void LogConfigChange(string editType, string ip, string port)
         {
-                // Create an EventLog instance and assign its source.
-            EventLog eventLog = new EventLog();
-            eventLog.Source = "UDP_Repeater_Frontend";
-
-
             string message = String.Format("The \"{0}\" settings were changed. \n" +
                                             "New settings: IP Address: {1} and Port: {2}", editType, ip, port);
 
             eventLog.WriteEntry(message, EventLogEntryType.Information, 6);  // 6 is id for ip/port config change
-
-            eventLog.Dispose();
         }
 
 
@@ -97,7 +94,7 @@ namespace UDP_Repeater_GUI
         ///  
         ///  Returns:  None
         /// </summary>
-        public static void LogInactivityChange(int frequency, string interval)
+        public void LogInactivityChange(int frequency, string interval)
         {
             // Create an EventLog instance and assign its source.
             EventLog eventLog = new EventLog();
@@ -124,7 +121,7 @@ namespace UDP_Repeater_GUI
         ///  
         ///  Returns:  None
         /// </summary>
-        public static void StartStopLogger(string mode)
+        public void StartStopLogger(string mode)
         {
             string message = "";
             if (mode == "start")
