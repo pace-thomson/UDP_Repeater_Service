@@ -16,6 +16,7 @@
 //   1.0    6/21/24   Jade Pace Thomson   Initial Release
 //---------------------------------------------------
 
+using System;
 using System.ServiceProcess;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
@@ -25,6 +26,7 @@ using BackendClassNameSpace;
 using Newtonsoft.Json;
 using System.Threading;
 using System.IO;
+using System.Diagnostics;
 
 
 
@@ -55,8 +57,8 @@ namespace UDP_Repeater_Service
         ///  Class Name: UDP_Service  <br/><br/> 
         ///  Parent Class: ServiceBase  <br/><br/> 
         ///
-        ///  Description: When windows starts this service, it runs the backend program.<br/>
-        ///  This was auto-generated as part of this template. <br/><br/>
+        ///  Description: When windows starts this service, it runs the backend program. Through this<br/>
+        ///  This also logs the service starting. This was auto-generated as part of this template. <br/><br/>
         ///
         ///  Inputs: None <br/><br/>
         ///  
@@ -67,7 +69,7 @@ namespace UDP_Repeater_Service
             TheMainProgram.main();
             Backend.StartStopLogger("start");
         }
-
+        /// <summary> Logs that the service is stopping </summary>
         protected override void OnStop()
         {
             Backend.StartStopLogger("stop");
@@ -93,18 +95,20 @@ class TheMainProgram
     /// </summary>
     public static Backend SetConfig()
     {
-        if (!File.Exists("UDP_Repeater_Config.json"))   // actual path: "C:\\Windows\\SysWOW64\\UDP_Repeater_Config.json"
+        try
         {
-                                // if UDP_Repeater_Config.json doense't exist, it make it and then poplulates it with this string
-            string defaults = @"        
+            if (!File.Exists("UDP_Repeater_Config.json"))   // actual path: "C:\\Windows\\SysWOW64\\UDP_Repeater_Config.json"
+            {
+                // if UDP_Repeater_Config.json doense't exist, it make it and then poplulates it with this string
+                string defaults = @"        
                 {
                     ""currentConfig"": {
                         ""receiveFrom"": {
-                            ""ip"": ""127.0.0.255"",
-                            ""port"": ""7654""
+                            ""ip"": ""172.18.46.213"",
+                            ""port"": ""763""
                         },
                         ""sendTo"": {
-                            ""ip"": ""132.58.202.157"",
+                            ""ip"": ""172.18.46.213"",
                             ""port"": ""722""
                         }
                     },
@@ -121,30 +125,36 @@ class TheMainProgram
                     },
 
                     ""inactivitySettings"": {
-                        ""frequency"": ""1"",
+                        ""frequency"": ""5"",
                         ""interval"": ""minute""
                     }
                 }";
 
-            // Write the JSON string to a file
-            File.WriteAllText("UDP_Repeater_Config.json", defaults);
+                // Write the JSON string to a file
+                File.WriteAllText("UDP_Repeater_Config.json", defaults);
+            }
+
+            string jsonString = File.ReadAllText("UDP_Repeater_Config.json");
+
+
+            JObject jsonObject = JObject.Parse(jsonString);
+
+            string receiveIp = (string)jsonObject["currentConfig"]["receiveFrom"]["ip"];
+            string receivePort = (string)jsonObject["currentConfig"]["receiveFrom"]["port"];
+            string sendIp = (string)jsonObject["currentConfig"]["sendTo"]["ip"];
+            string sendPort = (string)jsonObject["currentConfig"]["sendTo"]["port"];
+            int frequency = (int)jsonObject["inactivitySettings"]["frequency"];
+            string interval = (string)jsonObject["inactivitySettings"]["interval"];
+
+            Backend backendObject = new Backend(receiveIp, receivePort, sendIp, sendPort, frequency, interval);
+
+            return backendObject;
         }
-
-        string jsonString = File.ReadAllText("UDP_Repeater_Config.json");
-
-
-        JObject jsonObject = JObject.Parse(jsonString);
-
-        string receiveIp    =   (string)jsonObject["currentConfig"]["receiveFrom"]["ip"];
-        string receivePort  =   (string)jsonObject["currentConfig"]["receiveFrom"]["port"];
-        string sendIp       =   (string)jsonObject["currentConfig"]["sendTo"]["ip"];
-        string sendPort     =   (string)jsonObject["currentConfig"]["sendTo"]["port"];
-        int frequency       =   (int)jsonObject["inactivitySettings"]["frequency"];
-        string interval     =   (string)jsonObject["inactivitySettings"]["interval"];
-
-        Backend backendObject = new Backend(receiveIp, receivePort, sendIp, sendPort, frequency, interval);
-
-        return backendObject;
+        catch (Exception e)
+        {
+            Backend.ExceptionLogger(e);
+            return null;
+        }
     }
 
 
@@ -161,29 +171,36 @@ class TheMainProgram
     /// </summary>
     public static void RestoreToDefaults(Backend backendObject)
     {
-        string jsonString = File.ReadAllText("UDP_Repeater_Config.json");
+        try
+        {
+            string jsonString = File.ReadAllText("UDP_Repeater_Config.json");
 
 
-        JObject jsonObject = JObject.Parse(jsonString);
+            JObject jsonObject = JObject.Parse(jsonString);
 
-        string receiveIp   =  (string)jsonObject["defaultSettings"]["receiveFrom"]["ip"];
-        string receivePort =  (string)jsonObject["defaultSettings"]["receiveFrom"]["port"];
-        string sendIp      =  (string)jsonObject["defaultSettings"]["sendTo"]["ip"];
-        string sendPort    =  (string)jsonObject["defaultSettings"]["sendTo"]["port"];
+            string receiveIp   =  (string)jsonObject["defaultSettings"]["receiveFrom"]["ip"];
+            string receivePort =  (string)jsonObject["defaultSettings"]["receiveFrom"]["port"];
+            string sendIp      =  (string)jsonObject["defaultSettings"]["sendTo"]["ip"];
+            string sendPort    =  (string)jsonObject["defaultSettings"]["sendTo"]["port"];
 
-        jsonObject["currentConfig"]["receiveFrom"]["ip"]   =  receiveIp;
-        jsonObject["currentConfig"]["receiveFrom"]["port"] =  receivePort;
-        jsonObject["currentConfig"]["sendTo"]["ip"]        =  sendIp;
-        jsonObject["currentConfig"]["sendTo"]["port"]      =  sendPort;
+            jsonObject["currentConfig"]["receiveFrom"]["ip"]   =  receiveIp;
+            jsonObject["currentConfig"]["receiveFrom"]["port"] =  receivePort;
+            jsonObject["currentConfig"]["sendTo"]["ip"]        =  sendIp;
+            jsonObject["currentConfig"]["sendTo"]["port"]      =  sendPort;
 
 
-        backendObject.receiveIp    =  receiveIp;
-        backendObject.receivePort  =  int.Parse(receivePort);
-        backendObject.sendIp       =  sendIp;
-        backendObject.sendPort     =  int.Parse(sendPort);
+            backendObject.receiveIp    =  receiveIp;
+            backendObject.receivePort  =  int.Parse(receivePort);
+            backendObject.sendIp       =  sendIp;
+            backendObject.sendPort     =  int.Parse(sendPort);
 
-        var stringThing = JsonConvert.SerializeObject(jsonObject, Formatting.Indented);
-        File.WriteAllText("UDP_Repeater_Config.json", jsonString);
+            var stringThing = JsonConvert.SerializeObject(jsonObject, Formatting.Indented);
+            File.WriteAllText("UDP_Repeater_Config.json", jsonString);
+        }
+        catch (Exception e)
+        {
+            Backend.ExceptionLogger(e);
+        }
     }
 
     /// <summary> 
@@ -231,7 +248,31 @@ class TheMainProgram
         File.WriteAllText("UDP_Repeater_Config.json", stringThing);
     }
 
-
+    /// <summary> 
+    ///  Class Name: TheMainProgram  <br/><br/> 
+    ///
+    ///  Description: Checks for our event log, and creates it with the "UDP_Repeater_Backend"
+    ///               source if it needs to. <br/><br/>
+    ///
+    ///  Inputs: None <br/><br/>
+    ///  
+    /// </summary>
+    /// <returns>  None </returns>
+    private static void CheckForEventLog()
+    {
+        try
+        {
+            // Create the source and log, if it does not already exist.
+            if (!EventLog.SourceExists("UDP_Repeater_Backend"))
+            {
+                EventLog.CreateEventSource("UDP_Repeater_Backend", "UDP Packet Repeater");
+            }
+        }
+        catch (Exception e)
+        {
+            Backend.ExceptionLogger(e);
+        }
+    }
 
 
     /// <summary> 
@@ -248,33 +289,45 @@ class TheMainProgram
     /// </summary>
     public static async void main()
     {
-        CancellationTokenSource cts = new CancellationTokenSource();
-        Backend backendObject = SetConfig();
-
-        while (true)
+        Backend.ExceptionLogger(new Exception("line 292"));
+        try
         {
-                    // Starts the Sending/Receiving thread
-            Thread repeaterThread = new Thread(() => RepeaterClass.main(backendObject, cts.Token));
-            repeaterThread.Start();
-
-                    // Use Task<Backend> to call the method asynchronously and get the backend object it returns
-            Task<Backend> receiveFromGUITask = Task.Run(() => ReceiveFromGUI.main(backendObject));
-            Backend newbackendObject = await receiveFromGUITask; 
-
-            cts.Cancel();                           // Signal the send thread to stop
-            repeaterThread.Join();                  // Wait for the send thread to complete
-            cts = new CancellationTokenSource();    // Reset the cancellation token for the next iteration
-
-                    // this checks to see if the option was to restore defaultst
-            if (backendObject.Equals(newbackendObject))       
+            CancellationTokenSource cts = new CancellationTokenSource();
+            Backend backendObject = SetConfig();
+            Backend.ExceptionLogger(new Exception("line 296"));
+            while (true)
             {
-                RestoreToDefaults(backendObject);
+                // Starts the Sending/Receiving thread
+                Thread repeaterThread = new Thread(() => RepeaterClass.main(backendObject, cts.Token));
+                repeaterThread.Start();
+                Backend.ExceptionLogger(new Exception("line 302"));
+
+
+                // Use Task<Backend> to call the method asynchronously and get the backend object it returns
+                Task<Backend> receiveFromGUITask = Task.Run(() => ReceiveFromGUI.main(backendObject));
+                Backend newbackendObject = await receiveFromGUITask;
+
+                cts.Cancel();                           // Signal the send thread to stop
+                repeaterThread.Join();                  // Wait for the send thread to complete
+                cts = new CancellationTokenSource();    // Reset the cancellation token for the next iteration
+
+                Backend.ExceptionLogger(new Exception("line 313"));
+
+                // this checks to see if the option was to restore defaultst
+                if (backendObject.Equals(newbackendObject))
+                {
+                    RestoreToDefaults(backendObject);
+                }
+                else    // otherwise, some settings were changed, so we need to update our things
+                {
+                    UpdateConfigJson(newbackendObject);  // updates config.json
+                    backendObject = SetConfig();         // updates backendObject to match what's in config.json
+                }
             }
-            else    // otherwise, some settings were changed, so we need to update our things
-            {
-                UpdateConfigJson(newbackendObject);  // updates config.json
-                backendObject = SetConfig();         // updates backendObject to match what's in config.json
-            }
+        }
+        catch (Exception e)
+        {
+            Backend.ExceptionLogger(e);
         }
     }
 }

@@ -20,7 +20,6 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
-using System.Windows.Forms;
 
 
 
@@ -55,6 +54,8 @@ namespace UDP_Repeater_GUI
 
             // Write an entry to the event log.
             eventLog.WriteEntry(message, EventLogEntryType.Error, 2);       // 2 is id for frontend errors
+
+            eventLog.Dispose();
         }
 
 
@@ -77,12 +78,12 @@ namespace UDP_Repeater_GUI
             eventLog.Source = "UDP_Repeater_Frontend";
 
 
-            string message = String.Format("The {0} settings were changed. New settings - " +
-                                "IP Address: {1} and Port: {2}", editType, ip, port);
+            string message = String.Format("The \"{0}\" settings were changed. \n" +
+                                            "New settings: IP Address: {1} and Port: {2}", editType, ip, port);
 
-            string entry = "IP/Port Change" + ",\t" + message + ",\t" + DateTime.Now.ToString();
-
-            eventLog.WriteEntry(entry, EventLogEntryType.Information, 6);  // 6 is id for ip/port config change
+            eventLog.WriteEntry(message, EventLogEntryType.Information, 6);  // 6 is id for ip/port config change
+            
+            eventLog.Dispose();
         }
 
 
@@ -104,12 +105,12 @@ namespace UDP_Repeater_GUI
             eventLog.Source = "UDP_Repeater_Frontend";
 
 
-            string message = String.Format("The Inactivity settings were changed. New settings - " +
-                                                "Frequency: {0} and Interval: {1}", frequency, interval);
+            string message = String.Format("The \"Inactivity\" settings were changed. \n" +
+                                           "New settings: Frequency: {0} and Interval: {1}", frequency, interval);
 
-            string entry = "Inactivity Settings Change" + ",\t" + message + ",\t" + DateTime.Now.ToString();
+            eventLog.WriteEntry(message, EventLogEntryType.Information, 7);  // 7 is an inactivity config change
 
-            eventLog.WriteEntry(entry, EventLogEntryType.Information, 7);  // 7 is an inactivity config change
+            eventLog.Dispose();
         }
 
 
@@ -142,6 +143,8 @@ namespace UDP_Repeater_GUI
 
 
             eventLog.WriteEntry(message, EventLogEntryType.Information, 5);     // 5 is id for frontend start/stop
+
+            eventLog.Dispose();
         }
     }
 }

@@ -71,6 +71,12 @@ namespace BackendClassNameSpace
             this.sendPort = Convert.ToInt32(SendPort);
             this.frequency = newFrequency;
             this.interval = newInterval;
+
+            // Create the source and log, if it does not already exist.
+            if (!EventLog.SourceExists("UDP_Repeater_Backend"))
+            {
+                EventLog.CreateEventSource("UDP_Repeater_Backend", "UDP Packet Repeater");
+            }
         }
 
 
@@ -119,6 +125,8 @@ namespace BackendClassNameSpace
 
             // Write an entry to the event log.
             eventLog.WriteEntry(message, EventLogEntryType.Error, 1);  // 1 is our id for backend errors
+
+            eventLog.Dispose();
         }
 
 
@@ -167,6 +175,8 @@ namespace BackendClassNameSpace
 
             // Write an entry to the event log.
             eventLog.WriteEntry(message, EventLogEntryType.Warning, 3);     // 3 is the id for backend inactivity
+
+            eventLog.Dispose();
         }
 
         /// <summary> 
@@ -198,6 +208,8 @@ namespace BackendClassNameSpace
 
 
             eventLog.WriteEntry(message, EventLogEntryType.Information, 4);     // 4 is id for backend start/stop
+
+            eventLog.Dispose();
         }
     }
 }

@@ -1,8 +1,7 @@
 ﻿
 
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
-	 xmlns:util="http://wixtoolset.org/schemas/v4/wxs/util"
-	 xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+	 xmlns:util="http://wixtoolset.org/schemas/v4/wxs/util">
 	
 	<Package Name="UDP Repeater Service" Language="1033" Version="1.0.0.0" Manufacturer="JT4 LLC" UpgradeCode="07b96bd4-d109-4c22-a924-70f8326a1be9" InstallerVersion="200">
 		
@@ -44,37 +43,37 @@
 	<Fragment>
 		<ComponentGroup Id="Repeater_DependencyFiles" Directory="INSTALLFOLDER">
 			<Component Guid="CB0604BE-202F-4A0B-BBEF-F4C962CE463A">
-				<File Id="___var.UDP_Repeater_Service.TargetDir_Microsoft.Bcl.AsyncInterfaces.dll" Source="$(var.UDP_Repeater_Service.TargetDir)Microsoft.Bcl.AsyncInterfaces.dll" KeyPath="yes" />
+				<File Id="Microsoft.Bcl.AsyncInterfaces.dll" Source="$(var.UDP_Repeater_Service.TargetDir)Microsoft.Bcl.AsyncInterfaces.dll" KeyPath="yes" />
 			</Component>
 			<Component Guid="ABA12169-33E8-4140-A547-1268DA306C61">
-				<File Id="___var.UDP_Repeater_Service.TargetDir_Newtonsoft.Json.dll" Source="$(var.UDP_Repeater_Service.TargetDir)Newtonsoft.Json.dll" KeyPath="yes" />
+				<File Id="Newtonsoft.Json.dll" Source="$(var.UDP_Repeater_Service.TargetDir)Newtonsoft.Json.dll" KeyPath="yes" />
 			</Component>
 			<Component Guid="4A1DA99A-DC08-4E9E-9C05-88987C18D6D4">
-				<File Id="___var.UDP_Repeater_Service.TargetDir_PacketDotNet.dll" Source="$(var.UDP_Repeater_Service.TargetDir)PacketDotNet.dll" KeyPath="yes" />
+				<File Id="PacketDotNet.dll" Source="$(var.UDP_Repeater_Service.TargetDir)PacketDotNet.dll" KeyPath="yes" />
 			</Component>
 			<Component Guid="1dd19b92-90f8-4290-b495-1b6f920f5e79">
-				<File Id="___var.UDP_Repeater_Service.TargetDir_SharpPcap.dll" Source="$(var.UDP_Repeater_Service.TargetDir)SharpPcap.dll" KeyPath="yes" />
+				<File Id="SharpPcap.dll" Source="$(var.UDP_Repeater_Service.TargetDir)SharpPcap.dll" KeyPath="yes" />
 			</Component>
 			<Component Guid="744f6f71-2a05-4ff8-9052-8c2d434c7de6">
-				<File Id="___var.UDP_Repeater_Service.TargetDir_System.Buffers.dll" Source="$(var.UDP_Repeater_Service.TargetDir)System.Buffers.dll" KeyPath="yes" />
+				<File Id="System.Buffers.dll" Source="$(var.UDP_Repeater_Service.TargetDir)System.Buffers.dll" KeyPath="yes" />
 			</Component>
 			<Component Guid="7248c35a-3203-4254-ac41-0afc422b311f">
-				<File Id="___var.UDP_Repeater_Service.TargetDir_System.Memory.dll" Source="$(var.UDP_Repeater_Service.TargetDir)System.Memory.dll" KeyPath="yes" />
+				<File Id="System.Memory.dll" Source="$(var.UDP_Repeater_Service.TargetDir)System.Memory.dll" KeyPath="yes" />
 			</Component>
 			<Component Guid="cb5d0eff-0e7b-432d-bca2-adeeb2508d93">
-				<File Id="___var.UDP_Repeater_Service.TargetDir_System.Numerics.Vectors.dll" Source="$(var.UDP_Repeater_Service.TargetDir)System.Numerics.Vectors.dll" KeyPath="yes" />
+				<File Id="System.Numerics.Vectors.dll" Source="$(var.UDP_Repeater_Service.TargetDir)System.Numerics.Vectors.dll" KeyPath="yes" />
 			</Component>
 			<Component Guid="66177735-3e01-4255-83a8-d6c5541073ce">
-				<File Id="___var.UDP_Repeater_Service.TargetDir_System.Runtime.CompilerServices.Unsafe.dll" Source="$(var.UDP_Repeater_Service.TargetDir)System.Runtime.CompilerServices.Unsafe.dll" KeyPath="yes" />
+				<File Id="System.Runtime.CompilerServices.Unsafe.dll" Source="$(var.UDP_Repeater_Service.TargetDir)System.Runtime.CompilerServices.Unsafe.dll" KeyPath="yes" />
 			</Component>
 			<Component Guid="b3f5479f-8073-48e7-9c72-0207b85ee7bb">
-				<File Id="___var.UDP_Repeater_Service.TargetDir_System.Text.Encoding.CodePages.dll" Source="$(var.UDP_Repeater_Service.TargetDir)System.Text.Encoding.CodePages.dll" KeyPath="yes" />
+				<File Id="System.Text.Encoding.CodePages.dll" Source="$(var.UDP_Repeater_Service.TargetDir)System.Text.Encoding.CodePages.dll" KeyPath="yes" />
 			</Component>
 			<Component Guid="969b6c2a-fd8b-4f69-90b2-0612050fac62">
-				<File Id="___var.UDP_Repeater_Service.TargetDir_System.Threading.Tasks.Extensions.dll" Source="$(var.UDP_Repeater_Service.TargetDir)System.Threading.Tasks.Extensions.dll" KeyPath="yes" />
+				<File Id="System.Threading.Tasks.Extensions.dll" Source="$(var.UDP_Repeater_Service.TargetDir)System.Threading.Tasks.Extensions.dll" KeyPath="yes" />
 			</Component>
 			<Component Guid="b346745e-8a0e-4984-a611-0285d8b154a1">
-				<File Id="___var.UDP_Repeater_Service.TargetDir_System.ValueTuple.dll" Source="$(var.UDP_Repeater_Service.TargetDir)System.ValueTuple.dll" KeyPath="yes" />
+				<File Id="System.ValueTuple.dll" Source="$(var.UDP_Repeater_Service.TargetDir)System.ValueTuple.dll" KeyPath="yes" />
 			</Component>
 			<Component Guid="ffae1a37-eb14-43be-b85c-de2d5a89e11d">
 				<File Id="___var.UDP_Repeater_GUI.TargetDir_jt4_logo.ico"
@@ -88,7 +87,7 @@
 	<Fragment>
 		<ComponentGroup Id="Repeater_ConfigFiles" Directory="INSTALLFOLDER">
 			<Component Guid="17C70FC2-4AF5-4381-9FBE-B9C4D062E74A">
-				<File Id="___var.UDP_Repeater_Service.TargetDir_UDP_Repeater_Service.exe.config" 
+				<File Id="UDP_Repeater_Service.exe.config" 
 					  Source="$(var.UDP_Repeater_Service.TargetDir)UDP_Repeater_Service.exe.config" 
 					  KeyPath="yes" />
 			</Component>
@@ -166,7 +165,7 @@
 	<Fragment>
 		<ComponentGroup Id="Repeater_ServiceInstaller" Directory="INSTALLFOLDER">
 			<Component Guid="F7E041AB-3227-4272-92C1-4A12685F30AF">
-				<File Id="___var.UDP_Repeater_Service.TargetDir_UDP_Repeater_Service.exe" Source="$(var.UDP_Repeater_Service.TargetDir)UDP_Repeater_Service.exe" KeyPath="yes" />
+				<File Id="UDP_Repeater_Service.exe" Source="$(var.UDP_Repeater_Service.TargetDir)UDP_Repeater_Service.exe" KeyPath="yes" />
 
 				<util:EventSource Log="UDP Packet Repeater"
 								  Name="UDP_Repeater_Backend"
@@ -184,7 +183,7 @@
 								<util:ServiceConfig FirstFailureActionType='restart'
 													SecondFailureActionType='restart'
 													ThirdFailureActionType='restart'
-													RestartServiceDelayInSeconds='15'
+													RestartServiceDelayInSeconds='30'
 													ResetPeriodInDays='1'/>
 				</ServiceInstall>
 				

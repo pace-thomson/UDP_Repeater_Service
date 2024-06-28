@@ -448,7 +448,7 @@ namespace UDP_Repeater_GUI
         /// Capitlizes the first letter of the string. 
         /// </summary>
         /// <param name="str"></param>
-        /// <returns>The string with the first letter capitilized.</returns>
+        /// <returns>The supplied string with the first letter capitilized.</returns>
         private string FirstLetterCapital(string str)
         {
             return Char.ToUpper(str[0]) + str.Remove(0, 1);
