@@ -54,6 +54,7 @@ namespace UDP_Repeater_GUI
 
             // Write an entry to the event log.
             eventLog.WriteEntry(message, EventLogEntryType.Error, 2);       // 2 is id for frontend errors
+            eventLog.Dispose();
         }
 
 
@@ -80,6 +81,8 @@ namespace UDP_Repeater_GUI
                                             "New settings: IP Address: {1} and Port: {2}", editType, ip, port);
 
             eventLog.WriteEntry(message, EventLogEntryType.Information, 6);  // 6 is id for ip/port config change
+
+            eventLog.Dispose();
         }
 
 
@@ -105,6 +108,8 @@ namespace UDP_Repeater_GUI
                                            "New settings: Frequency: {0} and Interval: {1}", frequency, interval);
 
             eventLog.WriteEntry(message, EventLogEntryType.Information, 7);  // 7 is an inactivity config change
+
+            eventLog.Dispose();
         }
 
 
@@ -136,6 +141,8 @@ namespace UDP_Repeater_GUI
             eventLog.Source = "UDP_Repeater_Frontend";
 
             eventLog.WriteEntry(message, EventLogEntryType.Information, 5);     // 5 is id for frontend start/stop
+
+            eventLog.Dispose();
         }
     }
 }

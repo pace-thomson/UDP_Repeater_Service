@@ -28,7 +28,7 @@ namespace BackendClassNameSpace
     /// <summary>
     /// An oject that contains all of the configuration settings to be passed between 
     /// the functions that need it. It is updated as settings change. This class
-    /// also houses the function that logs exceptions. 
+    /// also houses the functions for logging. 
     /// </summary>
     public class Backend
     {
@@ -119,6 +119,8 @@ namespace BackendClassNameSpace
 
             // Write an entry to the event log.
             eventLog.WriteEntry(message, EventLogEntryType.Error, 1);  // 1 is our id for backend errors
+
+            eventLog.Dispose();
         }
 
 
@@ -167,6 +169,8 @@ namespace BackendClassNameSpace
 
             // Write an entry to the event log.
             eventLog.WriteEntry(message, EventLogEntryType.Warning, 3);     // 3 is the id for backend inactivity
+
+            eventLog.Dispose();
         }
 
         /// <summary> 
@@ -198,6 +202,8 @@ namespace BackendClassNameSpace
 
 
             eventLog.WriteEntry(message, EventLogEntryType.Information, 4);     // 4 is id for backend start/stop
+
+            eventLog.Dispose();
         }
     }
 }

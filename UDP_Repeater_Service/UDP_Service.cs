@@ -139,12 +139,12 @@ class TheMainProgram
 
             JObject jsonObject = JObject.Parse(jsonString);
 
-            string receiveIp = (string)jsonObject["currentConfig"]["receiveFrom"]["ip"];
-            string receivePort = (string)jsonObject["currentConfig"]["receiveFrom"]["port"];
-            string sendIp = (string)jsonObject["currentConfig"]["sendTo"]["ip"];
-            string sendPort = (string)jsonObject["currentConfig"]["sendTo"]["port"];
-            int frequency = (int)jsonObject["inactivitySettings"]["frequency"];
-            string interval = (string)jsonObject["inactivitySettings"]["interval"];
+            string receiveIp    =   (string)jsonObject["currentConfig"]["receiveFrom"]["ip"];
+            string receivePort  =   (string)jsonObject["currentConfig"]["receiveFrom"]["port"];
+            string sendIp       =   (string)jsonObject["currentConfig"]["sendTo"]["ip"];
+            string sendPort     =   (string)jsonObject["currentConfig"]["sendTo"]["port"];
+            int frequency       =   (int)jsonObject["inactivitySettings"]["frequency"];
+            string interval     =   (string)jsonObject["inactivitySettings"]["interval"];
 
             Backend backendObject = new Backend(receiveIp, receivePort, sendIp, sendPort, frequency, interval);
 

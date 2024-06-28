@@ -404,16 +404,22 @@ namespace UDP_Repeater_GUI
         /// </summary>
         private void gui_form_FormClosing(object sender, FormClosingEventArgs e)
         {
-            DialogResult = MessageBox.Show("Are you sure you want to close this Interface?" +
-                                           "Just minimize it if you would like it out of the way.");
+            DialogResult dialogResult = MessageBox.Show("Are you sure you want to close this Interface?" +
+                                                        "Just minimize it if you would like it out of the way.", 
+                                                        "Closing Confirmation",
+                                                        MessageBoxButtons.YesNo);
 
-            if (e.CloseReason == CloseReason.UserClosing)
+            if (dialogResult == DialogResult.Yes)
+            {
+                Logger.StartStopLogger("stop");
+
+            }
+            else
             {
                 e.Cancel = true;
                 WindowState = FormWindowState.Minimized;
                 return;
             }
-            Logger.StartStopLogger("stop");
         }
 
 
