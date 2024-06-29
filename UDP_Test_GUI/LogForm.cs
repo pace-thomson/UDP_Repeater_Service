@@ -39,6 +39,9 @@ namespace UDP_Repeater_GUI
             /// <summary> Our object for logging. </summary>
         private Logger logger;
 
+        public EventLog eventLog;
+
+
         /// <summary> 
         ///  Class Name: LogForm  <br/><br/>
         ///
@@ -59,7 +62,7 @@ namespace UDP_Repeater_GUI
 
             logger = new Logger();
 
-            SetCheckerForLogChanges();
+            eventLog = SetCheckerForLogChanges();
 
                     // this makes sure that the rows can fit if there's multiple lines of text
             reconfigLog.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
@@ -158,18 +161,21 @@ namespace UDP_Repeater_GUI
         ///  
         ///  Returns: None
         /// </summary>
-        public void SetCheckerForLogChanges()
+        public EventLog SetCheckerForLogChanges()
         {
             try
             {
-                EventLog eventLog = new EventLog("UDP Packet Repeater");    
+                EventLog eventLog = new EventLog();
+                eventLog.Source = "UDP_Repeater_Frontend";
 
                 eventLog.EntryWritten += new EntryWrittenEventHandler(OnEntryWritten);
                 eventLog.EnableRaisingEvents = true;
+                return eventLog;
             }
             catch ( Exception e)
             {
                 logger.LogException(e);
+                return null;
             }
         }
 
@@ -220,6 +226,11 @@ namespace UDP_Repeater_GUI
 
             row.Cells["messageColumn"].Value = entry.Message;
             row.Cells["timeStampColumn"].Value = entry.TimeWritten;
+        }
+
+        private void LogForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            eventLog.Dispose();
         }
     }
 }

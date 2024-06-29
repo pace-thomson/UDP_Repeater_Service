@@ -156,12 +156,14 @@
             this.entryType.HeaderText = "Entry Type";
             this.entryType.Name = "entryType";
             this.entryType.ReadOnly = true;
+            this.entryType.Width = 90;
             // 
             // frontOrBack
             // 
             this.frontOrBack.HeaderText = "Location";
             this.frontOrBack.Name = "frontOrBack";
             this.frontOrBack.ReadOnly = true;
+            this.frontOrBack.Width = 80;
             // 
             // messageColumn
             // 
@@ -195,6 +197,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "LogForm";
             this.Text = "System Log";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.LogForm_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.reconfigLog)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.inactivityInputBox)).EndInit();
             this.ResumeLayout(false);

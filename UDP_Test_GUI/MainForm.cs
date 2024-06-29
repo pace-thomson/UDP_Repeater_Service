@@ -47,6 +47,8 @@ namespace UDP_Repeater_GUI
         private ServiceController ourService;
             /// <summary> Our object for logging. </summary>
         private Logger logger;
+            /// <summary> Our timer object so we can release it when the form closes. </summary>
+        private Timer timer;
 
         /// <summary> 
         ///  Class Name: gui_form  <br/><br/>
@@ -83,7 +85,7 @@ namespace UDP_Repeater_GUI
 
             UpdateCurrentConfigGroup();
 
-            SetupTimerForServiceStatus();
+            timer = SetupTimerForServiceStatus();
 
             logger.StartStopLogger("start");
         }
@@ -320,9 +322,6 @@ namespace UDP_Repeater_GUI
                     return;
                 }
             }
-                
-            // Activate the form
-            Activate();
         }
 
         /// <summary> 
@@ -334,7 +333,7 @@ namespace UDP_Repeater_GUI
         ///  
         ///  Returns: None
         /// </summary>
-        private void SetupTimerForServiceStatus()
+        private Timer SetupTimerForServiceStatus()
         {
             try
             {
@@ -350,10 +349,13 @@ namespace UDP_Repeater_GUI
                 timer.Interval = 5000;      // checks every 5 seconds
 
                 timer.Start();
+
+                return timer;
             }
             catch (Exception e) 
             {
                 logger.LogException (e);
+                return null;
             }
         }
 
@@ -406,8 +408,8 @@ namespace UDP_Repeater_GUI
         /// </summary>
         private void gui_form_FormClosing(object sender, FormClosingEventArgs e)
         {
-            DialogResult dialogResult = MessageBox.Show("Are you sure you want to close this Interface? " +
-                                                        "Just minimize it if you would like it out of the way.", 
+            DialogResult dialogResult = MessageBox.Show("Are you sure you want to close this Interface? \n" +
+                                                        "You will lose the actively capture packets information.", 
                                                         "Closing Confirmation",
                                                         MessageBoxButtons.YesNo);
 
@@ -440,7 +442,6 @@ namespace UDP_Repeater_GUI
         {
             configDialog messageDialog = new configDialog(this);
             var response = messageDialog.ShowDialog();
-            messageDialog.Dispose();
         }
 
         /// <summary> 
@@ -458,7 +459,6 @@ namespace UDP_Repeater_GUI
         {
             LogForm logForm = new LogForm(this);
             logForm.Show();
-            logForm.Dispose();
         }
         
         /// <summary>
