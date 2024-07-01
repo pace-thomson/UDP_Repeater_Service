@@ -30,6 +30,8 @@ using System.Timers;
 using SharpPcap;
 using System.Linq;
 using System.Net;
+using System.Collections.Generic;
+using System.Net.NetworkInformation;
 
 
 namespace Repeater
@@ -179,7 +181,7 @@ namespace Repeater
                     using (Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp))
                     {
                         s.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, new MulticastOption(ip));
-                        s.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.MulticastTimeToLive, 32); 
+                        s.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.MulticastTimeToLive, 16); 
 
                         s.Connect(endPoint);
 
@@ -249,6 +251,49 @@ namespace Repeater
         /// <summary> 
         ///  Class Name: RepeaterClass  <br/><br/>
         ///
+        ///  Description: Returns the best card for listening on <br/><br/>
+        ///
+        ///  Inputs: None  <br/><br/>
+        ///  
+        ///  Returns:  ILiveDevice - The ILiveDevice object that represents the best card to listen with.
+        /// </summary>
+        public static ILiveDevice GetBestNIC()
+        {
+
+            Console.WriteLine("\n\n\n\n\n --------------------- NICS ------------\n");
+            NetworkInterface[] nics = NetworkInterface.GetAllNetworkInterfaces();
+            List<NetworkInterface> ethernetNICs = new List<NetworkInterface>();
+            foreach (NetworkInterface adapter in nics)
+            {
+                Console.WriteLine(adapter.Description);
+                Console.WriteLine(adapter.NetworkInterfaceType);
+                if (adapter.NetworkInterfaceType == NetworkInterfaceType.Ethernet)
+                {
+                    ethernetNICs.Add(adapter);
+                }
+            }
+            if (ethernetNICs == null)
+            {
+                return null;
+            }
+
+            NetworkInterface best = ethernetNICs.FirstOrDefault(nic => nic.OperationalStatus == OperationalStatus.Up);
+
+            var devices = CaptureDeviceList.Instance;
+            foreach (ILiveDevice adapter in devices)
+            {
+                Console.WriteLine(adapter.Description);
+                if (best.Description == adapter.Description)
+                {
+                    return adapter;
+                }
+            }
+            return null;
+        }
+
+        /// <summary> 
+        ///  Class Name: RepeaterClass  <br/><br/>
+        ///
         ///  Description: Continually listens for packets in promiscuous mode. Whenver a packet is received, <br/>
         ///  a packet is sent out to the target machine, and another one is sent to the GUI. <br/><br/>
         ///
@@ -263,20 +308,8 @@ namespace Repeater
             {
                 Thread.Sleep(1000);     // This HAS TO STAY or else the old port won't be closed by the time this runs
 
-                
-                var devices = CaptureDeviceList.Instance;
 
-                // If no devices were found, log an error
-                if (devices.Count < 1)
-                {
-                    Backend.ExceptionLogger(new Exception("No network devices found on current machine."));
-                    return;
-                }
-
-
-                    // gets the ethernet device
-                var device = devices.FirstOrDefault(dev => dev.Description.Contains("Ethernet") &&
-                                                           !dev.Description.Contains("Hyper-V"));
+                ILiveDevice device = GetBestNIC();
 
 
                     // Register our handler function to the 'packet arrival' event
