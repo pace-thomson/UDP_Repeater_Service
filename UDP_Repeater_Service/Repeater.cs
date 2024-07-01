@@ -304,7 +304,7 @@ namespace Repeater
                     finally
                     {
                         device.StopCapture();
-                        device.Close();
+                        device.Dispose();
                     }
                 });
 
