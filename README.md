@@ -1,8 +1,8 @@
 ## Overview
 
-This application was developed to solve a problem where multiple machines needed to get the same UDP Multicast messages. 
-It was built as a Windows Service backend that interacts with a GUI frontend for user interaction and system monitoring. Included in this repo is the installer
-for the application. 
+This application was developed to solve a problem where multiple machines needed to get the same UDP Unicast messages. It functions by listening for 
+packets on a host machine, and then sending the payload of that packet out to a taget machine(s). It was built as a Windows Service backend that interacts 
+with a GUI frontend for user interaction and system monitoring. Included in this repo is the installer for the application. 
 
 
 <p align="center">

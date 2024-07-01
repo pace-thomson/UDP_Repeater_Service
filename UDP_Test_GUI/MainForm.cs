@@ -409,7 +409,7 @@ namespace UDP_Repeater_GUI
         private void gui_form_FormClosing(object sender, FormClosingEventArgs e)
         {
             DialogResult dialogResult = MessageBox.Show("Are you sure you want to close this Interface? \n" +
-                                                        "You will lose the actively capture packets information.", 
+                                                        "You will lose the information about packets gathered since the interface started.", 
                                                         "Closing Confirmation",
                                                         MessageBoxButtons.YesNo);
 

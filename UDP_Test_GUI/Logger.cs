@@ -53,7 +53,7 @@ namespace UDP_Repeater_GUI
         {
             string[] formattedStackString = e.StackTrace.Split('\n');
 
-            string message = String.Format($"{e.Message}.\n" +
+            string message = String.Format($"Error Message: {e.Message}.\n" +
                                            $"Error location: Frontend/User Interface. \n" + 
                                            $"{formattedStackString.Last().TrimStart()}.");
 

@@ -1,0 +1,41 @@
+﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" 
+	 xmlns:bal="http://wixtoolset.org/schemas/v4/wxs/bal">
+	
+	
+    <Bundle Name="Packet_Repeater_Installer" 
+			Manufacturer="TODO Manufacturer" 
+			Version="1.0.0.0" 
+			UpgradeCode="ed0db20e-808e-41c9-9c42-200ec2ba04d7"
+			IconSourceFile="C:\Users\pthomson01.ctr\source\repos\pace-thomson\UDP_Repeater_Service\UDP_Test_GUI\bin\Debug\jt4_logo.ico">
+		
+		
+        <BootstrapperApplication>
+            <bal:WixStandardBootstrapperApplication LicenseUrl="https://www.example.com/license" Theme="hyperlinkLicense" />
+        </BootstrapperApplication>
+
+        <Chain>
+
+	        <!-- .NET INSTALLER -->
+			<ExePackage DetectCondition="false"
+						UninstallArguments="/uninstall /quiet /norestart"
+						SourceFile="C:\Users\pthomson01.ctr\Documents\ndp472-kb4054531-web.exe"/>
+			
+            <!-- NPCAP INSTALLER -->
+			<ExePackage DetectCondition="false"
+						UninstallArguments="/uninstall /quiet /norestart"
+						SourceFile="C:\Users\pthomson01.ctr\source\repos\pace-thomson\UDP_Repeater_Service\UDP_Packet_Repeater_Installer\bin\x86\Debug\npcap-1.79.exe"/>
+			
+            <!-- FRONTEND AND BACKEND INSTALLER -->
+			<PackageGroupRef Id="Repeater_Installer"/>
+        </Chain>
+
+    </Bundle>
+
+	<Fragment>
+		<PackageGroup Id="Repeater_Installer">
+			<MsiPackage SourceFile="C:\Users\pthomson01.ctr\source\repos\pace-thomson\UDP_Repeater_Service\UDP_Packet_Repeater_Installer\bin\x86\Debug\Packet_Repeater_Installer.msi" />
+		</PackageGroup>
+	</Fragment>
+	
+</Wix>
+

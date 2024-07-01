@@ -117,7 +117,8 @@ namespace BackendClassNameSpace
             string[] formattedStackString = e.StackTrace.Split('\n');
 
 
-            string message = String.Format($"Error location: Backend/Service. \n" +
+            string message = String.Format($"Error Message: {e.Message}.\n" +
+                                           $"Error location: Backend/Service. \n" +
                                            $"{formattedStackString.Last().TrimStart()}.");
 
             // Write an entry to the event log.
