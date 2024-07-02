@@ -6,6 +6,9 @@
     <OutputPath>..</OutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="HyperlinkTheme.xml" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="WixToolset.Bal.wixext" Version="5.0.0" />
   </ItemGroup>
 </Project>

@@ -49,7 +49,7 @@ namespace BackendClassNameSpace
         public string interval { get; set; }
 
         /// <summary> The device.Description of the network card that we're listening on. </summary>
-        public string nameOfNIC { get; set; }
+        public string descriptionOfNIC { get; set; }
 
 
         /// <summary> 
@@ -76,7 +76,7 @@ namespace BackendClassNameSpace
             this.sendPort = Convert.ToInt32(SendPort);
             this.frequency = newFrequency;
             this.interval = newInterval;
-            this.nameOfNIC = NameOfNIC;
+            this.descriptionOfNIC = NameOfNIC;
         }
 
 
@@ -106,7 +106,7 @@ namespace BackendClassNameSpace
 
             string jsonString = File.ReadAllText("UDP_Repeater_Config.json");
             JObject jsonObject = JObject.Parse(jsonString);
-            this.nameOfNIC = (string)jsonObject["nameOfNIC"];
+            this.descriptionOfNIC = (string)jsonObject["descriptionOfNIC"];
         }
 
 

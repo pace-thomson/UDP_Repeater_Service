@@ -29,6 +29,7 @@ using System.Windows.Forms;
 using System.IO;
 using Newtonsoft.Json.Linq;
 using System.ServiceProcess;
+using UDP_Test_GUI;
 
 
 namespace UDP_Repeater_GUI
@@ -63,31 +64,52 @@ namespace UDP_Repeater_GUI
         {
             InitializeComponent();
 
-                // starts the listening
+            GetUserNicChoice();
+
             InitializeUDPListener();
 
-
-            notifyIcon1 = new NotifyIcon();
-
-                // The Icon property sets the icon that will appear
-                // in the systray for this application.
-            notifyIcon1.Icon = new Icon("jt4_logo.ico");
-
-                // The Text property sets the text that will be displayed,
-                // in a tooltip, when the mouse hovers over the systray icon.
-            notifyIcon1.Text = "UDP Packet Repeater";
-            notifyIcon1.Visible = true;
-
-                // Handle the Click event to activate the form.
-            notifyIcon1.Click += new EventHandler(notifyIcon1_Click);
-
-            logger = new Logger();
+            HandleSysTrayIcon();
 
             UpdateCurrentConfigGroup();
+
+            logger = new Logger();
 
             timer = SetupTimerForServiceStatus();
 
             logger.StartStopLogger("start");
+        }
+
+        private void HandleSysTrayIcon()
+        {
+            notifyIcon1 = new NotifyIcon();
+
+            // The Icon property sets the icon that will appear
+            // in the systray for this application.
+            notifyIcon1.Icon = new Icon("jt4_logo.ico");
+
+            // The Text property sets the text that will be displayed,
+            // in a tooltip, when the mouse hovers over the systray icon.
+            notifyIcon1.Text = "UDP Packet Repeater";
+            notifyIcon1.Visible = true;
+
+            // Handle the Click event to activate the form.
+            notifyIcon1.Click += new EventHandler(notifyIcon1_Click);
+        }
+
+        public void GetUserNicChoice()
+        {
+            while (!File.Exists("C:\\Windows\\SysWOW64\\UDP_Repeater_Config.json"))
+            {
+                System.Threading.Thread.Sleep(1000);
+            }
+            double diff = (DateTime.Now - File.GetCreationTime("C:\\Windows\\SysWOW64\\UDP_Repeater_Config.json")).TotalSeconds;
+            if (diff > 5.0)
+            {
+                return;
+            }
+
+            NIC_Picker picker = new NIC_Picker();   
+            picker.ShowDialog();
         }
 
         /// <summary> 
@@ -195,7 +217,6 @@ namespace UDP_Repeater_GUI
             {
                 logger.LogException(e);
             }
-            
         }
 
         /// <summary> 
@@ -312,15 +333,8 @@ namespace UDP_Repeater_GUI
 
             else if (WindowState == FormWindowState.Normal)
             {
-                if (!this.Focused)
-                {
-                    this.Focus();
-                }
-                else if (this.Focused)
-                {
-                    WindowState = FormWindowState.Minimized;
-                    return;
-                }
+                WindowState = FormWindowState.Minimized;
+                return;
             }
         }
 
@@ -416,13 +430,12 @@ namespace UDP_Repeater_GUI
             if (dialogResult == DialogResult.Yes)
             {
                 logger.StartStopLogger("stop");
-
+                logger.eventLog.Dispose();
             }
             else
             {
                 e.Cancel = true;
                 WindowState = FormWindowState.Minimized;
-                return;
             }
         }
 
@@ -441,7 +454,12 @@ namespace UDP_Repeater_GUI
         private void showDialogbutton_Click(object sender, EventArgs e)
         {
             configDialog messageDialog = new configDialog(this);
-            var response = messageDialog.ShowDialog();
+            DialogResult response = messageDialog.ShowDialog();
+            if (response == DialogResult.Abort)
+            {
+                NIC_Picker picker = new NIC_Picker();
+                picker.ShowDialog();
+            }
         }
 
         /// <summary> 

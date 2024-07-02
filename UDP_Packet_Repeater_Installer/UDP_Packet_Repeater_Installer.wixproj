@@ -8,6 +8,7 @@
     <OutputPath>bin\x86\Debug</OutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="WixToolset.UI.wixext" Version="5.0.0" />
     <PackageReference Include="WixToolset.Util.wixext" Version="5.0.0" />
     <PackageReference Include="WixToolset.VisualStudio.wixext" Version="5.0.0" />
   </ItemGroup>

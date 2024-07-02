@@ -37,14 +37,15 @@
             this.port_label = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.defaultButton = new System.Windows.Forms.Button();
+            this.reconfigNicButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // dialogOkButton
             // 
             this.dialogOkButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.dialogOkButton.Location = new System.Drawing.Point(280, 202);
+            this.dialogOkButton.Location = new System.Drawing.Point(341, 202);
             this.dialogOkButton.Name = "dialogOkButton";
-            this.dialogOkButton.Size = new System.Drawing.Size(94, 38);
+            this.dialogOkButton.Size = new System.Drawing.Size(100, 38);
             this.dialogOkButton.TabIndex = 1;
             this.dialogOkButton.Text = "Ok";
             this.dialogOkButton.UseVisualStyleBackColor = true;
@@ -117,13 +118,24 @@
             // defaultButton
             // 
             this.defaultButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.defaultButton.Location = new System.Drawing.Point(112, 202);
+            this.defaultButton.Location = new System.Drawing.Point(195, 202);
             this.defaultButton.Name = "defaultButton";
-            this.defaultButton.Size = new System.Drawing.Size(94, 38);
+            this.defaultButton.Size = new System.Drawing.Size(100, 38);
             this.defaultButton.TabIndex = 23;
             this.defaultButton.Text = "Restore to Default Settings";
             this.defaultButton.UseVisualStyleBackColor = true;
             this.defaultButton.Click += new System.EventHandler(this.defaultButton_Click);
+            // 
+            // reconfigNicButton
+            // 
+            this.reconfigNicButton.DialogResult = System.Windows.Forms.DialogResult.Abort;
+            this.reconfigNicButton.Location = new System.Drawing.Point(45, 202);
+            this.reconfigNicButton.Name = "reconfigNicButton";
+            this.reconfigNicButton.Size = new System.Drawing.Size(100, 38);
+            this.reconfigNicButton.TabIndex = 24;
+            this.reconfigNicButton.Text = "Reconfigure Network Inteface ";
+            this.reconfigNicButton.UseVisualStyleBackColor = true;
+            this.reconfigNicButton.Click += new System.EventHandler(this.reconfigNicButton_Click);
             // 
             // configDialog
             // 
@@ -132,6 +144,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.dialogOkButton;
             this.ClientSize = new System.Drawing.Size(477, 263);
+            this.Controls.Add(this.reconfigNicButton);
             this.Controls.Add(this.defaultButton);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.port_label);
@@ -162,5 +175,6 @@
         private System.Windows.Forms.Label port_label;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button defaultButton;
+        private System.Windows.Forms.Button reconfigNicButton;
     }
 }

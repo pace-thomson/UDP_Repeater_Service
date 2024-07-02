@@ -146,7 +146,7 @@ class TheMainProgram
                         ""frequency"": ""5"",
                         ""interval"": ""minute""
                     },
-                    ""nameOfNIC"":""Temporary""
+                    ""descriptionOfNIC"":""Temporary""
                 }";
 
                 // Write the JSON string to a file
@@ -162,9 +162,9 @@ class TheMainProgram
             string receivePort  =   (string)jsonObject["currentConfig"]["receiveFrom"]["port"];
             string sendIp       =   (string)jsonObject["currentConfig"]["sendTo"]["ip"];
             string sendPort     =   (string)jsonObject["currentConfig"]["sendTo"]["port"];
-            int frequency       =   (int)jsonObject["inactivitySettings"]["frequency"];
+            int frequency       =   ( int  )jsonObject["inactivitySettings"]["frequency"];
             string interval     =   (string)jsonObject["inactivitySettings"]["interval"];
-            string nameOfNIC    =   (string)jsonObject["nameOfNIC"];
+            string nameOfNIC    =   (string)jsonObject["descriptionOfNIC"];
 
 
             Backend backendObject = new Backend(receiveIp, receivePort, sendIp, sendPort, frequency, interval, nameOfNIC);

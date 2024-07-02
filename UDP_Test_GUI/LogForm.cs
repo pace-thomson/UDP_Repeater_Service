@@ -57,15 +57,17 @@ namespace UDP_Repeater_GUI
         {
             InitializeComponent();
 
-            PopulateTable();
+            eventLog = SetCheckerForLogChanges();
+            
             theMainForm = mainForm;
 
             logger = new Logger();
 
-            eventLog = SetCheckerForLogChanges();
-
                     // this makes sure that the rows can fit if there's multiple lines of text
             reconfigLog.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+
+
+            PopulateTable();
         }
 
         /// <summary> 
@@ -83,7 +85,6 @@ namespace UDP_Repeater_GUI
         {
             try
             {
-                EventLog eventLog = new EventLog("UDP Packet Repeater");
                 foreach (EventLogEntry entry in eventLog.Entries)
                 {
                     AddNewRow(entry);
@@ -222,6 +223,10 @@ namespace UDP_Repeater_GUI
                     row.Cells["entryType"].Value = "Inactivity Change";
                     row.Cells["frontOrBack"].Value = "General";
                     break;
+                case 8:
+                    row.Cells["entryType"].Value = "NIC Change";
+                    row.Cells["frontOrBack"].Value = "General";
+                    break;
             }
 
             row.Cells["messageColumn"].Value = entry.Message;
@@ -231,6 +236,7 @@ namespace UDP_Repeater_GUI
         private void LogForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             eventLog.Dispose();
+            logger.eventLog.Dispose();
         }
     }
 }

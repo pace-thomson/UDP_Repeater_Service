@@ -28,10 +28,7 @@ using System.Text;
 using BackendClassNameSpace;
 using System.Timers;
 using SharpPcap;
-using System.Linq;
 using System.Net;
-using System.Collections.Generic;
-using System.Net.NetworkInformation;
 
 
 namespace Repeater
@@ -267,18 +264,15 @@ namespace Repeater
                 Thread.Sleep(1000);     // This HAS TO STAY or else the old port won't be closed by the time this runs
 
                 CaptureDeviceList devices = CaptureDeviceList.Instance;
-                ILiveDevice device = null;
+                ICaptureDevice device = null;
                 foreach (var dev in devices)
                 {
-                    if (dev.Description == backendObject.nameOfNIC)
+                    if (dev.Description == backendObject.descriptionOfNIC)
                     {
                         device = dev;
                         break;
                     }
                 }
-
-
-                Backend.ExceptionLogger(new Exception(device.Description));
 
                     // Register our handler function to the 'packet arrival' event
                 device.OnPacketArrival += new PacketArrivalEventHandler(device_OnPacketArrival);

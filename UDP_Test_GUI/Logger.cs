@@ -77,7 +77,8 @@ namespace UDP_Repeater_GUI
         public void LogConfigChange(string editType, string ip, string port)
         {
             string message = String.Format("The \"{0}\" settings were changed. \n" +
-                                            "New settings: IP Address: {1} and Port: {2}", editType, ip, port);
+                                            "IP Address: {1}" +
+                                            "Port: {2}", editType, ip, port);
 
             eventLog.WriteEntry(message, EventLogEntryType.Information, 6);  // 6 is id for ip/port config change
         }
@@ -96,17 +97,31 @@ namespace UDP_Repeater_GUI
         /// </summary>
         public void LogInactivityChange(int frequency, string interval)
         {
-            // Create an EventLog instance and assign its source.
-            EventLog eventLog = new EventLog();
-            eventLog.Source = "UDP_Repeater_Frontend";
-
-
             string message = String.Format("The \"Inactivity\" settings were changed. \n" +
-                                           "New settings: Frequency: {0} and Interval: {1}", frequency, interval);
+                                           "Frequency: {0}" +
+                                           "Interval: {1}", frequency, interval);
 
             eventLog.WriteEntry(message, EventLogEntryType.Information, 7);  // 7 is an inactivity config change
+        }
 
-            eventLog.Dispose();
+        /// <summary> 
+        ///  Class Name: Logger  <br/><br/>
+        ///
+        ///  Description: Logs NIC changes into the event log. <br/><br/>
+        ///
+        ///  Inputs:  <br/>
+        ///  string <paramref name="description"/> - The new NIC's description. <br/>
+        ///  string <paramref name="type"/> - The new NIC's interface type. <br/><br/>
+        ///  
+        ///  Returns:  None
+        /// </summary>
+        public void LogNicChange(string description, string type)
+        {
+            string message = String.Format("The Network Interface Listening Card was changed. \n" +
+                                           "Description: {0} " +
+                                           "Interface Type: {1}", description, type);
+
+            eventLog.WriteEntry(message, EventLogEntryType.Information, 8);  // 8 is a NIC config change
         }
 
 
@@ -133,13 +148,7 @@ namespace UDP_Repeater_GUI
                 message = String.Format("User Interface stopped.");
             }
 
-            // Create an EventLog instance and assign its source.
-            EventLog eventLog = new EventLog();
-            eventLog.Source = "UDP_Repeater_Frontend";
-
             eventLog.WriteEntry(message, EventLogEntryType.Information, 5);     // 5 is id for frontend start/stop
-
-            eventLog.Dispose();
         }
     }
 }

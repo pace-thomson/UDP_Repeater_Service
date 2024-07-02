@@ -22,6 +22,8 @@ using System.Net.Sockets;
 using System.Net;
 using System.Text;
 using System.Windows.Forms;
+using System.Diagnostics;
+using UDP_Test_GUI;
 
 
 namespace UDP_Repeater_GUI
@@ -161,6 +163,7 @@ namespace UDP_Repeater_GUI
                 ip_field.Text = "";
                 port_field.Text = "";
                 sendRequest.Close();
+                inputValid = true;
             }
         }
 
@@ -180,8 +183,14 @@ namespace UDP_Repeater_GUI
             if (!inputValid)
             {
                 e.Cancel = true;
+                return;
             }
+            logger.eventLog.Dispose();
+        }
 
+        private void reconfigNicButton_Click(object sender, EventArgs e)
+        {
+            inputValid = true;
         }
     }
 }

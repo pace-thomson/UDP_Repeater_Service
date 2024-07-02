@@ -114,6 +114,9 @@ namespace GUIreceiver
                         newbackendObject.frequency = int.Parse(dataParts[0]);
                         newbackendObject.interval = dataParts[1];
                         break;
+                    case "nic":
+                        newbackendObject.descriptionOfNIC = dataParts[0];
+                        break;
                 }
 
                 return newbackendObject;
