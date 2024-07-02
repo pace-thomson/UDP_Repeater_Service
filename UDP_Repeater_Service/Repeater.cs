@@ -248,48 +248,6 @@ namespace Repeater
             }
         }
 
-        /// <summary> 
-        ///  Class Name: RepeaterClass  <br/><br/>
-        ///
-        ///  Description: Returns the best card for listening on <br/><br/>
-        ///
-        ///  Inputs: None  <br/><br/>
-        ///  
-        ///  Returns:  ILiveDevice - The ILiveDevice object that represents the best card to listen with.
-        /// </summary>
-        public static ILiveDevice GetBestNIC()
-        {
-
-            Console.WriteLine("\n\n\n\n\n --------------------- NICS ------------\n");
-            NetworkInterface[] nics = NetworkInterface.GetAllNetworkInterfaces();
-            List<NetworkInterface> ethernetNICs = new List<NetworkInterface>();
-            foreach (NetworkInterface adapter in nics)
-            {
-                Console.WriteLine(adapter.Description);
-                Console.WriteLine(adapter.NetworkInterfaceType);
-                if (adapter.NetworkInterfaceType == NetworkInterfaceType.Ethernet)
-                {
-                    ethernetNICs.Add(adapter);
-                }
-            }
-            if (ethernetNICs == null)
-            {
-                return null;
-            }
-
-            NetworkInterface best = ethernetNICs.FirstOrDefault(nic => nic.OperationalStatus == OperationalStatus.Up);
-
-            var devices = CaptureDeviceList.Instance;
-            foreach (ILiveDevice adapter in devices)
-            {
-                Console.WriteLine(adapter.Description);
-                if (best.Description == adapter.Description)
-                {
-                    return adapter;
-                }
-            }
-            return null;
-        }
 
         /// <summary> 
         ///  Class Name: RepeaterClass  <br/><br/>
@@ -308,9 +266,19 @@ namespace Repeater
             {
                 Thread.Sleep(1000);     // This HAS TO STAY or else the old port won't be closed by the time this runs
 
+                CaptureDeviceList devices = CaptureDeviceList.Instance;
+                ILiveDevice device = null;
+                foreach (var dev in devices)
+                {
+                    if (dev.Description == backendObject.nameOfNIC)
+                    {
+                        device = dev;
+                        break;
+                    }
+                }
 
-                ILiveDevice device = GetBestNIC();
 
+                Backend.ExceptionLogger(new Exception(device.Description));
 
                     // Register our handler function to the 'packet arrival' event
                 device.OnPacketArrival += new PacketArrivalEventHandler(device_OnPacketArrival);
@@ -337,7 +305,7 @@ namespace Repeater
                     finally
                     {
                         device.StopCapture();
-                        device.Dispose();
+                        device.Close();
                     }
                 });
 

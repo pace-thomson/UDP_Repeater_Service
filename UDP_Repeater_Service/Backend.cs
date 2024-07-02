@@ -17,11 +17,11 @@
 //   1.0    6/21/24   Jade Pace Thomson   Initial Release
 //---------------------------------------------------
 
+using Newtonsoft.Json.Linq;
 using System;
 using System.Diagnostics;
 using System.Linq;
 using System.IO;
-
 
 
 
@@ -48,6 +48,36 @@ namespace BackendClassNameSpace
             /// <summary> The Interval (minute, day, hour) at which the service reports inactivity</summary>
         public string interval { get; set; }
 
+        /// <summary> The device.Description of the network card that we're listening on. </summary>
+        public string nameOfNIC { get; set; }
+
+
+        /// <summary> 
+        ///  Class Name: Backend  <br/><br/> 
+        ///
+        ///  Description: Overload 1/2 - The Backend Constructor for when the service first starts. <br/><br/>
+        ///
+        ///  Inputs:  <br/>
+        ///  string <paramref name="ReceiveIp"/> - The IP being listened to. <br/>
+        ///  string <paramref name="ReceivePort"/> - The Port being listened to. <br/>
+        ///  string <paramref name="SendIp"/> - The IP being sent to. <br/>
+        ///  string <paramref name="SendPort"/> - The Port being sent to. <br/>
+        ///  int    <paramref name="newFrequency"/> - The Frequency (number) at which the service reports inactivity <br/>
+        ///  string <paramref name="newInterval"/> - The Interval (minute, day, hour) at which the service reports inactivity <br/>
+        ///  string <paramref name="NameOfNIC"/> - The name of the NIC we're listening on <br/><br/> 
+        ///  
+        /// Returns: A Backend Object
+        /// </summary>
+        public Backend(string ReceiveIp, string ReceivePort, string SendIp, string SendPort, int newFrequency, string newInterval, string NameOfNIC)
+        {
+            this.receiveIp = ReceiveIp;
+            this.receivePort = Convert.ToInt32(ReceivePort);
+            this.sendIp = SendIp;
+            this.sendPort = Convert.ToInt32(SendPort);
+            this.frequency = newFrequency;
+            this.interval = newInterval;
+            this.nameOfNIC = NameOfNIC;
+        }
 
 
         /// <summary> 
@@ -73,6 +103,10 @@ namespace BackendClassNameSpace
             this.sendPort = Convert.ToInt32(SendPort);
             this.frequency = newFrequency;
             this.interval = newInterval;
+
+            string jsonString = File.ReadAllText("UDP_Repeater_Config.json");
+            JObject jsonObject = JObject.Parse(jsonString);
+            this.nameOfNIC = (string)jsonObject["nameOfNIC"];
         }
 
 
