@@ -57,11 +57,11 @@ namespace UDP_Repeater_GUI
         {
             InitializeComponent();
 
-            eventLog = SetCheckerForLogChanges();
-            
-            theMainForm = mainForm;
-
             logger = new Logger();
+            
+            eventLog = SetCheckerForLogChanges();
+
+            theMainForm = mainForm;
 
                     // this makes sure that the rows can fit if there's multiple lines of text
             reconfigLog.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;

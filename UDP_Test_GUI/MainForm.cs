@@ -64,6 +64,10 @@ namespace UDP_Repeater_GUI
         {
             InitializeComponent();
 
+            logger = new Logger();
+            timer = SetupTimerForServiceStatus();
+            logger.StartStopLogger("start");
+
             GetUserNicChoice();
 
             InitializeUDPListener();
@@ -71,12 +75,6 @@ namespace UDP_Repeater_GUI
             HandleSysTrayIcon();
 
             UpdateCurrentConfigGroup();
-
-            logger = new Logger();
-
-            timer = SetupTimerForServiceStatus();
-
-            logger.StartStopLogger("start");
         }
 
         /// <summary> Sets up the sys tray icon and it's stuff </summary>

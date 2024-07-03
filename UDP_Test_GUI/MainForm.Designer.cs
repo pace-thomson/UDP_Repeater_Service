@@ -140,7 +140,7 @@
             this.showConfigbutton.Name = "showConfigbutton";
             this.showConfigbutton.Size = new System.Drawing.Size(129, 26);
             this.showConfigbutton.TabIndex = 18;
-            this.showConfigbutton.Text = "Reconfigure IP\'s/Ports";
+            this.showConfigbutton.Text = "Reconfigure Settings";
             this.showConfigbutton.UseVisualStyleBackColor = true;
             this.showConfigbutton.Click += new System.EventHandler(this.showDialogbutton_Click);
             // 
