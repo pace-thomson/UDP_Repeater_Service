@@ -401,11 +401,9 @@ namespace UDP_Repeater_GUI
                 WindowState = FormWindowState.Normal;
                 this.Focus();
             }
-
-            else if (WindowState == FormWindowState.Normal)
+            else
             {
-                WindowState = FormWindowState.Minimized;
-                return;
+                this.Focus();
             }
         }
 
