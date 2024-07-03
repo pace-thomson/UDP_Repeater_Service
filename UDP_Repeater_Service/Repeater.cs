@@ -15,7 +15,7 @@
 // Change History:
 //
 // Version   Date         Author            Description
-//   1.0    6/21/24   Jade Pace Thomson   Initial Release
+//   1.0    7/3/24    Jade Pace Thomson   Initial Release
 //---------------------------------------------------
 
 
@@ -153,7 +153,7 @@ namespace Repeater
         public static Backend backendObject { get; set; }
                 /// <summary> A timerClass object that we use to get the update the last received packet time. </summary>
         public static TimerClass timer { get; set; }
-                /// <summary> W </summary>
+                /// <summary> Tells us if the send ip is multicast or not. </summary>
         private static bool isMulticast { get; set; }
 
 
@@ -282,8 +282,9 @@ namespace Repeater
 
                 if (device == null)
                 {
-                    device = devices.FirstOrDefault(nic => nic.Description.ToLower().Contains("ethernet"));
-                    Backend.ExceptionLogger(new Exception("WARNING: No matching network device was found, a default card is being used."));
+                    device = devices[0];
+                    Backend.WarningLogger("No matching network device was found, a default device is being used." +
+                                          "Ignore if the system was just installed.");
                 }
 
                     // Register our handler function to the 'packet arrival' event

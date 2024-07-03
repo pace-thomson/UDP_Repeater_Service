@@ -13,7 +13,7 @@
 //          Change History:
 //
 // Version   Date         Author            Description
-//   1.0    6/21/24   Jade Pace Thomson   Initial Release
+//   1.0    7/3/24    Jade Pace Thomson   Initial Release
 //---------------------------------------------------
 
 using System;
@@ -26,6 +26,7 @@ using BackendClassNameSpace;
 using Newtonsoft.Json;
 using System.Threading;
 using System.IO;
+using System.Diagnostics;
 
 
 
@@ -277,6 +278,15 @@ class TheMainProgram
         }
     }
 
+    public static void SetLogLimit()
+    {
+        EventLog eventLog = new EventLog();
+        eventLog.Source = "UDP_Repeater_Backend";
+
+        eventLog.MaximumKilobytes = 256;
+        eventLog.Dispose();
+    }
+
 
     /// <summary> 
     ///  Class Name: TheMainProgram  <br/><br/> 
@@ -294,6 +304,7 @@ class TheMainProgram
     {
         try
         {
+            SetLogLimit();
             CancellationTokenSource cts = new CancellationTokenSource();
             Backend backendObject = SetConfig();
             while (true)

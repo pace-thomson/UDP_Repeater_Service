@@ -14,7 +14,7 @@
 // Change History:
 //
 // Version   Date         Author            Description
-//   1.0    6/21/24   Jade Pace Thomson   Initial Release
+//   1.0    7/3/24    Jade Pace Thomson   Initial Release
 //---------------------------------------------------
 
 using Newtonsoft.Json.Linq;
@@ -241,6 +241,26 @@ namespace BackendClassNameSpace
 
 
             eventLog.WriteEntry(message, EventLogEntryType.Information, 4);     // 4 is id for backend start/stop
+
+            eventLog.Dispose();
+        }
+
+        /// <summary> 
+        ///  Class Name: Backend  <br/><br/>
+        ///
+        ///  Description: Logs general warnings. <br/><br/>
+        ///
+        ///  Inputs:  <br/>
+        ///  string <paramref name="message"/> - The message to log. <br/><br/>
+        ///  
+        ///  Returns:  None
+        /// </summary>
+        public static void WarningLogger(string message)
+        {
+            EventLog eventLog = new EventLog();
+            eventLog.Source = "UDP_Repeater_Backend";
+
+            eventLog.WriteEntry(message, EventLogEntryType.Warning, 9);     // 9 is id for backend general warnings
 
             eventLog.Dispose();
         }

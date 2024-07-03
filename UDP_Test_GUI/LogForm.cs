@@ -13,7 +13,7 @@
 // Change History:
 //
 // Version   Date         Author            Description
-//   1.0    6/21/24   Jade Pace Thomson   Initial Release
+//   1.0    7/3/24    Jade Pace Thomson   Initial Release
 //---------------------------------------------------
 
 
@@ -38,7 +38,7 @@ namespace UDP_Repeater_GUI
         private gui_form theMainForm;
             /// <summary> Our object for logging. </summary>
         private Logger logger;
-
+            /// <summary> Our own eventLog object to watch and read from. </summary>
         public EventLog eventLog;
 
 
@@ -187,7 +187,7 @@ namespace UDP_Repeater_GUI
             Invoke(new Action(() => reconfigLog.Sort(reconfigLog.Columns["timeStampColumn"], ListSortDirection.Descending)));
         }
 
-
+        /// <summary> Adds a new row to the configLog data grid view.s </summary>
         public void AddNewRow(EventLogEntry entry)
         {
             int rowNum = reconfigLog.Rows.Add();
@@ -227,12 +227,17 @@ namespace UDP_Repeater_GUI
                     row.Cells["entryType"].Value = "NIC Change";
                     row.Cells["frontOrBack"].Value = "General";
                     break;
+                case 9:
+                    row.Cells["entryType"].Value = "Warning";
+                    row.Cells["frontOrBack"].Value = "Service";
+                    break;
             }
 
             row.Cells["messageColumn"].Value = entry.Message;
             row.Cells["timeStampColumn"].Value = entry.TimeWritten;
         }
 
+        /// <summary> Disposes of both of the eventLog objects. </summary>
         private void LogForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             eventLog.Dispose();

@@ -12,7 +12,7 @@
 // Change History:
 //
 // Version   Date         Author            Description
-//   1.0    6/21/24   Jade Pace Thomson   Initial Release
+//   1.0    7/3/24    Jade Pace Thomson   Initial Release
 //---------------------------------------------------
 
 
@@ -188,6 +188,7 @@ namespace UDP_Repeater_GUI
             logger.eventLog.Dispose();
         }
 
+        /// <summary> Lets the form close because we are opening the nic picker form. </summary>
         private void reconfigNicButton_Click(object sender, EventArgs e)
         {
             inputValid = true;

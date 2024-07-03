@@ -15,7 +15,7 @@
 // Change History:
 //
 // Version   Date         Author            Description
-//   1.0    6/21/24   Jade Pace Thomson   Initial Release
+//   1.0    7/3/24    Jade Pace Thomson   Initial Release
 //---------------------------------------------------
 
 
@@ -79,6 +79,7 @@ namespace UDP_Repeater_GUI
             logger.StartStopLogger("start");
         }
 
+        /// <summary> Sets up the sys tray icon and it's stuff </summary>
         private void HandleSysTrayIcon()
         {
             notifyIcon1 = new NotifyIcon();
@@ -96,6 +97,8 @@ namespace UDP_Repeater_GUI
             notifyIcon1.Click += new EventHandler(notifyIcon1_Click);
         }
 
+        /// <summary> If this was just installed (UDP_Repeater_Config.json is less than 5 minutes old), 
+        /// this opens the nic picker window.</summary>
         public void GetUserNicChoice()
         {
             while (!File.Exists("C:\\Windows\\SysWOW64\\UDP_Repeater_Config.json"))
@@ -311,33 +314,6 @@ namespace UDP_Repeater_GUI
             }
         }
 
-
-        /// <summary> 
-        ///  Class Name: gui_form  <br/><br/>
-        ///
-        ///  Description: Handles clicking of the system tray icon. <br/><br/>
-        ///
-        ///  Inputs:  <br/>
-        ///  object <paramref name="Sender"/> - Whoever sent this, I think? <br/>
-        ///  FormClosingEventArgs <paramref name="e"/> - The form closing event arg. <br/><br/>
-        ///  
-        ///  Returns: None
-        /// </summary>
-        private void notifyIcon1_Click(object Sender, EventArgs e)
-        {
-            if (WindowState == FormWindowState.Minimized)
-            {
-                WindowState = FormWindowState.Normal;
-                this.Focus();
-            }
-
-            else if (WindowState == FormWindowState.Normal)
-            {
-                WindowState = FormWindowState.Minimized;
-                return;
-            }
-        }
-
         /// <summary> 
         ///  Class Name: gui_form  <br/><br/>
         ///
@@ -405,6 +381,33 @@ namespace UDP_Repeater_GUI
                 statusLabel.Text = "Service Not Found";
                 statusLabel.ForeColor = Color.DarkRed;
                 logger.LogException(notFound);
+            }
+        }
+
+
+        /// <summary> 
+        ///  Class Name: gui_form  <br/><br/>
+        ///
+        ///  Description: Handles clicking of the system tray icon. <br/><br/>
+        ///
+        ///  Inputs:  <br/>
+        ///  object <paramref name="Sender"/> - Whoever sent this, I think? <br/>
+        ///  EventArgs <paramref name="e"/> - The icon click event arg. <br/><br/>
+        ///  
+        ///  Returns: None
+        /// </summary>
+        private void notifyIcon1_Click(object Sender, EventArgs e)
+        {
+            if (WindowState == FormWindowState.Minimized)
+            {
+                WindowState = FormWindowState.Normal;
+                this.Focus();
+            }
+
+            else if (WindowState == FormWindowState.Normal)
+            {
+                WindowState = FormWindowState.Minimized;
+                return;
             }
         }
 

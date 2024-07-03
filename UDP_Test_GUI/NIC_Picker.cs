@@ -7,11 +7,16 @@ using UDP_Repeater_GUI;
 
 namespace UDP_Test_GUI
 {
+    /// <summary>  </summary>
     public partial class NIC_Picker : Form
     {
 
+            /// <summary> Tracks whether the user selection was valid </summary>
         public bool isValid;
+            /// <summary> This forms Logger object </summary>
         private Logger logger;
+
+        /// <summary> The NIC_Picker form constructor </summary>
         public NIC_Picker()
         {
             InitializeComponent();
@@ -25,6 +30,7 @@ namespace UDP_Test_GUI
             dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
         }
 
+        /// <summary> Fills out the data grid view with all the NIC's on the system </summary>
         private void PopulateNICs()
         {
             var devices = CaptureDeviceList.Instance;
@@ -43,6 +49,7 @@ namespace UDP_Test_GUI
             }
         }
 
+        /// <summary> Handles the done button click. Validates input and then sends to the Backend. </summary>
         private void doneButton_Click(object sender, EventArgs e)
         {
             int selectedRowCount = dataGridView1.Rows.GetRowCount(DataGridViewElementStates.Selected);
@@ -75,6 +82,8 @@ namespace UDP_Test_GUI
             }
         }
 
+        /// <summary> Checks if isValid is true, and either cancels the form closing or 
+        /// lets it close and disposes of the logger objects eventLog.</summary>
         private void NIC_Picker_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (!isValid)
