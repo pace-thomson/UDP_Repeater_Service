@@ -29,6 +29,7 @@ using BackendClassNameSpace;
 using System.Timers;
 using SharpPcap;
 using System.Net;
+using System.Linq;
 
 
 namespace Repeater
@@ -257,11 +258,16 @@ namespace Repeater
         ///  
         ///  Returns:  None
         /// </summary>
-        public static void StartReceiver(CancellationToken token)
+        public static async void StartReceiver(CancellationToken token)
         {
             try
             {
-                Thread.Sleep(1000);     // This HAS TO STAY or else the old port won't be closed by the time this runs
+                var tcs = new TaskCompletionSource<bool>();
+
+                token.Register(() =>
+                {
+                    tcs.SetResult(true);
+                });
 
                 CaptureDeviceList devices = CaptureDeviceList.Instance;
                 ICaptureDevice device = null;
@@ -274,6 +280,12 @@ namespace Repeater
                     }
                 }
 
+                if (device == null)
+                {
+                    device = devices.FirstOrDefault(nic => nic.Description.ToLower().Contains("ethernet"));
+                    Backend.ExceptionLogger(new Exception("WARNING: No matching network device was found, a default card is being used."));
+                }
+
                     // Register our handler function to the 'packet arrival' event
                 device.OnPacketArrival += new PacketArrivalEventHandler(device_OnPacketArrival);
 
@@ -284,27 +296,13 @@ namespace Repeater
                     // filters for out listening port
                 device.Filter = String.Format("udp port {0}", backendObject.receivePort);
 
-                Thread captureThread = new Thread(() =>
-                {
-                    // Start the capturing process
-                    device.StartCapture();
 
-                    try
-                    {
-                        while (!token.IsCancellationRequested)
-                        {
-                            Thread.Sleep(3000);
-                        }
-                    }
-                    finally
-                    {
-                        device.StopCapture();
-                        device.Close();
-                    }
-                });
+                device.StartCapture();
 
-                captureThread.Start();
-                captureThread.Join();
+                await tcs.Task;
+
+                device.StopCapture();
+                device.Close();
 
                 return;
             }
@@ -404,7 +402,7 @@ namespace Repeater
 
                 timer = new TimerClass(BackendObject);
 
-                await Task.Run(() => StartReceiver(token));
+                StartReceiver(token);
 
                 timer.DisposeOfTimerObject();
 

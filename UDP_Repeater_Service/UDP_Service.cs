@@ -266,6 +266,7 @@ class TheMainProgram
                             // always updates the inactivitySettings
             jsonObject["inactivitySettings"]["frequency"]  =  backendObject.frequency.ToString();
             jsonObject["inactivitySettings"]["interval"]   =  backendObject.interval;
+            jsonObject["descriptionOfNIC"]                 =  backendObject.descriptionOfNIC;    
 
             var stringThing = JsonConvert.SerializeObject(jsonObject, Formatting.Indented);
             File.WriteAllText("UDP_Repeater_Config.json", stringThing);

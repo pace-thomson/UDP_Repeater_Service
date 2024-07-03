@@ -48,7 +48,7 @@ namespace BackendClassNameSpace
             /// <summary> The Interval (minute, day, hour) at which the service reports inactivity</summary>
         public string interval { get; set; }
 
-        /// <summary> The device.Description of the network card that we're listening on. </summary>
+            /// <summary> The device.Description of the network card that we're listening on. </summary>
         public string descriptionOfNIC { get; set; }
 
 
@@ -128,7 +128,8 @@ namespace BackendClassNameSpace
                    sendIp == other.sendIp &&
                    sendPort == other.sendPort &&
                    frequency == other.frequency &&
-                   interval == other.interval;
+                   interval == other.interval &&
+                   descriptionOfNIC == other.descriptionOfNIC;
         }
 
         /// <summary> 
@@ -151,9 +152,9 @@ namespace BackendClassNameSpace
             string[] formattedStackString = e.StackTrace.Split('\n');
 
 
-            string message = String.Format($"Error Message: {e.Message}.\n" +
+            string message = String.Format($"Error Message: {e.Message} \n" +
                                            $"Error location: Backend/Service. \n" +
-                                           $"{formattedStackString.Last().TrimStart()}.");
+                                           $"{formattedStackString.Last().TrimStart()}");
 
             // Write an entry to the event log.
             eventLog.WriteEntry(message, EventLogEntryType.Error, 1);  // 1 is our id for backend errors

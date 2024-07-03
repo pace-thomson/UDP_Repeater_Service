@@ -1,8 +1,7 @@
 ﻿
 
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
-	 xmlns:util="http://wixtoolset.org/schemas/v4/wxs/util"
-	 xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+	 xmlns:util="http://wixtoolset.org/schemas/v4/wxs/util">
 	
 	<Package Name="UDP Repeater Service" Language="1033" Version="1.0.0.0" Manufacturer="JT4 LLC" UpgradeCode="07b96bd4-d109-4c22-a924-70f8326a1be9" InstallerVersion="200">
 		
@@ -19,7 +18,6 @@
 			<ComponentRef Id="AppStartMenuShortcut"/>
 			<ComponentRef Id="AppStartupFolderShortcut"/>
 		</Feature>
-
 	</Package>
 
 	
@@ -37,33 +35,6 @@
 		<StandardDirectory Id="StartupFolder"></StandardDirectory>
 
 	</Fragment>
-
-	<!--<Fragment>
-		<UI Id ="NIC_Dialog">
-
-			<ui:WixUI Id="WixUI_FeatureTree"/>
-			<UIRef Id="WixUI_ErrorProgressText" />
-
-
-			<Dialog Id="NIC_Picker" Width="370" Height="270" Title="NIC_Dialog thing">
-				<Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes" Text="Please enter your license key" />
-				<Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="&amp;Next">
-					<Publish Event="NewDialog" Value="FeaturesDlg"/>
-				</Control>
-			</Dialog>
-
-			
-			
-			<Dialog Id="NIC_Picker" Width="370" Height="270" Title="Networl Interface Selection" NoMinimize="yes">
-				<Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="Cancel text thing">
-					
-				</Control>
-				<Control Id="Next" Type="PushButton" X="220" Y="243" Width="56" Height="17" Default="yes" Text="push button text thing">
-
-				</Control>
-			</Dialog>
-		</UI>
-	</Fragment>-->
 
 
 	<!--DEPENDENCY FILES-->
@@ -105,6 +76,7 @@
 		</ComponentGroup>
 	</Fragment>
 
+	
 	<!--OTHER MISCELLANEOUS FILES-->
 	<Fragment>
 		<ComponentGroup Id="Repeater_ConfigFiles" Directory="INSTALLFOLDER">
@@ -170,26 +142,6 @@
 		</DirectoryRef>
 	</Fragment>
 
-	
-	<!--<Fragment>
-		<ComponentGroup Id="CheckForNicsForm" Directory="INSTALLFOLDER">
-			<Component Guid="9343b74f-a17d-4731-9586-dd0456cf00fd">
-				<File Id="Ask_For_Nics_Form.exe"
-					  Source="C:\Users\pthomson01.ctr\source\repos\pace-thomson\UDP_Repeater_Service\Ask_For_Nics_Form\bin\Debug\Ask_For_Nics_Form.exe"
-					  KeyPath="yes" />
-			</Component>
-		</ComponentGroup>
-		<CustomAction Id="Ask_For_NICS"
-						Execute="immediate"
-						Impersonate="yes"
-						Return="check"
-						Directory="INSTALLFOLDER"
-						ExeCommand="[INSTALLFOLDER]Ask_For_Nics_Form.exe" />
-		
-		<InstallExecuteSequence>
-			<Custom Action="Ask_For_NICS" After="InstallFiles" Condition="NOT Installed"  />
-		</InstallExecuteSequence>
-	</Fragment>-->
 	
 	<!--GUI-->
 	<Fragment>

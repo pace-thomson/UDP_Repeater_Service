@@ -1,6 +1,5 @@
 ﻿using System;
 using SharpPcap;
-using SharpPcap.LibPcap;
 using System.Net.Sockets;
 using System.Text;
 using System.Windows.Forms;
@@ -37,6 +36,10 @@ namespace UDP_Test_GUI
                 row.Cells["nameColumn"].Value = dev.Name;
                 row.Cells["descriptionColumn"].Value = dev.Description;
                 row.Cells["macAddressColumn"].Value = dev.MacAddress;
+                if (dev.MacAddress == null)
+                {
+                    row.Cells["macAddressColumn"].Value = "N/A";
+                }
             }
         }
 
@@ -54,7 +57,7 @@ namespace UDP_Test_GUI
                     {
                         byte[] bytes = Encoding.ASCII.GetBytes($"{selected},irrelevant,nic");
                         sendRequest.Send(bytes, bytes.Length, "127.0.0.1", 50001);
-                        logger.LogNicChange(selected, row.Cells["typeColumn"].Value.ToString());
+                        logger.LogNicChange(selected, row.Cells["macAddressColumn"].Value.ToString());
                     }
                     catch (Exception exception)
                     {
