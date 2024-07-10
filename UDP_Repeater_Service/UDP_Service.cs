@@ -71,27 +71,13 @@ namespace UDP_Repeater_Service
         /// </summary>
         protected override void OnStart(string[] args)
         {
-            try
-            {
-                TheMainProgram.main();
-                Backend.StartStopLogger("start");
-            }
-            catch (Exception e)
-            {
-                Backend.ExceptionLogger(e);
-            }
+            Backend.StartStopLogger("start");
+            TheMainProgram.main();
         }
         /// <summary> Logs that the service is stopping </summary>
         protected override void OnStop()
         {
-            try
-            {
-                Backend.StartStopLogger("stop");
-            }
-            catch (Exception e)
-            {
-                Backend.ExceptionLogger(e);
-            }
+            Backend.StartStopLogger("stop");
         }
     }
 }
@@ -174,7 +160,7 @@ class TheMainProgram
         }
         catch (Exception e)
         {
-            Backend.ExceptionLogger(e);
+            Backend.ExceptionLoggerStatic(e);
             return null;
         }
     }
@@ -221,7 +207,7 @@ class TheMainProgram
         }
         catch (Exception e)
         {
-            Backend.ExceptionLogger(e);
+            backendObject.ExceptionLogger(e);
         }
     }
 
@@ -274,18 +260,11 @@ class TheMainProgram
         }
         catch (Exception e)
         {
-            Backend.ExceptionLogger(e);
+            backendObject.ExceptionLogger(e);
         }
     }
 
-    public static void SetLogLimit()
-    {
-        EventLog eventLog = new EventLog();
-        eventLog.Source = "UDP_Repeater_Backend";
 
-        eventLog.MaximumKilobytes = 256;
-        eventLog.Dispose();
-    }
 
 
     /// <summary> 
@@ -304,9 +283,11 @@ class TheMainProgram
     {
         try
         {
-            SetLogLimit();
             CancellationTokenSource cts = new CancellationTokenSource();
             Backend backendObject = SetConfig();
+
+            backendObject.lokiTester();
+
             while (true)
             {
                 // Starts the Sending/Receiving thread
@@ -337,7 +318,7 @@ class TheMainProgram
         }
         catch (Exception e)
         {
-            Backend.ExceptionLogger(e);
+            Backend.ExceptionLoggerStatic(e);
         }
     }
 }

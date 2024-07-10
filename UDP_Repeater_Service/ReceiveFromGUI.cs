@@ -42,7 +42,7 @@ namespace GUIreceiver
         ///  
         ///  Returns: string[] - An array of strings containing the new confiuration information
         /// </summary>
-        public static string[] ReceivingFromGUI()
+        public static string[] ReceivingFromGUI(Backend backendObject)
         {
             try
             {
@@ -60,7 +60,7 @@ namespace GUIreceiver
             }
             catch ( Exception e ) 
             {
-                Backend.ExceptionLogger(e);
+                backendObject.ExceptionLogger(e);
                 return "Exception met".Split(',');
             }
         }
@@ -87,7 +87,7 @@ namespace GUIreceiver
 
                         // This resets the send or receive data if those options are selected
                         // and does nothing if defaults is selected, which is handled where this is called
-                string[] dataParts = ReceivingFromGUI();
+                string[] dataParts = ReceivingFromGUI(backendObject);
 
                         // dataParts[2] is mode 
                 switch (dataParts[2])
@@ -123,7 +123,7 @@ namespace GUIreceiver
             }
             catch (Exception e)
             {
-                Backend.ExceptionLogger(e);
+                backendObject.ExceptionLogger(e);
                 return null;
             }
         }

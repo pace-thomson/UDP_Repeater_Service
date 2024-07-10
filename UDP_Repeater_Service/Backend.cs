@@ -22,6 +22,8 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.IO;
+using Serilog;
+using Serilog.Sinks.Grafana.Loki;
 
 
 
@@ -52,6 +54,12 @@ namespace BackendClassNameSpace
         public string descriptionOfNIC { get; set; }
 
 
+            /// <summary> Our local windows event log. </summary>
+        public EventLog eventLog { get; set; }
+            /// <summary> The loki log that our logs get sent to, in addition to the windows log. </summary>
+        public ILogger lokiLogger { get; set; }
+
+
         /// <summary> 
         ///  Class Name: Backend  <br/><br/> 
         ///
@@ -77,6 +85,12 @@ namespace BackendClassNameSpace
             this.frequency = newFrequency;
             this.interval = newInterval;
             this.descriptionOfNIC = NameOfNIC;
+
+            this.eventLog = new EventLog();
+            eventLog.Source = "UDP_Repeater_Backend";
+
+            this.lokiLogger = new LoggerConfiguration()
+                    .WriteTo.GrafanaLoki("http://localhost:3100").CreateLogger();
         }
 
 
@@ -97,16 +111,26 @@ namespace BackendClassNameSpace
         /// </summary>
         public Backend(string ReceiveIp, string ReceivePort, string SendIp, string SendPort, int newFrequency, string newInterval)
         {
+                // system configuration set up
             this.receiveIp = ReceiveIp;
             this.receivePort = Convert.ToInt32(ReceivePort);
             this.sendIp = SendIp;
             this.sendPort = Convert.ToInt32(SendPort);
             this.frequency = newFrequency;
             this.interval = newInterval;
-
             string jsonString = File.ReadAllText("UDP_Repeater_Config.json");
             JObject jsonObject = JObject.Parse(jsonString);
             this.descriptionOfNIC = (string)jsonObject["descriptionOfNIC"];
+
+
+                // windows event logger set up
+            this.eventLog = new EventLog();
+            eventLog.Source = "UDP_Repeater_Backend";
+            eventLog.MaximumKilobytes = 256;
+
+                // Loki event logger set up
+            this.lokiLogger = new LoggerConfiguration()
+                    .WriteTo.GrafanaLoki("http://localhost:3100").CreateLogger();
         }
 
 
@@ -132,6 +156,11 @@ namespace BackendClassNameSpace
                    descriptionOfNIC == other.descriptionOfNIC;
         }
 
+        public void lokiTester()
+        {
+            lokiLogger.Information("The god of the day is odin");
+        }
+
         /// <summary> 
         ///  Class Name: Backend  <br/> <br/>
         ///
@@ -142,13 +171,8 @@ namespace BackendClassNameSpace
         ///  
         ///  Returns:  None
         /// </summary>
-        public static void ExceptionLogger(Exception e)
+        public void ExceptionLogger(Exception e)
         {
-            // Create an EventLog instance and assign its source.
-            EventLog eventLog = new EventLog();
-
-            eventLog.Source = "UDP_Repeater_Backend";
-
             string[] formattedStackString = e.StackTrace.Split('\n');
 
 
@@ -158,8 +182,24 @@ namespace BackendClassNameSpace
 
             // Write an entry to the event log.
             eventLog.WriteEntry(message, EventLogEntryType.Error, 1);  // 1 is our id for backend errors
+        }
 
-            eventLog.Dispose();
+        public static void ExceptionLoggerStatic(Exception e)
+        {
+            EventLog logg = new EventLog();
+            logg.Source = "UDP_Repeater_Backend";
+
+            string[] formattedStackString = e.StackTrace.Split('\n');
+
+
+            string message = String.Format($"Error Message: {e.Message} \n" +
+                                           $"Error location: Backend/Service. \n" +
+                                           $"{formattedStackString.Last().TrimStart()}");
+
+            // Write an entry to the event log.
+            logg.WriteEntry(message, EventLogEntryType.Error, 1);  // 1 is our id for backend errors
+
+            logg.Dispose();
         }
 
 
@@ -175,15 +215,10 @@ namespace BackendClassNameSpace
         ///  
         ///  Returns:  None
         /// </summary>
-        public static void InactivityLogger(int consecutiveEvents, int frequency, string interval)
+        public void InactivityLogger(int consecutiveEvents, int frequency, string interval)
         {
-            // Create an EventLog instance and assign its source.
-            EventLog eventLog = new EventLog();
-            eventLog.Source = "UDP_Repeater_Backend";
-
-
-            // this whole section is just to find if the interval word in the log message should have an 's' or not 
-            // this has to be so much more complicated than it should be
+                // this whole section is just to find if the interval word in the log message should have an 's' or not 
+                // this has to be so much more complicated than it should be
             int totalTime = consecutiveEvents * frequency;
             string message;
             interval += "s";
@@ -208,8 +243,6 @@ namespace BackendClassNameSpace
 
             // Write an entry to the event log.
             eventLog.WriteEntry(message, EventLogEntryType.Warning, 3);     // 3 is the id for backend inactivity
-
-            eventLog.Dispose();
         }
 
         /// <summary> 
@@ -225,6 +258,9 @@ namespace BackendClassNameSpace
         /// </summary>
         public static void StartStopLogger(string mode)
         {
+            EventLog logg = new EventLog();
+            logg.Source = "UDP_Repeater_Backend";
+
             string message = "";
             if (mode == "start")
             {
@@ -235,14 +271,9 @@ namespace BackendClassNameSpace
                 message = String.Format("Repeater Service stopped.");
             }
 
-            // Create an EventLog instance and assign its source.
-            EventLog eventLog = new EventLog();
-            eventLog.Source = "UDP_Repeater_Backend";
+            logg.WriteEntry(message, EventLogEntryType.Information, 4);     // 4 is id for backend start/stop
 
-
-            eventLog.WriteEntry(message, EventLogEntryType.Information, 4);     // 4 is id for backend start/stop
-
-            eventLog.Dispose();
+            logg.Dispose();
         }
 
         /// <summary> 
@@ -255,14 +286,9 @@ namespace BackendClassNameSpace
         ///  
         ///  Returns:  None
         /// </summary>
-        public static void WarningLogger(string message)
+        public void WarningLogger(string message)
         {
-            EventLog eventLog = new EventLog();
-            eventLog.Source = "UDP_Repeater_Backend";
-
             eventLog.WriteEntry(message, EventLogEntryType.Warning, 9);     // 9 is id for backend general warnings
-
-            eventLog.Dispose();
         }
     }
 }

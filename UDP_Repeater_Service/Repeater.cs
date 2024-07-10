@@ -29,7 +29,6 @@ using BackendClassNameSpace;
 using System.Timers;
 using SharpPcap;
 using System.Net;
-using System.Linq;
 
 
 namespace Repeater
@@ -91,7 +90,7 @@ namespace Repeater
             }
             catch (Exception e)
             {
-                Backend.ExceptionLogger(e);
+                backendObject.ExceptionLogger(e);
             }
         }
 
@@ -115,7 +114,7 @@ namespace Repeater
                 consecutiveEventsFired++;
                 mostRecentTimestamp = DateTime.Now;
 
-                Backend.InactivityLogger(consecutiveEventsFired, backendObject.frequency, backendObject.interval);
+                backendObject.InactivityLogger(consecutiveEventsFired, backendObject.frequency, backendObject.interval);
             }
         }
 
@@ -190,7 +189,7 @@ namespace Repeater
                 }
                 catch (Exception e)
                 {
-                    Backend.ExceptionLogger(e);
+                    backendObject.ExceptionLogger(e);
                 }
                 
             } 
@@ -204,7 +203,7 @@ namespace Repeater
                     }
                     catch (Exception e)
                     {
-                        Backend.ExceptionLogger(e);
+                        backendObject.ExceptionLogger(e);
                     }
                     sender.Close();
                 }
@@ -240,7 +239,7 @@ namespace Repeater
                 }
                 catch (Exception e)
                 {
-                    Backend.ExceptionLogger(e);
+                    backendObject.ExceptionLogger(e);
                 }
                 sender.Close();
             }
@@ -283,7 +282,7 @@ namespace Repeater
                 if (device == null)
                 {
                     device = devices[0];
-                    Backend.WarningLogger("No matching network device was found, a default device is being used." +
+                    backendObject.WarningLogger("No matching network device was found, a default device is being used." +
                                           "Ignore if the system was just installed.");
                 }
 
@@ -309,7 +308,7 @@ namespace Repeater
             }
             catch (Exception e)
             {
-                Backend.ExceptionLogger(e);
+                backendObject.ExceptionLogger(e);
             }
         }
 
@@ -344,7 +343,7 @@ namespace Repeater
             }
             catch (Exception ex)
             {
-                Backend.ExceptionLogger(ex);
+                backendObject.ExceptionLogger(ex);
             }
         }
 
@@ -376,7 +375,7 @@ namespace Repeater
             }
             catch (Exception e)
             {
-                Backend.ExceptionLogger(e);
+                backendObject.ExceptionLogger(e);
                 return false;
             }
         }
@@ -411,7 +410,7 @@ namespace Repeater
             }
             catch (Exception e)
             {
-                Backend.ExceptionLogger(e);
+                backendObject.ExceptionLogger(e);
             }
         }
     }
