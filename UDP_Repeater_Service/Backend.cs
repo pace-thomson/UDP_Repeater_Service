@@ -272,7 +272,6 @@ namespace BackendClassNameSpace
             }
 
             logg.WriteEntry(message, EventLogEntryType.Information, 4);     // 4 is id for backend start/stop
-
             logg.Dispose();
         }
 

@@ -26,7 +26,6 @@ using BackendClassNameSpace;
 using Newtonsoft.Json;
 using System.Threading;
 using System.IO;
-using System.Diagnostics;
 
 
 
@@ -286,7 +285,7 @@ class TheMainProgram
             CancellationTokenSource cts = new CancellationTokenSource();
             Backend backendObject = SetConfig();
 
-            backendObject.lokiTester();
+            // backendObject.lokiTester();
 
             while (true)
             {
@@ -314,6 +313,7 @@ class TheMainProgram
                     UpdateConfigJson(newbackendObject);  // updates config.json
                     backendObject = SetConfig();         // updates backendObject to match what's in config.json
                 }
+                newbackendObject.eventLog.Dispose();
             }
         }
         catch (Exception e)

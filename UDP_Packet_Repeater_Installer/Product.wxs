@@ -73,6 +73,24 @@
 			<Component Guid="b346745e-8a0e-4984-a611-0285d8b154a1">
 				<File Id="System.ValueTuple.dll" Source="$(var.UDP_Repeater_Service.TargetDir)System.ValueTuple.dll" KeyPath="yes" />
 			</Component>
+			<Component Guid="0d55a95b-dbd8-403a-af26-781136ac3feb">
+				<File Id="System.Threading.Channels.dll" Source="$(var.UDP_Repeater_Service.TargetDir)System.Threading.Channels.dll" KeyPath="yes" />
+			</Component>
+			<Component Guid="b2be1a0d-8313-4abe-b3b4-0f878a3afc8d">
+				<File Id="System.Text.Json.dll" Source="$(var.UDP_Repeater_Service.TargetDir)System.Text.Json.dll" KeyPath="yes" />
+			</Component>
+			<Component Guid="6bd7c166-3048-46f6-9dab-ea57b22e82fe">
+				<File Id="System.Text.Encodings.Web.dll" Source="$(var.UDP_Repeater_Service.TargetDir)System.Text.Encodings.Web.dll" KeyPath="yes" />
+			</Component>
+			<Component Guid="8ebbc582-4967-48de-898b-309e135fa5a8">
+				<File Id="System.Diagnostics.DiagnosticSource.dll" Source="$(var.UDP_Repeater_Service.TargetDir)System.Diagnostics.DiagnosticSource.dll" KeyPath="yes" />
+			</Component>
+			<Component Guid="c0d90098-8081-43e3-bf19-75234b0a0d0c">
+				<File Id="Serilog.Sinks.Grafana.Loki.dll" Source="$(var.UDP_Repeater_Service.TargetDir)Serilog.Sinks.Grafana.Loki.dll" KeyPath="yes" />
+			</Component>
+			<Component Guid="3e976172-1b18-49b9-b3ce-3ab0d3836762">
+				<File Id="Serilog.dll" Source="$(var.UDP_Repeater_Service.TargetDir)Serilog.dll" KeyPath="yes" />
+			</Component>
 		</ComponentGroup>
 	</Fragment>
 
