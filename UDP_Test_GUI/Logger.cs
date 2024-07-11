@@ -20,6 +20,11 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Diagnostics.Metrics;
+using System.Collections.Generic;
+using OpenTelemetry;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Exporter;
 
 
 
@@ -30,13 +35,54 @@ namespace UDP_Repeater_GUI
     /// </summary>
     internal class Logger
     {
+        /// <summary> Our event log object. </summary>
         public EventLog eventLog;
+        /// <summary> Our Meter object (the base for all of the metric instrumentation) </summary>
+        private static readonly Meter myMeter = new Meter("JT4.Repeater.MyLibrary", "1.0");
+        /// <summary> The counter for packets handled </summary>
+        private static readonly Counter<long> TotalPacketsHandled = myMeter.CreateCounter<long>("TotalPacketsHandled");
+
+        public MeterProvider meterProvider;
+       
 
         public Logger()
         {
                 // Create an EventLog instance and assign its source.
             eventLog = new EventLog();
             eventLog.Source = "UDP_Repeater_Frontend";
+
+            meterProvider = Sdk.CreateMeterProviderBuilder()
+                                   .AddMeter("JT4.Repeater.MyLibrary")
+                                   .AddOtlpExporter((exporterOptions, metricReaderOptions) =>
+                                   {
+                                       exporterOptions.Endpoint = new Uri("http://localhost:9090/api/v1/otlp/v1/metrics");
+                                       exporterOptions.Protocol = OtlpExportProtocol.HttpProtobuf;
+                                       metricReaderOptions.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 1000;
+                                   })
+                                   .Build();
+        }
+
+        public void PrometheusSenderCounter()
+        {
+                 // Testing one
+            Counter<long> MyFruitCounter = myMeter.CreateCounter<long>("MyFruitCounter");
+
+            for (int i = 0; i < 15; i++)
+            {
+                // In this example, we have low cardinality which is below the 2000
+                // default limit. If you have high cardinality, you need to set the
+                // cardinality limit properly.
+                MyFruitCounter.Add(1, new KeyValuePair<string, object>("name", "apple"), new KeyValuePair<string, object>("color", "red"));
+                MyFruitCounter.Add(2, new KeyValuePair<string, object>("name", "lemon"), new KeyValuePair<string, object>("color", "yellow"));
+                MyFruitCounter.Add(1, new KeyValuePair<string, object>("name", "lemon"), new KeyValuePair<string, object>("color", "yellow"));
+                MyFruitCounter.Add(2, new KeyValuePair<string, object>("name", "apple"), new KeyValuePair<string, object>("color", "green"));
+                MyFruitCounter.Add(5, new KeyValuePair<string, object>("name", "apple"), new KeyValuePair<string, object>("color", "red"));
+                MyFruitCounter.Add(4, new KeyValuePair<string, object>("name", "lemon"), new KeyValuePair<string, object>("color", "yellow"));
+
+                // Dispose meter provider before the application ends.
+                // This will flush the remaining metrics and shutdown the metrics pipeline.
+                System.Threading.Thread.Sleep(1000);
+            }
         }
 
         /// <summary> 
