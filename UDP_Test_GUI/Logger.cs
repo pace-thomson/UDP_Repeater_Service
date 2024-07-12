@@ -52,14 +52,14 @@ namespace UDP_Repeater_GUI
             eventLog.Source = "UDP_Repeater_Frontend";
 
             meterProvider = Sdk.CreateMeterProviderBuilder()
-                                   .AddMeter("JT4.Repeater.MyLibrary")
-                                   .AddOtlpExporter((exporterOptions, metricReaderOptions) =>
-                                   {
-                                       exporterOptions.Endpoint = new Uri("http://localhost:9090/api/v1/otlp/v1/metrics");
-                                       exporterOptions.Protocol = OtlpExportProtocol.HttpProtobuf;
-                                       metricReaderOptions.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 1000;
-                                   })
-                                   .Build();
+                                .AddMeter("JT4.Repeater.MyLibrary")
+                                .AddOtlpExporter((exporterOptions, metricReaderOptions) =>
+                                {
+                                    exporterOptions.Endpoint = new Uri("http://localhost:9090/api/v1/otlp/v1/metrics");
+                                    exporterOptions.Protocol = OtlpExportProtocol.HttpProtobuf;
+                                    metricReaderOptions.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 1000;
+                                })
+                                .Build();
         }
 
         public void PrometheusSenderCounter()
@@ -67,11 +67,8 @@ namespace UDP_Repeater_GUI
                  // Testing one
             Counter<long> MyFruitCounter = myMeter.CreateCounter<long>("MyFruitCounter");
 
-            for (int i = 0; i < 15; i++)
+            while (true)
             {
-                // In this example, we have low cardinality which is below the 2000
-                // default limit. If you have high cardinality, you need to set the
-                // cardinality limit properly.
                 MyFruitCounter.Add(1, new KeyValuePair<string, object>("name", "apple"), new KeyValuePair<string, object>("color", "red"));
                 MyFruitCounter.Add(2, new KeyValuePair<string, object>("name", "lemon"), new KeyValuePair<string, object>("color", "yellow"));
                 MyFruitCounter.Add(1, new KeyValuePair<string, object>("name", "lemon"), new KeyValuePair<string, object>("color", "yellow"));
@@ -79,8 +76,6 @@ namespace UDP_Repeater_GUI
                 MyFruitCounter.Add(5, new KeyValuePair<string, object>("name", "apple"), new KeyValuePair<string, object>("color", "red"));
                 MyFruitCounter.Add(4, new KeyValuePair<string, object>("name", "lemon"), new KeyValuePair<string, object>("color", "yellow"));
 
-                // Dispose meter provider before the application ends.
-                // This will flush the remaining metrics and shutdown the metrics pipeline.
                 System.Threading.Thread.Sleep(1000);
             }
         }

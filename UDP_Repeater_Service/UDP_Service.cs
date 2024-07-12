@@ -285,7 +285,7 @@ class TheMainProgram
             CancellationTokenSource cts = new CancellationTokenSource();
             Backend backendObject = SetConfig();
 
-            // backendObject.lokiTester();
+            backendObject.lokiTester();
 
             while (true)
             {

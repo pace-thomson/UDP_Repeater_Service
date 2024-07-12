@@ -24,6 +24,9 @@ using System.Linq;
 using System.IO;
 using Serilog;
 using Serilog.Sinks.Grafana.Loki;
+using System.Collections.Generic;
+using Serilog.Core;
+using System.Threading;
 
 
 
@@ -78,6 +81,7 @@ namespace BackendClassNameSpace
         /// </summary>
         public Backend(string ReceiveIp, string ReceivePort, string SendIp, string SendPort, int newFrequency, string newInterval, string NameOfNIC)
         {
+                // system configuration set up
             this.receiveIp = ReceiveIp;
             this.receivePort = Convert.ToInt32(ReceivePort);
             this.sendIp = SendIp;
@@ -86,11 +90,21 @@ namespace BackendClassNameSpace
             this.interval = newInterval;
             this.descriptionOfNIC = NameOfNIC;
 
+                // windows event logger set up
             this.eventLog = new EventLog();
             eventLog.Source = "UDP_Repeater_Backend";
 
+                // Loki event logger set up
             this.lokiLogger = new LoggerConfiguration()
-                    .WriteTo.GrafanaLoki("http://localhost:3100").CreateLogger();
+                              .WriteTo
+                              .GrafanaLoki
+                              (
+                                    "http://localhost:3100",
+                                    propertiesAsLabels: new List<string>() {"app"}
+                              )
+                              .Enrich.FromLogContext()
+                              .Enrich.WithProperty("app", "UDP_Repeater_Backend")
+                              .CreateLogger();
         }
 
 
@@ -118,8 +132,7 @@ namespace BackendClassNameSpace
             this.sendPort = Convert.ToInt32(SendPort);
             this.frequency = newFrequency;
             this.interval = newInterval;
-            string jsonString = File.ReadAllText("UDP_Repeater_Config.json");
-            JObject jsonObject = JObject.Parse(jsonString);
+            JObject jsonObject = JObject.Parse(File.ReadAllText("UDP_Repeater_Config.json"));
             this.descriptionOfNIC = (string)jsonObject["descriptionOfNIC"];
 
 
@@ -130,7 +143,16 @@ namespace BackendClassNameSpace
 
                 // Loki event logger set up
             this.lokiLogger = new LoggerConfiguration()
-                    .WriteTo.GrafanaLoki("http://localhost:3100").CreateLogger();
+                              .WriteTo
+                              .GrafanaLoki
+                              (
+                                    "http://localhost:3100", 
+                                    propertiesAsLabels: new List<string>() { "app", "version" }
+                              )
+                              .Enrich.FromLogContext()
+                              .Enrich.WithProperty("app", "StructuredLogging")
+                              .Enrich.WithProperty("version", "v1.2.3")
+                              .CreateLogger();
         }
 
 
@@ -158,7 +180,14 @@ namespace BackendClassNameSpace
 
         public void lokiTester()
         {
-            lokiLogger.Information("The god of the day is odin");
+            int count = 0;
+            while (true)
+            {
+                lokiLogger.Information("The god of the day is THE God");
+                lokiLogger.Warning("Here is a warning");
+                count++;
+                Thread.Sleep(3000);
+            }
         }
 
         /// <summary> 
