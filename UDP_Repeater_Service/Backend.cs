@@ -25,8 +25,8 @@ using System.IO;
 using Serilog;
 using Serilog.Sinks.Grafana.Loki;
 using System.Collections.Generic;
-using Serilog.Core;
 using System.Threading;
+using Serilog.Formatting.Display;
 
 
 
@@ -94,16 +94,21 @@ namespace BackendClassNameSpace
             this.eventLog = new EventLog();
             eventLog.Source = "UDP_Repeater_Backend";
 
-                // Loki event logger set up
+            // Loki event logger set up
+            const string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss} \t Backend/Service \t {Level} \n{Message}";
             this.lokiLogger = new LoggerConfiguration()
-                              .WriteTo
-                              .GrafanaLoki
+                              .WriteTo.GrafanaLoki
                               (
-                                    "http://localhost:3100",
-                                    propertiesAsLabels: new List<string>() {"app"}
+                                  "http://localhost:3100",
+                                  labels: new List<LokiLabel>
+                                  {
+                                      new LokiLabel(){ Key = "RepeaterSide", Value = "Backend/Service" },
+                                      new LokiLabel(){ Key = "MachineName", Value = Environment.MachineName },
+                                      new LokiLabel(){ Key = "User", Value = Environment.UserName }
+                                  },
+                                  textFormatter: new MessageTemplateTextFormatter(outputTemplate, null)
                               )
                               .Enrich.FromLogContext()
-                              .Enrich.WithProperty("app", "UDP_Repeater_Backend")
                               .CreateLogger();
         }
 
@@ -139,19 +144,24 @@ namespace BackendClassNameSpace
                 // windows event logger set up
             this.eventLog = new EventLog();
             eventLog.Source = "UDP_Repeater_Backend";
-            eventLog.MaximumKilobytes = 256;
+            EventLog.GetEventLogs().First(x => x.Log == "UDP Packet Repeater").MaximumKilobytes = 256;
 
-                // Loki event logger set up
+
+            // Loki event logger set up
+            const string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss} \t Backend/Service \t {Level} \n{Message}";
             this.lokiLogger = new LoggerConfiguration()
-                              .WriteTo
-                              .GrafanaLoki
+                              .WriteTo.GrafanaLoki
                               (
-                                    "http://localhost:3100", 
-                                    propertiesAsLabels: new List<string>() { "app", "version" }
+                                  "http://localhost:3100",
+                                  labels: new List<LokiLabel>
+                                  {
+                                      new LokiLabel(){ Key = "RepeaterSide", Value = "Backend/Service" },
+                                      new LokiLabel(){ Key = "MachineName", Value = Environment.MachineName },
+                                      new LokiLabel(){ Key = "User", Value = Environment.UserName }
+                                  },
+                                  textFormatter: new MessageTemplateTextFormatter(outputTemplate, null)
                               )
                               .Enrich.FromLogContext()
-                              .Enrich.WithProperty("app", "StructuredLogging")
-                              .Enrich.WithProperty("version", "v1.2.3")
                               .CreateLogger();
         }
 
@@ -180,12 +190,11 @@ namespace BackendClassNameSpace
 
         public void lokiTester()
         {
-            int count = 0;
             while (true)
             {
-                lokiLogger.Information("The god of the day is THE God");
-                lokiLogger.Warning("Here is a warning");
-                count++;
+                lokiLogger.Information("The INFORMATION");
+                lokiLogger.Warning("Here is a WARNING");
+                lokiLogger.Error("BIG ERROR TIME");
                 Thread.Sleep(3000);
             }
         }
@@ -204,13 +213,12 @@ namespace BackendClassNameSpace
         {
             string[] formattedStackString = e.StackTrace.Split('\n');
 
-
             string message = String.Format($"Error Message: {e.Message} \n" +
                                            $"Error location: Backend/Service. \n" +
                                            $"{formattedStackString.Last().TrimStart()}");
 
-            // Write an entry to the event log.
             eventLog.WriteEntry(message, EventLogEntryType.Error, 1);  // 1 is our id for backend errors
+            lokiLogger.Error(message);
         }
 
         public static void ExceptionLoggerStatic(Exception e)
@@ -227,8 +235,25 @@ namespace BackendClassNameSpace
 
             // Write an entry to the event log.
             logg.WriteEntry(message, EventLogEntryType.Error, 1);  // 1 is our id for backend errors
-
             logg.Dispose();
+
+            const string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss} \t Backend/Service \t {Level} \n{Message}";
+            var temporaryLokiLogger = new LoggerConfiguration()
+                              .WriteTo.GrafanaLoki
+                              (
+                                  "http://localhost:3100",
+                                  labels: new List<LokiLabel>
+                                  {
+                                      new LokiLabel(){ Key = "RepeaterSide", Value = "Backend/Service" },
+                                      new LokiLabel(){ Key = "MachineName", Value = Environment.MachineName },
+                                      new LokiLabel(){ Key = "User", Value = Environment.UserName }
+                                  },
+                                  textFormatter: new MessageTemplateTextFormatter(outputTemplate, null)
+                              )
+                              .Enrich.FromLogContext()
+                              .CreateLogger();
+
+            temporaryLokiLogger.Error(message);
         }
 
 
@@ -272,6 +297,8 @@ namespace BackendClassNameSpace
 
             // Write an entry to the event log.
             eventLog.WriteEntry(message, EventLogEntryType.Warning, 3);     // 3 is the id for backend inactivity
+
+            lokiLogger.Information(message);
         }
 
         /// <summary> 
@@ -285,7 +312,7 @@ namespace BackendClassNameSpace
         ///  
         ///  Returns:  None
         /// </summary>
-        public static void StartStopLogger(string mode)
+        public static void StartStopLogger(string mode, ILogger outerLokiLogger)
         {
             EventLog logg = new EventLog();
             logg.Source = "UDP_Repeater_Backend";
@@ -302,6 +329,8 @@ namespace BackendClassNameSpace
 
             logg.WriteEntry(message, EventLogEntryType.Information, 4);     // 4 is id for backend start/stop
             logg.Dispose();
+
+            outerLokiLogger.Information(message);
         }
 
         /// <summary> 
@@ -317,6 +346,8 @@ namespace BackendClassNameSpace
         public void WarningLogger(string message)
         {
             eventLog.WriteEntry(message, EventLogEntryType.Warning, 9);     // 9 is id for backend general warnings
+
+            lokiLogger.Warning(message);
         }
     }
 }

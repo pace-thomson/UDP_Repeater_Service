@@ -25,6 +25,10 @@ using System.Collections.Generic;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Exporter;
+using Serilog;
+using Serilog.Sinks.Grafana.Loki;
+using Serilog.Formatting.Display;
+using System.Threading;
 
 
 
@@ -35,29 +39,49 @@ namespace UDP_Repeater_GUI
     /// </summary>
     internal class Logger
     {
-        /// <summary> Our event log object. </summary>
+            /// <summary> Our event log object. </summary>
         public EventLog eventLog;
-        /// <summary> Our Meter object (the base for all of the metric instrumentation) </summary>
-        private static readonly Meter myMeter = new Meter("JT4.Repeater.MyLibrary", "1.0");
-        /// <summary> The counter for packets handled </summary>
-        private static readonly Counter<long> TotalPacketsHandled = myMeter.CreateCounter<long>("TotalPacketsHandled");
+            /// <summary> The loki log that our logs get sent to, in addition to the windows log. </summary>
+        public ILogger lokiLogger { get; set; }
 
+            /// <summary> Our Meter object (the base for all of the metric instrumentation) </summary>
+        private static readonly Meter myMeter = new Meter("JT4.Repeater.MyLibrary", "1.0");
+            /// <summary> The counter for packets handled </summary>
+        private static readonly Counter<long> TotalPacketsHandled = myMeter.CreateCounter<long>("TotalPacketsHandled");
+            /// <summary> The main meter provider </summary>
         public MeterProvider meterProvider;
        
 
         public Logger()
         {
                 // Create an EventLog instance and assign its source.
-            eventLog = new EventLog();
-            eventLog.Source = "UDP_Repeater_Frontend";
+            this.eventLog = new EventLog();
+            this.eventLog.Source = "UDP_Repeater_Frontend";
 
-            meterProvider = Sdk.CreateMeterProviderBuilder()
+            const string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss} \t Frontend/GUI \t {Level} \n{Message}";
+            this.lokiLogger = new LoggerConfiguration()
+                              .WriteTo.GrafanaLoki
+                              (
+                                  "http://localhost:3100",
+                                  labels: new List<LokiLabel>
+                                  {
+                                      new LokiLabel(){ Key = "RepeaterSide", Value = "Frontend/GUI" },
+                                      new LokiLabel(){ Key = "MachineName", Value = Environment.MachineName },
+                                      new LokiLabel(){ Key = "User", Value = Environment.UserName }
+                                  },
+                                  textFormatter: new MessageTemplateTextFormatter(outputTemplate, null)
+                              )
+                              .Enrich.FromLogContext()
+                              .CreateLogger();
+
+
+            this.meterProvider = Sdk.CreateMeterProviderBuilder()
                                 .AddMeter("JT4.Repeater.MyLibrary")
                                 .AddOtlpExporter((exporterOptions, metricReaderOptions) =>
                                 {
                                     exporterOptions.Endpoint = new Uri("http://localhost:9090/api/v1/otlp/v1/metrics");
                                     exporterOptions.Protocol = OtlpExportProtocol.HttpProtobuf;
-                                    metricReaderOptions.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 1000;
+                                    metricReaderOptions.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 5000;
                                 })
                                 .Build();
         }
@@ -100,6 +124,7 @@ namespace UDP_Repeater_GUI
 
             // Write an entry to the event log.
             eventLog.WriteEntry(message, EventLogEntryType.Error, 2);       // 2 is id for frontend errors
+            lokiLogger.Error(message);
         }
 
 
@@ -122,6 +147,7 @@ namespace UDP_Repeater_GUI
                                             "Port: {2}", editType, ip, port);
 
             eventLog.WriteEntry(message, EventLogEntryType.Information, 6);  // 6 is id for ip/port config change
+            lokiLogger.Information(message);
         }
 
 
@@ -143,6 +169,7 @@ namespace UDP_Repeater_GUI
                                            "Interval: {1}", frequency, interval);
 
             eventLog.WriteEntry(message, EventLogEntryType.Information, 7);  // 7 is an inactivity config change
+            lokiLogger.Information(message);
         }
 
         /// <summary> 
@@ -163,6 +190,7 @@ namespace UDP_Repeater_GUI
                                            "Mac Address: {1}", description, macAddress);
 
             eventLog.WriteEntry(message, EventLogEntryType.Information, 8);  // 8 is a NIC config change
+            lokiLogger.Information(message);
         }
 
 
@@ -190,6 +218,7 @@ namespace UDP_Repeater_GUI
             }
 
             eventLog.WriteEntry(message, EventLogEntryType.Information, 5);     // 5 is id for frontend start/stop
+            lokiLogger.Information(message);
         }
     }
 }

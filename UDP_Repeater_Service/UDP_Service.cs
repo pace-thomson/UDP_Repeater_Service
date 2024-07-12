@@ -26,6 +26,10 @@ using BackendClassNameSpace;
 using Newtonsoft.Json;
 using System.Threading;
 using System.IO;
+using Serilog.Formatting.Display;
+using Serilog.Sinks.Grafana.Loki;
+using Serilog;
+using System.Collections.Generic;
 
 
 
@@ -37,6 +41,8 @@ namespace UDP_Repeater_Service
     /// </summary>
     public partial class UDP_Service : ServiceBase
     {
+        private ILogger outerLokiLogger;
+
         /// <summary> 
         ///  Class Name: UDP_Service  <br/><br/> 
         ///  Parent Class: ServiceBase  <br/><br/> 
@@ -50,6 +56,21 @@ namespace UDP_Repeater_Service
         public UDP_Service()
         {
             InitializeComponent();
+            const string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss} \t Backend/Service \t {Level} \n{Message}";
+            outerLokiLogger = new LoggerConfiguration()
+                              .WriteTo.GrafanaLoki
+                              (
+                                  "http://localhost:3100",
+                                  labels: new List<LokiLabel>
+                                  {
+                                      new LokiLabel(){ Key = "RepeaterSide", Value = "Backend/Service" },
+                                      new LokiLabel(){ Key = "MachineName", Value = Environment.MachineName },
+                                      new LokiLabel(){ Key = "User", Value = Environment.UserName }
+                                  },
+                                  textFormatter: new MessageTemplateTextFormatter(outputTemplate, null)
+                              )
+                              .Enrich.FromLogContext()
+                              .CreateLogger();
         }
 
         public void DebuggerProcess()
@@ -70,13 +91,13 @@ namespace UDP_Repeater_Service
         /// </summary>
         protected override void OnStart(string[] args)
         {
-            Backend.StartStopLogger("start");
+            Backend.StartStopLogger("start", outerLokiLogger);
             TheMainProgram.main();
         }
         /// <summary> Logs that the service is stopping </summary>
         protected override void OnStop()
         {
-            Backend.StartStopLogger("stop");
+            Backend.StartStopLogger("stop", outerLokiLogger);
         }
     }
 }
