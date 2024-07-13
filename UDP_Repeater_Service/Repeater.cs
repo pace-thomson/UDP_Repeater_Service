@@ -29,6 +29,7 @@ using BackendClassNameSpace;
 using System.Timers;
 using SharpPcap;
 using System.Net;
+using Serilog.Core;
 
 
 namespace Repeater
@@ -340,6 +341,9 @@ namespace Repeater
 
                     // update last received
                 timer.UpdateLastReceivedTime(DateTime.Now);
+
+                    // increment the packets received counter for prometheus
+                backendObject.IncrementTotalPacketsHandled();
             }
             catch (Exception ex)
             {

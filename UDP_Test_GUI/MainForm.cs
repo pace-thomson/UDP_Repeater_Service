@@ -76,7 +76,7 @@ namespace UDP_Repeater_GUI
 
             UpdateCurrentConfigGroup();
 
-            //logger.PrometheusSenderCounter();
+            logger.PrometheusFruitCounterSender();
         }
 
         /// <summary> Sets up the sys tray icon and it's stuff </summary>

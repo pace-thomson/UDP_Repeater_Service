@@ -27,6 +27,11 @@ using Serilog.Sinks.Grafana.Loki;
 using System.Collections.Generic;
 using System.Threading;
 using Serilog.Formatting.Display;
+using OpenTelemetry;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Exporter;
+using System.Diagnostics.Metrics;
+using System.Runtime.Remoting.Messaging;
 
 
 
@@ -61,6 +66,22 @@ namespace BackendClassNameSpace
         public EventLog eventLog { get; set; }
             /// <summary> The loki log that our logs get sent to, in addition to the windows log. </summary>
         public ILogger lokiLogger { get; set; }
+
+
+            /// <summary> The main meter provider </summary>
+        public MeterProvider meterProvider;
+            /// <summary> Our Meter object (the base for all of the metric instrumentation) </summary>
+        public static readonly Meter myMeter = new Meter("JT4.Repeater.MyLibrary", "1.0");
+            /// <summary> The counter for packets handled </summary>
+        public static readonly Counter<long> TotalPacketsHandled = myMeter.CreateCounter<long>("TotalPacketsHandled");
+
+        public static readonly ObservableGauge<long> processMemory = myMeter.CreateObservableGauge("backendMemory", () => GetProcessMemory());
+
+        public static readonly UpDownCounter<long> isRunning = myMeter.CreateUpDownCounter<long>("isRunning");
+
+
+
+
 
 
         /// <summary> 
@@ -110,6 +131,17 @@ namespace BackendClassNameSpace
                               )
                               .Enrich.FromLogContext()
                               .CreateLogger();
+
+            this.meterProvider = Sdk.CreateMeterProviderBuilder()
+                                .AddMeter("JT4.Repeater.MyLibrary")
+                                .AddOtlpExporter((exporterOptions, metricReaderOptions) =>
+                                {
+                                    exporterOptions.Endpoint = new Uri("http://localhost:9090/api/v1/otlp/v1/metrics");
+                                    exporterOptions.Protocol = OtlpExportProtocol.HttpProtobuf;
+                                    metricReaderOptions.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 5000;
+                                })
+                                .Build();
+            isRunning.Add(1);
         }
 
 
@@ -163,6 +195,27 @@ namespace BackendClassNameSpace
                               )
                               .Enrich.FromLogContext()
                               .CreateLogger();
+
+            this.meterProvider = Sdk.CreateMeterProviderBuilder()
+                                .AddMeter("JT4.Repeater.MyLibrary")
+                                .AddOtlpExporter((exporterOptions, metricReaderOptions) =>
+                                {
+                                    exporterOptions.Endpoint = new Uri("http://localhost:9090/api/v1/otlp/v1/metrics");
+                                    exporterOptions.Protocol = OtlpExportProtocol.HttpProtobuf;
+                                    metricReaderOptions.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 5000;
+                                })
+                                .Build();
+        }
+
+        public static long GetProcessMemory()
+        {
+            Process proc = Process.GetCurrentProcess();
+            return proc.PrivateMemorySize64;
+        }
+
+        public void IncrementTotalPacketsHandled()
+        {
+            TotalPacketsHandled.Add(1);
         }
 
 
@@ -190,12 +243,15 @@ namespace BackendClassNameSpace
 
         public void lokiTester()
         {
+            Random random = new Random();
             while (true)
             {
+                TotalPacketsHandled.Add(1);
                 lokiLogger.Information("The INFORMATION");
                 lokiLogger.Warning("Here is a WARNING");
                 lokiLogger.Error("BIG ERROR TIME");
-                Thread.Sleep(3000);
+
+                Thread.Sleep(random.Next(100, 10000));
             }
         }
 

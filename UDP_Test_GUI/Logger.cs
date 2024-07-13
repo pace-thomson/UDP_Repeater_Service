@@ -28,7 +28,6 @@ using OpenTelemetry.Exporter;
 using Serilog;
 using Serilog.Sinks.Grafana.Loki;
 using Serilog.Formatting.Display;
-using System.Threading;
 
 
 
@@ -46,11 +45,15 @@ namespace UDP_Repeater_GUI
 
             /// <summary> Our Meter object (the base for all of the metric instrumentation) </summary>
         private static readonly Meter myMeter = new Meter("JT4.Repeater.MyLibrary", "1.0");
-            /// <summary> The counter for packets handled </summary>
-        private static readonly Counter<long> TotalPacketsHandled = myMeter.CreateCounter<long>("TotalPacketsHandled");
             /// <summary> The main meter provider </summary>
         public MeterProvider meterProvider;
-       
+
+        public static readonly ObservableGauge<long> processMemory = myMeter.CreateObservableGauge("frontendMemory", () => GetProcessMemory());
+
+
+
+
+
 
         public Logger()
         {
@@ -86,22 +89,31 @@ namespace UDP_Repeater_GUI
                                 .Build();
         }
 
-        public void PrometheusSenderCounter()
+        public void PrometheusFruitCounterSender()
         {
-                 // Testing one
+            ObservableGauge<int> isRunning = myMeter.CreateObservableGauge("running", () => { return 0; });
+            
+            // Testing one
             Counter<long> MyFruitCounter = myMeter.CreateCounter<long>("MyFruitCounter");
 
+            //MyFruitCounter.Add(50, new KeyValuePair<string, object>("name", "apple"), new KeyValuePair<string, object>("color", "red"));
+            //MyFruitCounter.Add(50, new KeyValuePair<string, object>("name", "apple"), new KeyValuePair<string, object>("color", "green"));
+            //MyFruitCounter.Add(50, new KeyValuePair<string, object>("name", "lemon"), new KeyValuePair<string, object>("color", "yellow"));
+
+            Random random = new Random();
             while (true)
             {
-                MyFruitCounter.Add(1, new KeyValuePair<string, object>("name", "apple"), new KeyValuePair<string, object>("color", "red"));
-                MyFruitCounter.Add(2, new KeyValuePair<string, object>("name", "lemon"), new KeyValuePair<string, object>("color", "yellow"));
-                MyFruitCounter.Add(1, new KeyValuePair<string, object>("name", "lemon"), new KeyValuePair<string, object>("color", "yellow"));
-                MyFruitCounter.Add(2, new KeyValuePair<string, object>("name", "apple"), new KeyValuePair<string, object>("color", "green"));
-                MyFruitCounter.Add(5, new KeyValuePair<string, object>("name", "apple"), new KeyValuePair<string, object>("color", "red"));
-                MyFruitCounter.Add(4, new KeyValuePair<string, object>("name", "lemon"), new KeyValuePair<string, object>("color", "yellow"));
+                MyFruitCounter.Add(1);
+              
 
-                System.Threading.Thread.Sleep(1000);
+                System.Threading.Thread.Sleep(random.Next(100, 10000));
             }
+        }
+
+        public static long GetProcessMemory()
+        {
+            Process proc = Process.GetCurrentProcess();
+            return proc.PrivateMemorySize64;
         }
 
         /// <summary> 
