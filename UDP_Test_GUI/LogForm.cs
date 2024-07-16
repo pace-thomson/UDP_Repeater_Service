@@ -66,7 +66,6 @@ namespace UDP_Repeater_GUI
                     // this makes sure that the rows can fit if there's multiple lines of text
             reconfigLog.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
 
-
             PopulateTable();
         }
 
@@ -166,7 +165,7 @@ namespace UDP_Repeater_GUI
         {
             try
             {
-                EventLog eventLog = new EventLog();
+                EventLog eventLog = new EventLog("UDP Packet Repeater");
                 eventLog.Source = "UDP_Repeater_Frontend";
 
                 eventLog.EntryWritten += new EntryWrittenEventHandler(OnEntryWritten);
@@ -242,6 +241,7 @@ namespace UDP_Repeater_GUI
         {
             eventLog.Dispose();
             logger.eventLog.Dispose();
+            //logger.meterProvider.Dispose();
         }
     }
 }

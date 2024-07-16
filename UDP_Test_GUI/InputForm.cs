@@ -22,8 +22,6 @@ using System.Net.Sockets;
 using System.Net;
 using System.Text;
 using System.Windows.Forms;
-using System.Diagnostics;
-using UDP_Test_GUI;
 
 
 namespace UDP_Repeater_GUI
@@ -188,6 +186,7 @@ namespace UDP_Repeater_GUI
                 return;
             }
             logger.eventLog.Dispose();
+            logger.meterProvider.Dispose();
         }
 
         /// <summary> Lets the form close because we are opening the nic picker form. </summary>

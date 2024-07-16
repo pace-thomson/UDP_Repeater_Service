@@ -113,7 +113,7 @@ namespace BackendClassNameSpace
             this.descriptionOfNIC = NameOfNIC;
 
                 // windows event logger set up
-            this.eventLog = new EventLog();
+            this.eventLog = new EventLog("UDP Packet Repeater");
             eventLog.Source = "UDP_Repeater_Backend";
             EventLog.GetEventLogs().First(x => x.Log == "UDP Packet Repeater").MaximumKilobytes = 256;
 
@@ -177,7 +177,7 @@ namespace BackendClassNameSpace
 
 
                 // windows event logger set up
-            this.eventLog = new EventLog();
+            this.eventLog = new EventLog("UDP Packet Repeater");
             eventLog.Source = "UDP_Repeater_Backend";
 
 
@@ -293,7 +293,7 @@ namespace BackendClassNameSpace
         /// </summary>
         public static void ExceptionLoggerStatic(Exception e)
         {
-            EventLog logg = new EventLog();
+            EventLog logg = new EventLog("UDP Packet Repeater");
             logg.Source = "UDP_Repeater_Backend";
 
             string[] formattedStackString = e.StackTrace.Split('\n');

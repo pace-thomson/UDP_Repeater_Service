@@ -54,7 +54,11 @@ namespace UDP_Repeater_GUI
         public Logger()
         {
                 // Create an EventLog instance and assign its source.
-            this.eventLog = new EventLog();
+            if (!EventLog.SourceExists("UDP_Repeater_Frontend"))
+            {
+                EventLog.CreateEventSource("UDP_Repeater_Frontend", "UDP Packet Repeater");
+            }
+            this.eventLog = new EventLog("UDP Packet Repeater");
             this.eventLog.Source = "UDP_Repeater_Frontend";
 
             const string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss} \t Frontend/GUI \t {Level} \n{Message}";
