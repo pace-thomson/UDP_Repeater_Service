@@ -30,6 +30,7 @@ using System.Timers;
 using SharpPcap;
 using System.Net;
 using Serilog.Core;
+using System.Diagnostics;
 
 
 namespace Repeater
@@ -155,6 +156,8 @@ namespace Repeater
         public static TimerClass timer { get; set; }
                 /// <summary> Tells us if the send ip is multicast or not. </summary>
         private static bool isMulticast { get; set; }
+
+        public static Stopwatch stopWatch { get; set; }
 
 
         /// <summary> 
@@ -327,14 +330,20 @@ namespace Repeater
         /// </summary>
         private static void device_OnPacketArrival(object sender, PacketCapture e)
         {
-
+            PerformanceCounterCategory performanceCounterCategory = new PerformanceCounterCategory();
             try
             {
+                stopWatch.Start();
                 RawCapture rawPacket = e.GetPacket();
                 byte[] payload = rawPacket.Data;
 
                     // actual sending section
                 SendMessageOut(payload);
+
+                    // input the metric for our packet ingress/egress
+                stopWatch.Stop();
+                backendObject.AddNewPacketTimeHandled(stopWatch.ElapsedMilliseconds);
+                stopWatch.Reset();
 
                     // sending to GUI section
                 SendToGUI(payload);
@@ -405,6 +414,8 @@ namespace Repeater
                 isMulticast = IsMulticastSetter(backendObject.sendIp);
 
                 timer = new TimerClass(BackendObject);
+
+                stopWatch = Stopwatch.StartNew();
 
                 StartReceiver(token);
 

@@ -36,98 +36,6 @@
 
 	</Fragment>
 
-
-	<!--DEPENDENCY FILES-->
-	<Fragment>
-		<ComponentGroup Id="Repeater_DependencyFiles" Directory="INSTALLFOLDER">
-			<Component Guid="CB0604BE-202F-4A0B-BBEF-F4C962CE463A">
-				<File Id="Microsoft.Bcl.AsyncInterfaces.dll" Source="$(var.UDP_Repeater_Service.TargetDir)Microsoft.Bcl.AsyncInterfaces.dll" KeyPath="yes" />
-			</Component>
-			<Component Guid="ABA12169-33E8-4140-A547-1268DA306C61">
-				<File Id="Newtonsoft.Json.dll" Source="$(var.UDP_Repeater_Service.TargetDir)Newtonsoft.Json.dll" KeyPath="yes" />
-			</Component>
-			<Component Guid="4A1DA99A-DC08-4E9E-9C05-88987C18D6D4">
-				<File Id="PacketDotNet.dll" Source="$(var.UDP_Repeater_Service.TargetDir)PacketDotNet.dll" KeyPath="yes" />
-			</Component>
-			<Component Guid="1dd19b92-90f8-4290-b495-1b6f920f5e79">
-				<File Id="SharpPcap.dll" Source="$(var.UDP_Repeater_Service.TargetDir)SharpPcap.dll" KeyPath="yes" />
-			</Component>
-			<Component Guid="744f6f71-2a05-4ff8-9052-8c2d434c7de6">
-				<File Id="System.Buffers.dll" Source="$(var.UDP_Repeater_Service.TargetDir)System.Buffers.dll" KeyPath="yes" />
-			</Component>
-			<Component Guid="7248c35a-3203-4254-ac41-0afc422b311f">
-				<File Id="System.Memory.dll" Source="$(var.UDP_Repeater_Service.TargetDir)System.Memory.dll" KeyPath="yes" />
-			</Component>
-			<Component Guid="cb5d0eff-0e7b-432d-bca2-adeeb2508d93">
-				<File Id="System.Numerics.Vectors.dll" Source="$(var.UDP_Repeater_Service.TargetDir)System.Numerics.Vectors.dll" KeyPath="yes" />
-			</Component>
-			<Component Guid="66177735-3e01-4255-83a8-d6c5541073ce">
-				<File Id="System.Runtime.CompilerServices.Unsafe.dll" Source="$(var.UDP_Repeater_Service.TargetDir)System.Runtime.CompilerServices.Unsafe.dll" KeyPath="yes" />
-			</Component>
-			<Component Guid="b3f5479f-8073-48e7-9c72-0207b85ee7bb">
-				<File Id="System.Text.Encoding.CodePages.dll" Source="$(var.UDP_Repeater_Service.TargetDir)System.Text.Encoding.CodePages.dll" KeyPath="yes" />
-			</Component>
-			<Component Guid="969b6c2a-fd8b-4f69-90b2-0612050fac62">
-				<File Id="System.Threading.Tasks.Extensions.dll" Source="$(var.UDP_Repeater_Service.TargetDir)System.Threading.Tasks.Extensions.dll" KeyPath="yes" />
-			</Component>
-			<Component Guid="b346745e-8a0e-4984-a611-0285d8b154a1">
-				<File Id="System.ValueTuple.dll" Source="$(var.UDP_Repeater_Service.TargetDir)System.ValueTuple.dll" KeyPath="yes" />
-			</Component>
-			<Component Guid="0d55a95b-dbd8-403a-af26-781136ac3feb">
-				<File Id="System.Threading.Channels.dll" Source="$(var.UDP_Repeater_Service.TargetDir)System.Threading.Channels.dll" KeyPath="yes" />
-			</Component>
-			<Component Guid="b2be1a0d-8313-4abe-b3b4-0f878a3afc8d">
-				<File Id="System.Text.Json.dll" Source="$(var.UDP_Repeater_Service.TargetDir)System.Text.Json.dll" KeyPath="yes" />
-			</Component>
-			<Component Guid="6bd7c166-3048-46f6-9dab-ea57b22e82fe">
-				<File Id="System.Text.Encodings.Web.dll" Source="$(var.UDP_Repeater_Service.TargetDir)System.Text.Encodings.Web.dll" KeyPath="yes" />
-			</Component>
-			<Component Guid="8ebbc582-4967-48de-898b-309e135fa5a8">
-				<File Id="System.Diagnostics.DiagnosticSource.dll" Source="$(var.UDP_Repeater_Service.TargetDir)System.Diagnostics.DiagnosticSource.dll" KeyPath="yes" />
-			</Component>
-			<Component Guid="c0d90098-8081-43e3-bf19-75234b0a0d0c">
-				<File Id="Serilog.Sinks.Grafana.Loki.dll" Source="$(var.UDP_Repeater_Service.TargetDir)Serilog.Sinks.Grafana.Loki.dll" KeyPath="yes" />
-			</Component>
-			<Component Guid="3e976172-1b18-49b9-b3ce-3ab0d3836762">
-				<File Id="Serilog.dll" Source="$(var.UDP_Repeater_Service.TargetDir)Serilog.dll" KeyPath="yes" />
-			</Component>
-		</ComponentGroup>
-	</Fragment>
-
-	
-	<!--OTHER MISCELLANEOUS FILES-->
-	<Fragment>
-		<ComponentGroup Id="Repeater_ConfigFiles" Directory="INSTALLFOLDER">
-			<Component Guid="17C70FC2-4AF5-4381-9FBE-B9C4D062E74A">
-				<File Id="UDP_Repeater_Service.exe.config" 
-					  Source="$(var.UDP_Repeater_Service.TargetDir)UDP_Repeater_Service.exe.config" 
-					  KeyPath="yes" />
-			</Component>
-			<Component Guid="6903a699-0f2c-4274-9b17-e1ccd6232aa3">
-				<File Id="___var.UDP_Repeater_GUI.TargetDir_UDP_Repeater_GUI.exe.config"
-					  Source="C:\Users\pthomson01.ctr\source\repos\pace-thomson\UDP_Repeater_Service\UDP_Test_GUI\bin\Debug\UDP_Repeater_GUI.exe.config"
-					  KeyPath="yes" />
-			</Component>
-			<Component Guid="ffae1a37-eb14-43be-b85c-de2d5a89e11d">
-				<File Id="___var.UDP_Repeater_GUI.TargetDir_jt4_logo.ico"
-					  Source="C:\Users\pthomson01.ctr\source\repos\pace-thomson\UDP_Repeater_Service\UDP_Test_GUI\bin\Debug\jt4_logo.ico"
-					  KeyPath="yes" />
-			</Component>
-			<Component Guid="fbf32a72-c668-489e-a4a7-3d0f7b13208c">
-				<File Id="UDP_Repeater_GUI.pdb"
-					  Source="C:\Users\pthomson01.ctr\source\repos\pace-thomson\UDP_Repeater_Service\UDP_Test_GUI\bin\Debug\UDP_Repeater_GUI.pdb"
-					  KeyPath="yes" />
-			</Component>
-			<Component Guid="5e8efe1b-aa13-4b46-bcaa-5d72aad4dfd1">
-				<File Id="UDP_Repeater_Service.pdb"
-					  Source="$(var.UDP_Repeater_Service.TargetDir)UDP_Repeater_Service.pdb"
-					  KeyPath="yes" />
-			</Component>
-		</ComponentGroup>
-	</Fragment>
-	
-
-
 	<!--ADDS SHORTCUTS TO START MENU-->
 	<Fragment>
 		<DirectoryRef Id="ProgramMenuFolder">
@@ -222,6 +130,170 @@
 								Name="UDP_Repeater_Service"
 								Wait="yes" />
 				
+			</Component>
+		</ComponentGroup>
+	</Fragment>
+	
+
+	<!--DEPENDENCY FILES-->
+	<Fragment>
+		<ComponentGroup Id="Repeater_DependencyFiles" Directory="INSTALLFOLDER">
+
+			<!-- Randoms -->
+			<Component Guid="CB0604BE-202F-4A0B-BBEF-F4C962CE463A">
+				<File Id="Microsoft.Bcl.AsyncInterfaces.dll" Source="$(var.UDP_Repeater_Service.TargetDir)Microsoft.Bcl.AsyncInterfaces.dll" KeyPath="yes" />
+			</Component>
+			<Component Guid="ABA12169-33E8-4140-A547-1268DA306C61">
+				<File Id="Newtonsoft.Json.dll" Source="$(var.UDP_Repeater_Service.TargetDir)Newtonsoft.Json.dll" KeyPath="yes" />
+			</Component>
+			<Component Guid="4A1DA99A-DC08-4E9E-9C05-88987C18D6D4">
+				<File Id="PacketDotNet.dll" Source="$(var.UDP_Repeater_Service.TargetDir)PacketDotNet.dll" KeyPath="yes" />
+			</Component>
+			<Component Guid="1dd19b92-90f8-4290-b495-1b6f920f5e79">
+				<File Id="SharpPcap.dll" Source="$(var.UDP_Repeater_Service.TargetDir)SharpPcap.dll" KeyPath="yes" />
+			</Component>
+
+			<!-- System libraries -->
+			<Component Guid="744f6f71-2a05-4ff8-9052-8c2d434c7de6">
+				<File Id="System.Buffers.dll" Source="$(var.UDP_Repeater_Service.TargetDir)System.Buffers.dll" KeyPath="yes" />
+			</Component>
+			<Component Guid="7248c35a-3203-4254-ac41-0afc422b311f">
+				<File Id="System.Memory.dll" Source="$(var.UDP_Repeater_Service.TargetDir)System.Memory.dll" KeyPath="yes" />
+			</Component>
+			<Component Guid="cb5d0eff-0e7b-432d-bca2-adeeb2508d93">
+				<File Id="System.Numerics.Vectors.dll" Source="$(var.UDP_Repeater_Service.TargetDir)System.Numerics.Vectors.dll" KeyPath="yes" />
+			</Component>
+			<Component Guid="66177735-3e01-4255-83a8-d6c5541073ce">
+				<File Id="System.Runtime.CompilerServices.Unsafe.dll" Source="$(var.UDP_Repeater_Service.TargetDir)System.Runtime.CompilerServices.Unsafe.dll" KeyPath="yes" />
+			</Component>
+			<Component Guid="b3f5479f-8073-48e7-9c72-0207b85ee7bb">
+				<File Id="System.Text.Encoding.CodePages.dll" Source="$(var.UDP_Repeater_Service.TargetDir)System.Text.Encoding.CodePages.dll" KeyPath="yes" />
+			</Component>
+			<Component Guid="969b6c2a-fd8b-4f69-90b2-0612050fac62">
+				<File Id="System.Threading.Tasks.Extensions.dll" Source="$(var.UDP_Repeater_Service.TargetDir)System.Threading.Tasks.Extensions.dll" KeyPath="yes" />
+			</Component>
+			<Component Guid="b346745e-8a0e-4984-a611-0285d8b154a1">
+				<File Id="System.ValueTuple.dll" Source="$(var.UDP_Repeater_Service.TargetDir)System.ValueTuple.dll" KeyPath="yes" />
+			</Component>
+			<Component Guid="0d55a95b-dbd8-403a-af26-781136ac3feb">
+				<File Id="System.Threading.Channels.dll" Source="$(var.UDP_Repeater_Service.TargetDir)System.Threading.Channels.dll" KeyPath="yes" />
+			</Component>
+			<Component Guid="b2be1a0d-8313-4abe-b3b4-0f878a3afc8d">
+				<File Id="System.Text.Json.dll" Source="$(var.UDP_Repeater_Service.TargetDir)System.Text.Json.dll" KeyPath="yes" />
+			</Component>
+			<Component Guid="6bd7c166-3048-46f6-9dab-ea57b22e82fe">
+				<File Id="System.Text.Encodings.Web.dll" Source="$(var.UDP_Repeater_Service.TargetDir)System.Text.Encodings.Web.dll" KeyPath="yes" />
+			</Component>
+			<Component Guid="8ebbc582-4967-48de-898b-309e135fa5a8">
+				<File Id="System.Diagnostics.DiagnosticSource.dll" Source="$(var.UDP_Repeater_Service.TargetDir)System.Diagnostics.DiagnosticSource.dll" KeyPath="yes" />
+			</Component>
+
+			<!-- Serilog/Loki -->
+			<Component Guid="c0d90098-8081-43e3-bf19-75234b0a0d0c">
+				<File Id="Serilog.Sinks.Grafana.Loki.dll" Source="$(var.UDP_Repeater_Service.TargetDir)Serilog.Sinks.Grafana.Loki.dll" KeyPath="yes" />
+			</Component>
+			<Component Guid="3e976172-1b18-49b9-b3ce-3ab0d3836762">
+				<File Id="Serilog.dll" Source="$(var.UDP_Repeater_Service.TargetDir)Serilog.dll" KeyPath="yes" />
+			</Component>
+
+			<!-- OpenTelemetry -->
+			<Component Guid="7241cfe9-7436-4f13-8f5b-f50fa99c907c">
+				<File Id="OpenTelemetry.Api.dll" Source="$(var.UDP_Repeater_Service.TargetDir)OpenTelemetry.Api.dll" KeyPath="yes" />
+			</Component>
+			<Component Guid="028e3e6e-0653-4fa8-aec1-c0602df44d8a">
+				<File Id="OpenTelemetry.Api.ProviderBuilderExtensions.dll" Source="$(var.UDP_Repeater_Service.TargetDir)OpenTelemetry.Api.ProviderBuilderExtensions.dll" KeyPath="yes" />
+			</Component>
+			<Component Guid="576f2f4f-adc8-435b-b36e-eca1b2b19deb">
+				<File Id="OpenTelemetry.dll" Source="$(var.UDP_Repeater_Service.TargetDir)OpenTelemetry.dll" KeyPath="yes" />
+			</Component>
+			<Component Guid="7690a9ca-61e2-47d3-8af1-e640e04424c0">
+				<File Id="OpenTelemetry.Exporter.OpenTelemetryProtocol.dll" Source="$(var.UDP_Repeater_Service.TargetDir)OpenTelemetry.Exporter.OpenTelemetryProtocol.dll" KeyPath="yes" />
+			</Component>
+
+			<!-- Microsoft.Extensions -->
+			<Component Guid="14ea689c-3978-4509-ac97-ffc7594d5421">
+				<File Id="Microsoft.Extensions.Configuration.Abstractions.dll" Source="$(var.UDP_Repeater_Service.TargetDir)Microsoft.Extensions.Configuration.Abstractions.dll" KeyPath="yes" />
+			</Component>
+			<Component Guid="4fadc619-a3be-471f-9a3b-b654100f872b">
+				<File Id="Microsoft.Extensions.Configuration.Binder.dll" Source="$(var.UDP_Repeater_Service.TargetDir)Microsoft.Extensions.Configuration.Binder.dll" KeyPath="yes" />
+			</Component>
+			<Component Guid="e1fe738f-1114-478b-98c6-03d6bd100fae">
+				<File Id="Microsoft.Extensions.Configuration.dll" Source="$(var.UDP_Repeater_Service.TargetDir)Microsoft.Extensions.Configuration.dll" KeyPath="yes" />
+			</Component>
+			<Component Guid="54d1b137-2591-4964-aea7-49025c14091b">
+				<File Id="Microsoft.Extensions.DependencyInjection.Abstractions.dll" Source="$(var.UDP_Repeater_Service.TargetDir)Microsoft.Extensions.DependencyInjection.Abstractions.dll" KeyPath="yes" />
+			</Component>
+			<Component Guid="e973fe67-f5d1-4590-a477-6952c5236ff4">
+				<File Id="Microsoft.Extensions.DependencyInjection.dll" Source="$(var.UDP_Repeater_Service.TargetDir)Microsoft.Extensions.DependencyInjection.dll" KeyPath="yes" />
+			</Component>
+			<Component Guid="9b0c431d-7ec6-4cf8-ba46-3c1552da5098">
+				<File Id="Microsoft.Extensions.Diagnostics.Abstractions.dll" Source="$(var.UDP_Repeater_Service.TargetDir)Microsoft.Extensions.Diagnostics.Abstractions.dll" KeyPath="yes" />
+			</Component>
+			<Component Guid="e1c10b46-f4cb-4b4d-9438-842f9d2b4ec4">
+				<File Id="Microsoft.Extensions.Logging.Abstractions.dll" Source="$(var.UDP_Repeater_Service.TargetDir)Microsoft.Extensions.Logging.Abstractions.dll" KeyPath="yes" />
+			</Component>
+			<Component Guid="9538fd08-750e-4e02-a93c-5912815fb42d">
+				<File Id="Microsoft.Extensions.Logging.Configuration.dll" Source="$(var.UDP_Repeater_Service.TargetDir)Microsoft.Extensions.Logging.Configuration.dll" KeyPath="yes" />
+			</Component>
+			<Component Guid="85d521af-86a8-4542-a677-abbd2241345e">
+				<File Id="Microsoft.Extensions.Logging.dll" Source="$(var.UDP_Repeater_Service.TargetDir)Microsoft.Extensions.Logging.dll" KeyPath="yes" />
+			</Component>
+			<Component Guid="7e2cfbe4-8750-4b67-8b20-3a39a7ca5c9c">
+				<File Id="Microsoft.Extensions.Options.ConfigurationExtensions.dll" Source="$(var.UDP_Repeater_Service.TargetDir)Microsoft.Extensions.Options.ConfigurationExtensions.dll" KeyPath="yes" />
+			</Component>
+			<Component Guid="b67b5b57-6d36-4030-936b-036332f07963">
+				<File Id="Microsoft.Extensions.Options.dll" Source="$(var.UDP_Repeater_Service.TargetDir)Microsoft.Extensions.Options.dll" KeyPath="yes" />
+			</Component>
+			<Component Guid="96852547-d5dc-4341-9f7b-64656547a8b6">
+				<File Id="Microsoft.Extensions.Primitives.dll" Source="$(var.UDP_Repeater_Service.TargetDir)Microsoft.Extensions.Primitives.dll" KeyPath="yes" />
+			</Component>
+
+			<!-- GRPC Stuff-->
+			<Component Guid="b1aa905d-eb16-47fe-9ed0-996dce240082">
+				<File Id="Google.Protobuf.dll" Source="$(var.UDP_Repeater_Service.TargetDir)Google.Protobuf.dll" KeyPath="yes" />
+			</Component>
+			<Component Guid="9900caac-1b61-42d0-8176-0d3f128b7fcb">
+				<File Id="Grpc.Core.Api.dll" Source="$(var.UDP_Repeater_Service.TargetDir)Grpc.Core.Api.dll" KeyPath="yes" />
+			</Component>
+			<Component Guid="98f59720-b514-4fc1-83ad-2b30450c95b8">
+				<File Id="Grpc.Core.dll" Source="$(var.UDP_Repeater_Service.TargetDir)Grpc.Core.dll" KeyPath="yes" />
+			</Component>
+			<Component Guid="06d7fe98-3730-4e5d-ba26-6bb996b54263">
+				<File Id="grpc_csharp_ext.x64.dll" Source="$(var.UDP_Repeater_Service.TargetDir)grpc_csharp_ext.x64.dll" KeyPath="yes" />
+			</Component>
+			<Component Guid="f530d8ba-5ced-4c1c-a6d7-92ab63f74e36">
+				<File Id="grpc_csharp_ext.x86.dll" Source="$(var.UDP_Repeater_Service.TargetDir)grpc_csharp_ext.x86.dll" KeyPath="yes" />
+			</Component>
+		</ComponentGroup>
+	</Fragment>
+
+	<!--CONFIG/DEBUGGING/ICON FILES-->
+	<Fragment>
+		<ComponentGroup Id="Repeater_ConfigFiles" Directory="INSTALLFOLDER">
+			<Component Guid="17C70FC2-4AF5-4381-9FBE-B9C4D062E74A">
+				<File Id="UDP_Repeater_Service.exe.config"
+					  Source="$(var.UDP_Repeater_Service.TargetDir)UDP_Repeater_Service.exe.config"
+					  KeyPath="yes" />
+			</Component>
+			<Component Guid="6903a699-0f2c-4274-9b17-e1ccd6232aa3">
+				<File Id="___var.UDP_Repeater_GUI.TargetDir_UDP_Repeater_GUI.exe.config"
+					  Source="C:\Users\pthomson01.ctr\source\repos\pace-thomson\UDP_Repeater_Service\UDP_Test_GUI\bin\Debug\UDP_Repeater_GUI.exe.config"
+					  KeyPath="yes" />
+			</Component>
+			<Component Guid="ffae1a37-eb14-43be-b85c-de2d5a89e11d">
+				<File Id="___var.UDP_Repeater_GUI.TargetDir_jt4_logo.ico"
+					  Source="C:\Users\pthomson01.ctr\source\repos\pace-thomson\UDP_Repeater_Service\UDP_Test_GUI\bin\Debug\jt4_logo.ico"
+					  KeyPath="yes" />
+			</Component>
+			<Component Guid="fbf32a72-c668-489e-a4a7-3d0f7b13208c">
+				<File Id="UDP_Repeater_GUI.pdb"
+					  Source="C:\Users\pthomson01.ctr\source\repos\pace-thomson\UDP_Repeater_Service\UDP_Test_GUI\bin\Debug\UDP_Repeater_GUI.pdb"
+					  KeyPath="yes" />
+			</Component>
+			<Component Guid="5e8efe1b-aa13-4b46-bcaa-5d72aad4dfd1">
+				<File Id="UDP_Repeater_Service.pdb"
+					  Source="$(var.UDP_Repeater_Service.TargetDir)UDP_Repeater_Service.pdb"
+					  KeyPath="yes" />
 			</Component>
 		</ComponentGroup>
 	</Fragment>

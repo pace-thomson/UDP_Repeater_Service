@@ -47,12 +47,8 @@ namespace UDP_Repeater_GUI
         private static readonly Meter myMeter = new Meter("JT4.Repeater.MyLibrary", "1.0");
             /// <summary> The main meter provider </summary>
         public MeterProvider meterProvider;
-
+        /// <summary> Tracks the memory use of the gui </summary>
         public static readonly ObservableGauge<long> processMemory = myMeter.CreateObservableGauge("frontendMemory", () => GetProcessMemory());
-
-
-
-
 
 
         public Logger()
@@ -110,6 +106,15 @@ namespace UDP_Repeater_GUI
             }
         }
 
+        /// <summary> 
+        ///  Class Name: Logger  <br/> <br/>
+        ///
+        ///  Description: Calculates and returns the current process memory used in bytes. <br/><br/>
+        ///
+        ///  Inputs: None <br/><br/>
+        ///  
+        ///  Returns:  long - the process memory
+        /// </summary>
         public static long GetProcessMemory()
         {
             Process proc = Process.GetCurrentProcess();

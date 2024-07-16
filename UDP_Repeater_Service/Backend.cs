@@ -31,7 +31,6 @@ using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Exporter;
 using System.Diagnostics.Metrics;
-using System.Runtime.Remoting.Messaging;
 
 
 
@@ -74,11 +73,12 @@ namespace BackendClassNameSpace
         public static readonly Meter myMeter = new Meter("JT4.Repeater.MyLibrary", "1.0");
             /// <summary> The counter for packets handled </summary>
         public static readonly Counter<long> TotalPacketsHandled = myMeter.CreateCounter<long>("TotalPacketsHandled");
-
+            /// <summary> Tracks the memory use of the backend. </summary>
         public static readonly ObservableGauge<long> processMemory = myMeter.CreateObservableGauge("backendMemory", () => GetProcessMemory());
-
-        public static readonly UpDownCounter<long> isRunning = myMeter.CreateUpDownCounter<long>("isRunning");
-
+            /// <summary> Reports if the service is running. If this value is 1, it's up. </summary>
+        public UpDownCounter<long> isRunning = myMeter.CreateUpDownCounter<long>("isRunning");
+            /// <summary> Tracks average time for packet ingress/egress </summary>
+        public static Histogram<long> packetHandling = myMeter.CreateHistogram<long>("packetHandling");
 
 
 
@@ -102,6 +102,7 @@ namespace BackendClassNameSpace
         /// </summary>
         public Backend(string ReceiveIp, string ReceivePort, string SendIp, string SendPort, int newFrequency, string newInterval, string NameOfNIC)
         {
+
                 // system configuration set up
             this.receiveIp = ReceiveIp;
             this.receivePort = Convert.ToInt32(ReceivePort);
@@ -114,8 +115,10 @@ namespace BackendClassNameSpace
                 // windows event logger set up
             this.eventLog = new EventLog();
             eventLog.Source = "UDP_Repeater_Backend";
+            EventLog.GetEventLogs().First(x => x.Log == "UDP Packet Repeater").MaximumKilobytes = 256;
 
-            // Loki event logger set up
+
+                // Loki event logger set up
             const string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss} \t Backend/Service \t {Level} \n{Message}";
             this.lokiLogger = new LoggerConfiguration()
                               .WriteTo.GrafanaLoki
@@ -176,10 +179,9 @@ namespace BackendClassNameSpace
                 // windows event logger set up
             this.eventLog = new EventLog();
             eventLog.Source = "UDP_Repeater_Backend";
-            EventLog.GetEventLogs().First(x => x.Log == "UDP Packet Repeater").MaximumKilobytes = 256;
 
 
-            // Loki event logger set up
+                // Loki event logger set up
             const string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss} \t Backend/Service \t {Level} \n{Message}";
             this.lokiLogger = new LoggerConfiguration()
                               .WriteTo.GrafanaLoki
@@ -207,15 +209,31 @@ namespace BackendClassNameSpace
                                 .Build();
         }
 
+        /// <summary> Calculates and returns the current process memroy in bytes. </summary>
         public static long GetProcessMemory()
         {
             Process proc = Process.GetCurrentProcess();
             return proc.PrivateMemorySize64;
         }
-
+        /// <summary> Increments total packets handled for our prometheus metrics. </summary>
         public void IncrementTotalPacketsHandled()
         {
             TotalPacketsHandled.Add(1);
+        }
+        /// <summary> Inputs the metric for our packet ingress/egress calculation. </summary>
+        public void AddNewPacketTimeHandled(long stopWatchTime)
+        {
+            packetHandling.Record(stopWatchTime);
+        }
+
+        public void tester()
+        {
+            Random random = new Random();
+            while (true)
+            {
+                AddNewPacketTimeHandled(random.Next(0, 10));
+                Thread.Sleep(random.Next(100, 10000));
+            }
         }
 
 
@@ -241,20 +259,6 @@ namespace BackendClassNameSpace
                    descriptionOfNIC == other.descriptionOfNIC;
         }
 
-        public void lokiTester()
-        {
-            Random random = new Random();
-            while (true)
-            {
-                TotalPacketsHandled.Add(1);
-                lokiLogger.Information("The INFORMATION");
-                lokiLogger.Warning("Here is a WARNING");
-                lokiLogger.Error("BIG ERROR TIME");
-
-                Thread.Sleep(random.Next(100, 10000));
-            }
-        }
-
         /// <summary> 
         ///  Class Name: Backend  <br/> <br/>
         ///
@@ -277,6 +281,16 @@ namespace BackendClassNameSpace
             lokiLogger.Error(message);
         }
 
+        /// <summary> 
+        ///  Class Name: Backend  <br/> <br/>
+        ///
+        ///  Description: Logs Exceptions into the "UDP Packet Repeater" Windows Event Log without an object instance. <br/><br/>
+        ///
+        ///  Inputs:  <br/>
+        ///  Exception <paramref name="e"/> - An Exception to be logged <br/><br/>
+        ///  
+        ///  Returns:  None
+        /// </summary>
         public static void ExceptionLoggerStatic(Exception e)
         {
             EventLog logg = new EventLog();
@@ -368,11 +382,8 @@ namespace BackendClassNameSpace
         ///  
         ///  Returns:  None
         /// </summary>
-        public static void StartStopLogger(string mode, ILogger outerLokiLogger)
+        public void StartStopLogger(string mode)
         {
-            EventLog logg = new EventLog();
-            logg.Source = "UDP_Repeater_Backend";
-
             string message = "";
             if (mode == "start")
             {
@@ -383,10 +394,9 @@ namespace BackendClassNameSpace
                 message = String.Format("Repeater Service stopped.");
             }
 
-            logg.WriteEntry(message, EventLogEntryType.Information, 4);     // 4 is id for backend start/stop
-            logg.Dispose();
+            eventLog.WriteEntry(message, EventLogEntryType.Information, 4);     // 4 is id for backend start/stop
 
-            outerLokiLogger.Information(message);
+            lokiLogger.Information(message);
         }
 
         /// <summary> 
