@@ -30,6 +30,7 @@ using System.IO;
 using Newtonsoft.Json.Linq;
 using System.ServiceProcess;
 using UDP_Test_GUI;
+using System.Diagnostics;
 
 
 namespace UDP_Repeater_GUI
@@ -63,6 +64,10 @@ namespace UDP_Repeater_GUI
         public gui_form()
         {
             InitializeComponent();
+
+            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
+            Application.ThreadException += new System.Threading.ThreadExceptionEventHandler(ThreadExceptionHandlerFunction);
+
 
             logger = new Logger();
             timer = SetupTimerForServiceStatus();
@@ -478,7 +483,7 @@ namespace UDP_Repeater_GUI
             LogForm logForm = new LogForm(this);
             logForm.Show();
         }
-        
+
         /// <summary>
         /// Capitlizes the first letter of the string. 
         /// </summary>
@@ -486,6 +491,37 @@ namespace UDP_Repeater_GUI
         private string FirstLetterCapital(string str)
         {
             return Char.ToUpper(str[0]) + str.Remove(0, 1);
+        }
+
+
+        public static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            Exception ex = (Exception)e.ExceptionObject;
+
+            string message = String.Format($"Error Message: {ex.Message} \n" +
+                                           $"Error location: Frontend/User Interface \n" +
+                                           $"{ex.StackTrace}");
+
+            EventLog eventLog = new EventLog("UDP Packet Repeater");
+            eventLog.Source = "UDP_Repeater_Frontend";
+
+            eventLog.WriteEntry(message, EventLogEntryType.Error, 2);  // 2 is our id for Frontend errors
+            eventLog.Dispose();
+        }
+
+        private static void ThreadExceptionHandlerFunction(object sender, System.Threading.ThreadExceptionEventArgs t)
+        {
+            Exception ex = t.Exception;
+
+            string message = String.Format($"Error Message: {ex.Message} \n" +
+                                           $"Error location: Frontend/User Interface \n" +
+                                           $"{ex.StackTrace}");
+
+            EventLog eventLog = new EventLog("UDP Packet Repeater");
+            eventLog.Source = "UDP_Repeater_Frontend";
+
+            eventLog.WriteEntry(message, EventLogEntryType.Error, 2);  // 2 is our id for Frontend errors
+            eventLog.Dispose();
         }
     }
 }

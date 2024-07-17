@@ -241,7 +241,7 @@ namespace UDP_Repeater_GUI
         {
             eventLog.Dispose();
             logger.eventLog.Dispose();
-            //logger.meterProvider.Dispose();
+            logger.meterProvider.Dispose();
         }
     }
 }

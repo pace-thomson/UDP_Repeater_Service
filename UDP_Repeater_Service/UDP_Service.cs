@@ -26,6 +26,7 @@ using BackendClassNameSpace;
 using Newtonsoft.Json;
 using System.Threading;
 using System.IO;
+using System.Diagnostics;
 
 
 
@@ -269,6 +270,16 @@ class TheMainProgram
         }
     }
 
+    public static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+    {
+        string message = String.Format($"Error Message: {e} \n" +
+                                       $"Error location: Backend/Service.");
+        
+        EventLog eventLog = new EventLog("UDP Packet Repeater");
+        eventLog.Source = "UDP_Repeater_Backend";
+
+        eventLog.WriteEntry(message, EventLogEntryType.Error, 1);  // 1 is our id for backend errors
+    }
 
 
 
@@ -286,6 +297,7 @@ class TheMainProgram
     /// </summary>
     public static async void main()
     {
+        AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
         try
         {
             CancellationTokenSource cts = new CancellationTokenSource();

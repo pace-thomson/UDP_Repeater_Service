@@ -19,8 +19,8 @@
 
 using System;
 using System.Diagnostics;
-using System.Linq;
 using System.Diagnostics.Metrics;
+using System.Linq;
 using System.Collections.Generic;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
@@ -28,6 +28,7 @@ using OpenTelemetry.Exporter;
 using Serilog;
 using Serilog.Sinks.Grafana.Loki;
 using Serilog.Formatting.Display;
+using System.Windows.Forms;
 
 
 
@@ -53,40 +54,51 @@ namespace UDP_Repeater_GUI
 
         public Logger()
         {
-                // Create an EventLog instance and assign its source.
-            if (!EventLog.SourceExists("UDP_Repeater_Frontend"))
+            try
             {
-                EventLog.CreateEventSource("UDP_Repeater_Frontend", "UDP Packet Repeater");
-            }
-            this.eventLog = new EventLog("UDP Packet Repeater");
-            this.eventLog.Source = "UDP_Repeater_Frontend";
+                this.eventLog = new EventLog("UDP Packet Repeater");
+                this.eventLog.Source = "UDP_Repeater_Frontend";
 
-            const string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss} \t Frontend/GUI \t {Level} \n{Message}";
-            this.lokiLogger = new LoggerConfiguration()
-                              .WriteTo.GrafanaLoki
-                              (
-                                  "http://localhost:3100",
-                                  labels: new List<LokiLabel>
-                                  {
+                const string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss} \t Frontend/GUI \t {Level} \n{Message}";
+                this.lokiLogger = new LoggerConfiguration()
+                                  .WriteTo.GrafanaLoki
+                                  (
+                                      "http://localhost:3100",
+                                      labels: new List<LokiLabel>
+                                      {
                                       new LokiLabel(){ Key = "RepeaterSide", Value = "Frontend/GUI" },
                                       new LokiLabel(){ Key = "MachineName", Value = Environment.MachineName },
                                       new LokiLabel(){ Key = "User", Value = Environment.UserName }
-                                  },
-                                  textFormatter: new MessageTemplateTextFormatter(outputTemplate, null)
-                              )
-                              .Enrich.FromLogContext()
-                              .CreateLogger();
+                                      },
+                                      textFormatter: new MessageTemplateTextFormatter(outputTemplate, null)
+                                  )
+                                  .Enrich.FromLogContext()
+                                  .CreateLogger();
 
 
-            this.meterProvider = Sdk.CreateMeterProviderBuilder()
-                                .AddMeter("JT4.Repeater.MyLibrary")
-                                .AddOtlpExporter((exporterOptions, metricReaderOptions) =>
-                                {
-                                    exporterOptions.Endpoint = new Uri("http://localhost:9090/api/v1/otlp/v1/metrics");
-                                    exporterOptions.Protocol = OtlpExportProtocol.HttpProtobuf;
-                                    metricReaderOptions.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 5000;
-                                })
-                                .Build();
+                this.meterProvider = Sdk.CreateMeterProviderBuilder()
+                                    .AddMeter("JT4.Repeater.MyLibrary")
+                                    .AddOtlpExporter((exporterOptions, metricReaderOptions) =>
+                                    {
+                                        exporterOptions.Endpoint = new Uri("http://localhost:9090/api/v1/otlp/v1/metrics");
+                                        exporterOptions.Protocol = OtlpExportProtocol.HttpProtobuf;
+                                        metricReaderOptions.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 5000;
+                                    })
+                                    .Build();
+            } 
+            catch (Exception ex)
+            {
+                string[] formattedStackString = ex.StackTrace.Split('\n');
+
+                string message = String.Format($"Error Message: {ex.Message} \n" +
+                                               $"Error location: Frontend/User Interface \n" +
+                                               $"{formattedStackString.Last().TrimStart()}");
+
+                MessageBox.Show(message);
+                // Write an entry to the event log.
+                eventLog.WriteEntry(message, EventLogEntryType.Error, 2);       // 2 is id for frontend errors
+            }
+            
         }
 
         public void PrometheusFruitCounterSender()
