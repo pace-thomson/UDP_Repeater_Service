@@ -115,7 +115,8 @@ namespace BackendClassNameSpace
                 // windows event logger set up
             this.eventLog = new EventLog("UDP Packet Repeater");
             eventLog.Source = "UDP_Repeater_Backend";
-            EventLog.GetEventLogs().First(x => x.Log == "UDP Packet Repeater").MaximumKilobytes = 256;
+            eventLog.MaximumKilobytes = 256;
+            // EventLog.GetEventLogs().First(x => x.Log == "UDP Packet Repeater").MaximumKilobytes = 256;
 
 
                 // Loki event logger set up

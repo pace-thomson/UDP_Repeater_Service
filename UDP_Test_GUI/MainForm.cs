@@ -435,7 +435,7 @@ namespace UDP_Repeater_GUI
             {
                 logger.StartStopLogger("stop");
                 logger.eventLog.Dispose();
-                logger.meterProvider.Dispose();
+                // logger.meterProvider.Dispose();
             }
             else
             {

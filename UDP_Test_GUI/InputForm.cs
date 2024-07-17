@@ -186,7 +186,7 @@ namespace UDP_Repeater_GUI
                 return;
             }
             logger.eventLog.Dispose();
-            logger.meterProvider.Dispose();
+            // logger.meterProvider.Dispose();
         }
 
         /// <summary> Lets the form close because we are opening the nic picker form. </summary>

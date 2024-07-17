@@ -239,9 +239,9 @@ namespace UDP_Repeater_GUI
         /// <summary> Disposes of both of the eventLog objects. </summary>
         private void LogForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            eventLog.Dispose();
-            logger.eventLog.Dispose();
-            logger.meterProvider.Dispose();
+            //eventLog.Dispose();
+            //logger.eventLog.Dispose();
+            //logger.meterProvider.Dispose();
         }
     }
 }

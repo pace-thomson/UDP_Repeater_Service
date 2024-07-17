@@ -94,7 +94,6 @@ namespace UDP_Repeater_GUI
                                                $"Error location: Frontend/User Interface \n" +
                                                $"{formattedStackString.Last().TrimStart()}");
 
-                MessageBox.Show(message);
                 // Write an entry to the event log.
                 eventLog.WriteEntry(message, EventLogEntryType.Error, 2);       // 2 is id for frontend errors
             }
