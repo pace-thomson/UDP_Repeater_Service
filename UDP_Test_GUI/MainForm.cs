@@ -73,6 +73,7 @@ namespace UDP_Repeater_GUI
             timer = SetupTimerForServiceStatus();
             logger.StartStopLogger("start");
 
+
             GetUserNicChoice();
 
             InitializeUDPListener();
@@ -100,8 +101,10 @@ namespace UDP_Repeater_GUI
             notifyIcon1.Click += new EventHandler(notifyIcon1_Click);
         }
 
-        /// <summary> If this was just installed (UDP_Repeater_Config.json is less than 5 minutes old), 
-        /// this opens the nic picker window.</summary>
+        /// <summary> 
+        /// If this was just installed (UDP_Repeater_Config.json is less than 5 minutes old), 
+        /// this opens the nic picker window.
+        /// </summary>
         public void GetUserNicChoice()
         {
             while (!File.Exists("C:\\Windows\\SysWOW64\\UDP_Repeater_Config.json"))
@@ -434,8 +437,15 @@ namespace UDP_Repeater_GUI
             if (dialogResult == DialogResult.Yes)
             {
                 logger.StartStopLogger("stop");
-                logger.eventLog.Dispose();
-                // logger.meterProvider.Dispose();
+                System.Threading.Thread.Sleep(800);
+                if (logger.eventLog != null)
+                {
+                    logger.eventLog.Dispose();
+                }
+                if (logger.meterProvider != null)
+                {
+                    logger.meterProvider.Dispose();
+                }
             }
             else
             {

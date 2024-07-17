@@ -55,7 +55,7 @@ namespace UDP_Repeater_Service
             InitializeComponent();
             if (!EventLog.SourceExists("UDP_Repeater_Backend"))
             {
-                EventLog.CreateEventSource("UDP_Repeater_Backend","UDP Packet Repeater");
+                EventLog.CreateEventSource("UDP_Repeater_Backend", "UDP Packet Repeater");
             }
             if (!EventLog.SourceExists("UDP_Repeater_Frontend"))
             {
@@ -67,6 +67,7 @@ namespace UDP_Repeater_Service
         public void DebuggerProcess()
         {
             outerBackendObject.isRunning.Add(1);
+            outerBackendObject.StartStopLogger("start");
             TheMainProgram.main();
         }
 
@@ -92,6 +93,7 @@ namespace UDP_Repeater_Service
         {
             outerBackendObject.StartStopLogger("stop");
             outerBackendObject.isRunning.Add(-1);
+            Thread.Sleep(1000);
         }
     }
 }

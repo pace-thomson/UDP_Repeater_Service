@@ -23,6 +23,8 @@ using System.Windows.Forms;
 using System.Net.Sockets;
 using System.Text;
 using System.Diagnostics;
+using System.Drawing;
+
 
 
 namespace UDP_Repeater_GUI
@@ -196,10 +198,12 @@ namespace UDP_Repeater_GUI
             {
                 case 1:
                     row.Cells["entryType"].Value = "Error/Exception";
+                    row.Cells["entryType"].Style.BackColor = Color.Crimson;
                     row.Cells["frontOrBack"].Value = "Service";
                     break;
                 case 2:
                     row.Cells["entryType"].Value = "Error/Exception";
+                    row.Cells["entryType"].Style.BackColor = Color.Crimson;
                     row.Cells["frontOrBack"].Value = "Interface";
                     break;
                 case 3:
@@ -228,6 +232,7 @@ namespace UDP_Repeater_GUI
                     break;
                 case 9:
                     row.Cells["entryType"].Value = "Warning";
+                    row.Cells["entryType"].Style.BackColor = Color.LightGoldenrodYellow;
                     row.Cells["frontOrBack"].Value = "Service";
                     break;
             }
@@ -239,9 +244,10 @@ namespace UDP_Repeater_GUI
         /// <summary> Disposes of both of the eventLog objects. </summary>
         private void LogForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            //eventLog.Dispose();
-            //logger.eventLog.Dispose();
-            //logger.meterProvider.Dispose();
+            if (eventLog != null)
+            {
+                eventLog.Dispose();
+            }
         }
     }
 }

@@ -183,7 +183,7 @@ namespace BackendClassNameSpace
 
 
                 // Loki event logger set up
-            const string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss} \t Backend/Service \t {Level} \n{Message}";
+            const string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss} \t Service \t {Level} \n{Message}";
             this.lokiLogger = new LoggerConfiguration()
                               .WriteTo.GrafanaLoki
                               (

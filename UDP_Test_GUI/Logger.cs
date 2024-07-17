@@ -58,14 +58,14 @@ namespace UDP_Repeater_GUI
                 this.eventLog = new EventLog("UDP Packet Repeater");
                 this.eventLog.Source = "UDP_Repeater_Frontend";
 
-                const string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss} \t Frontend/GUI \t {Level} \n{Message}";
+                const string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss} \t Frontend/Interface \t {Level} \n{Message}";
                 this.lokiLogger = new LoggerConfiguration()
                                   .WriteTo.GrafanaLoki
                                   (
                                       "http://localhost:3100",
                                       labels: new List<LokiLabel>
                                       {
-                                      new LokiLabel(){ Key = "RepeaterSide", Value = "Frontend/GUI" },
+                                      new LokiLabel(){ Key = "RepeaterSide", Value = "Frontend/Interface" },
                                       new LokiLabel(){ Key = "MachineName", Value = Environment.MachineName },
                                       new LokiLabel(){ Key = "User", Value = Environment.UserName }
                                       },
@@ -241,11 +241,11 @@ namespace UDP_Repeater_GUI
             string message = "";
             if (mode == "start")
             {
-                message = String.Format("User Interface started.");
+                message = "User Interface started.";
             }                                         
             else if (mode == "stop")                  
             {                                         
-                message = String.Format("User Interface stopped.");
+                message = "User Interface stopped.";
             }
 
             eventLog.WriteEntry(message, EventLogEntryType.Information, 5);     // 5 is id for frontend start/stop
