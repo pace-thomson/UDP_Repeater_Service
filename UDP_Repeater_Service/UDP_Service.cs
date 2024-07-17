@@ -53,7 +53,15 @@ namespace UDP_Repeater_Service
         public UDP_Service()
         {
             InitializeComponent();
-            outerBackendObject = new Backend("127.0.0.1","7654","127.0.0.1","4567",5,"minute","idk");
+            if (!EventLog.SourceExists("UDP_Repeater_Backend"))
+            {
+                EventLog.CreateEventSource("UDP_Repeater_Backend","UDP Packet Repeater");
+            }
+            if (!EventLog.SourceExists("UDP_Repeater_Frontend"))
+            {
+                EventLog.CreateEventSource("UDP_Repeater_Frontend", "UDP Packet Repeater");
+            }
+            outerBackendObject = new Backend("127.0.0.1", "7654", "127.0.0.1", "4567", 5, "minute", "idk");
         }
 
         public void DebuggerProcess()
@@ -272,7 +280,7 @@ class TheMainProgram
 
     public static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
     {
-        string message = String.Format($"Error Message: {e} \n" +
+        string message = String.Format($"Unhandled Error Message: {e} \n" +
                                        $"Error location: Backend/Service.");
         
         EventLog eventLog = new EventLog("UDP Packet Repeater");

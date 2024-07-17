@@ -77,7 +77,17 @@ namespace UDP_Repeater_GUI
             string ip = ip_field.Text;
             string port = port_field.Text;
             string mode = profileDropDown.Text;
-            int portInt = int.Parse(port_field.Text);
+            int portInt = 0;
+            try
+            {
+                portInt = int.Parse(port_field.Text);
+            } 
+            catch (FormatException ex)
+            {
+                MessageBox.Show("Please fill in all input fields.");
+                inputValid = false;
+                return;
+            }
                 
             IPAddress address;              // this validates if the ip address is legit
             if (ip.Count(c => c == '.') == 3 && IPAddress.TryParse(ip, out address) &&
