@@ -37,8 +37,6 @@ namespace UDP_Repeater_GUI
         private gui_form theMainForm;
             /// <summary> Keeps track of if the user has provided valid ip/port/profile </summary>
         private bool inputValid;
-            /// <summary> Our object for logging. </summary>
-        private Logger logger;
 
         /// <summary> 
         ///  Class Name: configDialog  <br/><br/>
@@ -56,7 +54,6 @@ namespace UDP_Repeater_GUI
             InitializeComponent();
             theMainForm = mainForm;
             inputValid = true;
-            logger = new Logger();
         }
 
         /// <summary> 
@@ -74,29 +71,30 @@ namespace UDP_Repeater_GUI
         /// </summary>
         private void dialogOkButton_Click(object sender, EventArgs e)
         {
-            string ip = ip_field.Text;
-            string port = port_field.Text;
-            string mode = profileDropDown.Text;
-            int portInt = 0;
             try
             {
-                portInt = int.Parse(port_field.Text);
-            } 
-            catch (FormatException ex)
-            {
-                MessageBox.Show("Please fill in all input fields.");
-                inputValid = false;
-                return;
-            }
-                
-            IPAddress address;              // this validates if the ip address is legit
-            if (ip.Count(c => c == '.') == 3 && IPAddress.TryParse(ip, out address) &&
-                portInt > 0 && portInt <= 65535)
-            {
-                using (UdpClient sendRequest = new UdpClient())
+                string ip = ip_field.Text;
+                string port = port_field.Text;
+                string mode = profileDropDown.Text;
+                int portInt = 0;
+                try
                 {
-                    try
+                    portInt = int.Parse(port_field.Text);
+                }
+                catch (FormatException ex)
+                {
+                    MessageBox.Show("Please fill in all input fields.");
+                    inputValid = false;
+                    return;
+                }
+
+                IPAddress address;              // this validates if the ip address is legit
+                if (ip.Count(c => c == '.') == 3 && IPAddress.TryParse(ip, out address) &&
+                    portInt > 0 && portInt <= 65535)  // and for all valid ports
+                {
+                    using (UdpClient sendRequest = new UdpClient())
                     {
+
                         if (mode != "")
                         {
                             if (mode == "Receiving From" || mode == "Sending To")
@@ -114,30 +112,26 @@ namespace UDP_Repeater_GUI
                         // we communicate back and forth with the Service with comma seperated strings
                         byte[] bytes = Encoding.ASCII.GetBytes(ip + "," + port + "," + mode);
                         sendRequest.Send(bytes, bytes.Length, "127.0.0.1", 50001);
-                    }
-                    catch (Exception exception)
-                    {
-                        MessageBox.Show($"Error sending data: {exception.Message}");
-                        logger.LogException(exception);
-                        return;
-                    }
-                    // this section resets the inputs
 
-                    logger.LogConfigChange(mode, ip, port);
+                        // this section resets the inputs
 
-                    ip_field.Text = "";
-                    port_field.Text = "";   
-                    
-                    sendRequest.Close();
-                    inputValid = true;
+                        theMainForm.logger.LogConfigChange(mode, ip, port);
+
+                        ip_field.Text = "";
+                        port_field.Text = "";
+
+                        sendRequest.Close();
+                        inputValid = true;
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Invalid IP or Port, please try again.");
+                    inputValid = false;
+                    return;
                 }
             }
-            else
-            {
-                MessageBox.Show("Invalid IP or Port, please try again.");
-                inputValid = false;
-                return;
-            }
+            catch (Exception ex) { theMainForm.logger.LogException(ex); }
         }
 
         /// <summary> 
@@ -162,12 +156,12 @@ namespace UDP_Repeater_GUI
                             // This doesn't even get read by the backend, it just is a placeholder
                     byte[] bytes = Encoding.ASCII.GetBytes(",,");
                     sendRequest.Send(bytes, bytes.Length, "127.0.0.1", 50001);
-                    logger.LogConfigChange("Reverted to Default", "N/A", "N/A");
+                    theMainForm.logger.LogConfigChange("Reverted to Default", "N/A", "N/A");
                 }
                 catch (Exception exception)
                 {
                     MessageBox.Show($"Error sending data: {exception.Message}");
-                    logger.LogException(exception);
+                    theMainForm.logger.LogException(exception);
                     return;
                 }
                 ip_field.Text = "";

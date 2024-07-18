@@ -66,7 +66,6 @@ namespace UDP_Repeater_Service
 
         public void DebuggerProcess()
         {
-            outerBackendObject.isRunning.Add(1);
             outerBackendObject.StartStopLogger("start");
             TheMainProgram.main();
         }
@@ -85,14 +84,12 @@ namespace UDP_Repeater_Service
         protected override void OnStart(string[] args)
         {
             outerBackendObject.StartStopLogger("start");
-            outerBackendObject.isRunning.Add(1);
             TheMainProgram.main();
         }
         /// <summary> Logs that the service is stopping </summary>
         protected override void OnStop()
         {
             outerBackendObject.StartStopLogger("stop");
-            outerBackendObject.isRunning.Add(-1);
             Thread.Sleep(1000);
         }
     }

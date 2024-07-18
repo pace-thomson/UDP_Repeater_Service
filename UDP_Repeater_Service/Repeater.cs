@@ -397,7 +397,7 @@ namespace Repeater
         ///  Class Name: RepeaterClass  <br/><br/> 
         ///
         ///  Description: The main function of the RepeaterClass. Starts and runs the StartReceiver funtion <br/>
-        ///  in it's own task. Also initializes the backendOjbect and timer data members. <br/><br/>
+        ///  in it's own task. Also initializes the backendOjbect and timer fields. <br/><br/>
         ///
         ///  Inputs:  <br/>
         ///  Backend <paramref name="BackendObject"/> - The Backend object to supply confiiguraiton information <br/>

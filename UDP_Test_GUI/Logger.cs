@@ -36,7 +36,7 @@ namespace UDP_Repeater_GUI
     /// <summary>
     /// This class handles all of the logging for the front end.
     /// </summary>
-    internal class Logger
+    public class Logger
     {
             /// <summary> Our event log object. </summary>
         public EventLog eventLog;
@@ -47,7 +47,7 @@ namespace UDP_Repeater_GUI
         private static readonly Meter myMeter = new Meter("JT4.Repeater.MyLibrary", "1.0");
             /// <summary> The main meter provider </summary>
         public MeterProvider meterProvider;
-        /// <summary> Tracks the memory use of the gui </summary>
+            /// <summary> Tracks the memory use of the gui </summary>
         public static readonly ObservableGauge<long> processMemory = myMeter.CreateObservableGauge("frontendMemory", () => GetProcessMemory());
 
 
@@ -101,8 +101,6 @@ namespace UDP_Repeater_GUI
 
         public void PrometheusFruitCounterSender()
         {
-            ObservableGauge<int> isRunning = myMeter.CreateObservableGauge("running", () => { return 0; });
-            
             // Testing one
             Counter<long> MyFruitCounter = myMeter.CreateCounter<long>("MyFruitCounter");
 

@@ -48,7 +48,7 @@ namespace UDP_Repeater_GUI
             /// <summary> Our Service </summary>
         private ServiceController ourService;
             /// <summary> Our object for logging. </summary>
-        private Logger logger;
+        public Logger logger;
             /// <summary> Our timer object so we can release it when the form closes. </summary>
         private Timer timer;
 
@@ -112,7 +112,7 @@ namespace UDP_Repeater_GUI
                 System.Threading.Thread.Sleep(1000);
             }
             double diff = (DateTime.Now - File.GetCreationTime("C:\\Windows\\SysWOW64\\UDP_Repeater_Config.json")).TotalSeconds;
-            if (diff > 5.0)
+            if (diff > 10.0)
             {
                 return;
             }

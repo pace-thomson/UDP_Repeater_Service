@@ -3,7 +3,7 @@
 // 
 // Description: This file contains all the methods for
 //              the Backend class. Which includes all
-//              the configuration settings as data members.
+//              the configuration settings as fields.
 //              It also includes the methods for logging errors.
 //
 // Language:         Visual C#
@@ -31,7 +31,6 @@ using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Exporter;
 using System.Diagnostics.Metrics;
-using System.Runtime.CompilerServices;
 
 
 
@@ -45,41 +44,37 @@ namespace BackendClassNameSpace
     public class Backend
     {
             /// <summary> The IP being listened to</summary>
-        public string receiveIp { get; set; }
+        public string receiveIp;
             /// <summary> The Port being listened to</summary>
-        public int receivePort { get; set; }
+        public int receivePort;
             /// <summary> The IP being sent to</summary>
-        public string sendIp { get; set; }
+        public string sendIp;
             /// <summary> The Port being sent to</summary>
-        public int sendPort { get; set; }
-
+        public int sendPort;
             /// <summary> The Frequency (number) at which the service reports inactivity</summary>
-        public int frequency { get; set; }
+        public int frequency;
             /// <summary> The Interval (minute, day, hour) at which the service reports inactivity</summary>
-        public string interval { get; set; }
-
+        public string interval;
             /// <summary> The device.Description of the network card that we're listening on. </summary>
-        public string descriptionOfNIC { get; set; }
+        public string descriptionOfNIC;
 
 
             /// <summary> Our local windows event log. </summary>
-        public EventLog eventLog { get; set; }
+        public EventLog eventLog;
             /// <summary> The loki log that our logs get sent to, in addition to the windows log. </summary>
-        public ILogger lokiLogger { get; set; }
+        public ILogger lokiLogger;
 
 
-            /// <summary> The main meter provider </summary>
+            /// <summary> The main meter provider for all of the prometheus metrics </summary>
         public MeterProvider meterProvider;
             /// <summary> Our Meter object (the base for all of the metric instrumentation) </summary>
-        public static readonly Meter myMeter = new Meter("JT4.Repeater.MyLibrary", "1.0");
+        public readonly Meter myMeter;
             /// <summary> The counter for packets handled </summary>
-        public static readonly Counter<long> TotalPacketsHandled = myMeter.CreateCounter<long>("TotalPacketsHandled");
+        public readonly Counter<long> TotalPacketsHandled;
             /// <summary> Tracks the memory use of the backend. </summary>
-        public static readonly ObservableGauge<long> processMemory = myMeter.CreateObservableGauge("backendMemory", () => GetProcessMemory());
-            /// <summary> Reports if the service is running. If this value is 1, it's up. </summary>
-        public UpDownCounter<long> isRunning = myMeter.CreateUpDownCounter<long>("isRunning");
+        public readonly ObservableGauge<long> processMemory;
             /// <summary> Tracks average time for packet ingress/egress </summary>
-        public static Histogram<long> packetHandling = myMeter.CreateHistogram<long>("packetHandling");
+        public Histogram<long> packetHandling;
 
 
 
@@ -88,7 +83,7 @@ namespace BackendClassNameSpace
         /// <summary> 
         ///  Class Name: Backend  <br/><br/> 
         ///
-        ///  Description: Overload 1/2 - The Backend Constructor for when the service first starts. <br/><br/>
+        ///  Description: Overload 1/3. The Backend Constructor for when the service first starts. <br/><br/>
         ///
         ///  Inputs:  <br/>
         ///  string <paramref name="ReceiveIp"/> - The IP being listened to. <br/>
@@ -104,7 +99,7 @@ namespace BackendClassNameSpace
         public Backend(string ReceiveIp, string ReceivePort, string SendIp, string SendPort, int newFrequency, string newInterval, string NameOfNIC)
         {
 
-                // system configuration set up
+                // system configuration set up section
             this.receiveIp = ReceiveIp;
             this.receivePort = Convert.ToInt32(ReceivePort);
             this.sendIp = SendIp;
@@ -113,14 +108,13 @@ namespace BackendClassNameSpace
             this.interval = newInterval;
             this.descriptionOfNIC = NameOfNIC;
 
-                // windows event logger set up
+                // windows event logger set up section
             this.eventLog = new EventLog("UDP Packet Repeater");
             eventLog.Source = "UDP_Repeater_Backend";
             eventLog.MaximumKilobytes = 256;
-            // EventLog.GetEventLogs().First(x => x.Log == "UDP Packet Repeater").MaximumKilobytes = 256;
 
 
-                // Loki event logger set up
+                // Loki event logger set up section
             const string outputTemplate = "Backend/Service \t {Level} \n{Message}";
             this.lokiLogger = new LoggerConfiguration()
                               .WriteTo.GrafanaLoki
@@ -137,7 +131,7 @@ namespace BackendClassNameSpace
                               .Enrich.FromLogContext()
                               .CreateLogger();
 
-                // Prometheus metric tracker
+                // Prometheus set up section
             this.meterProvider = Sdk.CreateMeterProviderBuilder()
                                 .AddMeter("JT4.Repeater.MyLibrary")
                                 .AddOtlpExporter((exporterOptions, metricReaderOptions) =>
@@ -147,14 +141,18 @@ namespace BackendClassNameSpace
                                     metricReaderOptions.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 5000;
                                 })
                                 .Build();
-            isRunning.Add(1);
+            this.myMeter = new Meter("JT4.Repeater.MyLibrary", "1.0");
+            this.TotalPacketsHandled = myMeter.CreateCounter<long>("TotalPacketsHandled");
+            this.processMemory = myMeter.CreateObservableGauge("backendMemory", () => GetProcessMemory());
+            this.packetHandling = myMeter.CreateHistogram<long>("packetHandling");
         }
 
 
         /// <summary> 
         ///  Class Name: Backend  <br/><br/> 
         ///
-        ///  Description: The Backend Constructor <br/><br/>
+        ///  Description: Overload 2/3. The Backend Constructor that doesn't take the name of the NIC <br/>
+        ///               Instead, it just reads it from UDP_Repeater_Config.json and then assigns it. <br/><br/>
         ///
         ///  Inputs:  <br/>
         ///  string <paramref name="ReceiveIp"/> - The IP being listened to. <br/>
@@ -168,7 +166,7 @@ namespace BackendClassNameSpace
         /// </summary>
         public Backend(string ReceiveIp, string ReceivePort, string SendIp, string SendPort, int newFrequency, string newInterval)
         {
-                // system configuration set up
+                // system configuration set up section
             this.receiveIp = ReceiveIp;
             this.receivePort = Convert.ToInt32(ReceivePort);
             this.sendIp = SendIp;
@@ -179,14 +177,13 @@ namespace BackendClassNameSpace
             this.descriptionOfNIC = (string)jsonObject["descriptionOfNIC"];
 
 
-                // windows event logger set up
+                // windows event logger set up section
             this.eventLog = new EventLog("UDP Packet Repeater");
             eventLog.Source = "UDP_Repeater_Backend";
 
 
-                // Loki event logger set up
+                // Loki event logger set up section
             const string outputTemplate = "Backend/Service \t {Level} \n{Message}";
-
             this.lokiLogger = new LoggerConfiguration()
                               .WriteTo.GrafanaLoki
                               (
@@ -204,7 +201,7 @@ namespace BackendClassNameSpace
                               .Enrich.FromLogContext()
                               .CreateLogger();
 
-                // Prometheus metric tracker
+                // Prometheus metric tracker section
             this.meterProvider = Sdk.CreateMeterProviderBuilder()
                                 .AddMeter("JT4.Repeater.MyLibrary")
                                 .AddOtlpExporter((exporterOptions, metricReaderOptions) =>
@@ -214,19 +211,25 @@ namespace BackendClassNameSpace
                                     metricReaderOptions.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 5000;
                                 })
                                 .Build();
+            this.myMeter = new Meter("JT4.Repeater.MyLibrary", "1.0");
+            this.TotalPacketsHandled = myMeter.CreateCounter<long>("TotalPacketsHandled");
+            this.processMemory = myMeter.CreateObservableGauge("backendMemory", () => GetProcessMemory());
+            this.packetHandling = myMeter.CreateHistogram<long>("packetHandling");
         }
 
+        /// <summary> 
+        ///  Class Name: Backend  <br/><br/> 
+        ///
+        ///  Description: Overload 3/3. The Backend Constructor for the start stop logging, so this <br/>
+        ///               only initializes the two logging memebers. <br/><br/>
+        ///
+        ///  Inputs: None <br/><br/> 
+        ///  
+        /// Returns: A Backend Object
+        /// </summary>
         public Backend()
         {
-            this.receiveIp = "";
-            this.receivePort = 0;
-            this.sendIp = "";
-            this.sendPort = 0;
-            this.frequency = 0;
-            this.interval = "";
-            this.descriptionOfNIC = "";
-
-            // windows event logger set up
+                // windows event logger set up
             this.eventLog = new EventLog("UDP Packet Repeater");
             eventLog.Source = "UDP_Repeater_Backend";
 
@@ -249,6 +252,15 @@ namespace BackendClassNameSpace
                               .Enrich.FromLogContext()
                               .CreateLogger();
         }
+        public void tester()
+        {
+            Random random = new Random();
+            while (true)
+            {
+                AddNewPacketTimeHandled(random.Next(0, 10));
+                Thread.Sleep(random.Next(100, 10000));
+            }
+        }
 
         /// <summary> Calculates and returns the current process memroy in bytes. </summary>
         public static long GetProcessMemory()
@@ -265,16 +277,6 @@ namespace BackendClassNameSpace
         public void AddNewPacketTimeHandled(long stopWatchTime)
         {
             packetHandling.Record(stopWatchTime);
-        }
-
-        public void tester()
-        {
-            Random random = new Random();
-            while (true)
-            {
-                AddNewPacketTimeHandled(random.Next(0, 10));
-                Thread.Sleep(random.Next(100, 10000));
-            }
         }
 
 
@@ -409,7 +411,7 @@ namespace BackendClassNameSpace
             // Write an entry to the event log.
             eventLog.WriteEntry(message, EventLogEntryType.Warning, 3);     // 3 is the id for backend inactivity
 
-            lokiLogger.Information(message);
+            lokiLogger.Warning(message);
         }
 
         /// <summary> 
