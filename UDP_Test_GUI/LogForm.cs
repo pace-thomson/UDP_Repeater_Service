@@ -38,8 +38,6 @@ namespace UDP_Repeater_GUI
     {
             /// <summary>The main form's object.</summary>
         private gui_form theMainForm;
-            /// <summary> Our object for logging. </summary>
-        private Logger logger;
             /// <summary> Our own eventLog object to watch and read from. </summary>
         public EventLog eventLog;
 
@@ -59,8 +57,6 @@ namespace UDP_Repeater_GUI
         {
             InitializeComponent();
 
-            logger = new Logger();
-            
             eventLog = SetCheckerForLogChanges();
 
             theMainForm = mainForm;
@@ -96,7 +92,7 @@ namespace UDP_Repeater_GUI
             }
             catch (Exception e)
             {
-                logger.LogException(e);
+                theMainForm.logger.LogException(e);
             }
         }
 
@@ -128,7 +124,7 @@ namespace UDP_Repeater_GUI
                                 // we want interval to still have the first letter uppcase here
                                 // so that we can use it to display prettily? idk if that's a word
                         theMainForm.UpdateCurrentConfigGroup(frequency.ToString(), interval);
-                        logger.LogInactivityChange(frequency, interval);
+                        theMainForm.logger.LogInactivityChange(frequency, interval);
 
                         interval = interval.ToLower();
 
@@ -139,7 +135,7 @@ namespace UDP_Repeater_GUI
                     catch (Exception exception)
                     {
                         MessageBox.Show($"Error sending data: {exception.Message}");
-                        logger.LogException(exception);
+                        theMainForm.logger.LogException(exception);
                         return;
                     }
                             // this section resets the inputs
@@ -176,7 +172,7 @@ namespace UDP_Repeater_GUI
             }
             catch ( Exception e)
             {
-                logger.LogException(e);
+                theMainForm.logger.LogException(e);
                 return null;
             }
         }
@@ -236,7 +232,6 @@ namespace UDP_Repeater_GUI
                     row.Cells["frontOrBack"].Value = "Service";
                     break;
             }
-
             row.Cells["messageColumn"].Value = entry.Message;
             row.Cells["timeStampColumn"].Value = entry.TimeWritten;
         }

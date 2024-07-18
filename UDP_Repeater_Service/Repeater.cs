@@ -29,7 +29,6 @@ using BackendClassNameSpace;
 using System.Timers;
 using SharpPcap;
 using System.Net;
-using Serilog.Core;
 using System.Diagnostics;
 
 
@@ -69,7 +68,6 @@ namespace Repeater
                 timer.Elapsed += OnTimedEvent;
 
                 timer.AutoReset = true;     // Hook up the Elapsed event for the timer.
-
                 timer.Enabled = true;
 
                 backendObject = BackendObject;
@@ -330,7 +328,6 @@ namespace Repeater
         /// </summary>
         private static void device_OnPacketArrival(object sender, PacketCapture e)
         {
-            PerformanceCounterCategory performanceCounterCategory = new PerformanceCounterCategory();
             try
             {
                 stopWatch.Start();

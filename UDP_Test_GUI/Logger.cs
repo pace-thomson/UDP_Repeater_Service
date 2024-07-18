@@ -53,70 +53,54 @@ namespace UDP_Repeater_GUI
 
         public Logger()
         {
-            try
-            {
-                this.eventLog = new EventLog("UDP Packet Repeater");
-                this.eventLog.Source = "UDP_Repeater_Frontend";
+            this.eventLog = new EventLog("UDP Packet Repeater");
+            this.eventLog.Source = "UDP_Repeater_Frontend";
 
-                const string outputTemplate = "Frontend/Interface \t {Level} \n{Message}";
-                this.lokiLogger = new LoggerConfiguration()
-                                  .WriteTo.GrafanaLoki
-                                  (
-                                      "http://localhost:3100",
-                                      labels: new List<LokiLabel>
-                                      {
-                                      new LokiLabel(){ Key = "RepeaterSide", Value = "Frontend/Interface" },
-                                      new LokiLabel(){ Key = "MachineName", Value = Environment.MachineName },
-                                      new LokiLabel(){ Key = "User", Value = Environment.UserName }
-                                      },
-                                      textFormatter: new MessageTemplateTextFormatter(outputTemplate, null)
-                                  )
-                                  .Enrich.FromLogContext()
-                                  .CreateLogger();
-
-
-                this.meterProvider = Sdk.CreateMeterProviderBuilder()
-                                    .AddMeter("JT4.Repeater.MyLibrary")
-                                    .AddOtlpExporter((exporterOptions, metricReaderOptions) =>
+            const string outputTemplate = "Frontend/Interface \t {Level} {NewLine}{Message}";
+            this.lokiLogger = new LoggerConfiguration()
+                                .WriteTo.GrafanaLoki
+                                (
+                                    "http://172.18.46.211:3100",
+                                    labels: new List<LokiLabel>
                                     {
-                                        exporterOptions.Endpoint = new Uri("http://localhost:9090/api/v1/otlp/v1/metrics");
-                                        exporterOptions.Protocol = OtlpExportProtocol.HttpProtobuf;
-                                        metricReaderOptions.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 5000;
-                                    })
-                                    .Build();
-            } 
-            catch (Exception ex)
-            {
-                string[] formattedStackString = ex.StackTrace.Split('\n');
+                                    new LokiLabel(){ Key = "RepeaterSide", Value = "Frontend/Interface" },
+                                    new LokiLabel(){ Key = "MachineName", Value = Environment.MachineName },
+                                    new LokiLabel(){ Key = "User", Value = Environment.UserName }
+                                    },
+                                    textFormatter: new MessageTemplateTextFormatter(outputTemplate, null)
+                                )
+                                .Enrich.FromLogContext()
+                                .CreateLogger();
 
-                string message = String.Format($"Error Message: {ex.Message} \n" +
-                                               $"Error location: Frontend/User Interface \n" +
-                                               $"{formattedStackString.Last().TrimStart()}");
 
-                // Write an entry to the event log.
-                eventLog.WriteEntry(message, EventLogEntryType.Error, 2);       // 2 is id for frontend errors
-            }
-            
+            this.meterProvider = Sdk.CreateMeterProviderBuilder()
+                                .AddMeter("JT4.Repeater.MyLibrary")
+                                .AddOtlpExporter((exporterOptions, metricReaderOptions) =>
+                                {
+                                    exporterOptions.Endpoint = new Uri("http://172.18.46.211:9090/api/v1/otlp/v1/metrics");
+                                    exporterOptions.Protocol = OtlpExportProtocol.HttpProtobuf;
+                                    metricReaderOptions.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 5000;
+                                })
+                                .Build();
         }
 
-        public void PrometheusFruitCounterSender()
-        {
-            // Testing one
-            Counter<long> MyFruitCounter = myMeter.CreateCounter<long>("MyFruitCounter");
+        //public void PrometheusFruitCounterSender()
+        //{
+        //    // Testing one
+        //    Counter<long> MyFruitCounter = myMeter.CreateCounter<long>("MyFruitCounter");
 
-            //MyFruitCounter.Add(50, new KeyValuePair<string, object>("name", "apple"), new KeyValuePair<string, object>("color", "red"));
-            //MyFruitCounter.Add(50, new KeyValuePair<string, object>("name", "apple"), new KeyValuePair<string, object>("color", "green"));
-            //MyFruitCounter.Add(50, new KeyValuePair<string, object>("name", "lemon"), new KeyValuePair<string, object>("color", "yellow"));
+        //    //MyFruitCounter.Add(50, new KeyValuePair<string, object>("name", "apple"), new KeyValuePair<string, object>("color", "red"));
+        //    //MyFruitCounter.Add(50, new KeyValuePair<string, object>("name", "apple"), new KeyValuePair<string, object>("color", "green"));
+        //    //MyFruitCounter.Add(50, new KeyValuePair<string, object>("name", "lemon"), new KeyValuePair<string, object>("color", "yellow"));
 
-            Random random = new Random();
-            while (true)
-            {
-                MyFruitCounter.Add(1);
-              
+        //    Random random = new Random();
+        //    while (true)
+        //    {
+        //        MyFruitCounter.Add(1);
 
-                System.Threading.Thread.Sleep(random.Next(100, 10000));
-            }
-        }
+        //        System.Threading.Thread.Sleep(random.Next(100, 10000));
+        //    }
+        //}
 
         /// <summary> 
         ///  Class Name: Logger  <br/> <br/>

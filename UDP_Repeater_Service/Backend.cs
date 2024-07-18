@@ -119,7 +119,7 @@ namespace BackendClassNameSpace
             this.lokiLogger = new LoggerConfiguration()
                               .WriteTo.GrafanaLoki
                               (
-                                  "http://localhost:3100",
+                                  "http://172.18.46.211:3100",
                                   labels: new List<LokiLabel>
                                   {
                                       new LokiLabel(){ Key = "RepeaterSide", Value = "Backend/Service" },
@@ -136,7 +136,7 @@ namespace BackendClassNameSpace
                                 .AddMeter("JT4.Repeater.MyLibrary")
                                 .AddOtlpExporter((exporterOptions, metricReaderOptions) =>
                                 {
-                                    exporterOptions.Endpoint = new Uri("http://localhost:9090/api/v1/otlp/v1/metrics");
+                                    exporterOptions.Endpoint = new Uri("http://172.18.46.211:9090/api/v1/otlp/v1/metrics");
                                     exporterOptions.Protocol = OtlpExportProtocol.HttpProtobuf;
                                     metricReaderOptions.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 5000;
                                 })
@@ -187,7 +187,7 @@ namespace BackendClassNameSpace
             this.lokiLogger = new LoggerConfiguration()
                               .WriteTo.GrafanaLoki
                               (
-                                  "http://localhost:3100",
+                                  "http://172.18.46.211:3100",
                                   labels: new List<LokiLabel>
                                   {
                                       new LokiLabel(){ Key = "RepeaterSide", Value = "Backend/Service" },
@@ -206,7 +206,7 @@ namespace BackendClassNameSpace
                                 .AddMeter("JT4.Repeater.MyLibrary")
                                 .AddOtlpExporter((exporterOptions, metricReaderOptions) =>
                                 {
-                                    exporterOptions.Endpoint = new Uri("http://localhost:9090/api/v1/otlp/v1/metrics");
+                                    exporterOptions.Endpoint = new Uri("http://172.18.46.211:9090/api/v1/otlp/v1/metrics");
                                     exporterOptions.Protocol = OtlpExportProtocol.HttpProtobuf;
                                     metricReaderOptions.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 5000;
                                 })
@@ -233,14 +233,13 @@ namespace BackendClassNameSpace
             this.eventLog = new EventLog("UDP Packet Repeater");
             eventLog.Source = "UDP_Repeater_Backend";
 
-
                 // Loki event logger set up
             const string outputTemplate = "Backend/Service \t {Level} \n{Message}";
 
             this.lokiLogger = new LoggerConfiguration()
                               .WriteTo.GrafanaLoki
                               (
-                                  "http://localhost:3100",
+                                  "http://172.18.46.211:3100",
                                   labels: new List<LokiLabel>
                                   {
                                       new LokiLabel(){ Key = "RepeaterSide", Value = "Backend/Service" },
@@ -252,15 +251,15 @@ namespace BackendClassNameSpace
                               .Enrich.FromLogContext()
                               .CreateLogger();
         }
-        public void tester()
-        {
-            Random random = new Random();
-            while (true)
-            {
-                AddNewPacketTimeHandled(random.Next(0, 10));
-                Thread.Sleep(random.Next(100, 10000));
-            }
-        }
+        //public void tester()
+        //{
+        //    Random random = new Random();
+        //    while (true)
+        //    {
+        //        AddNewPacketTimeHandled(random.Next(0, 10));
+        //        Thread.Sleep(random.Next(100, 10000));
+        //    }
+        //}
 
         /// <summary> Calculates and returns the current process memroy in bytes. </summary>
         public static long GetProcessMemory()
@@ -350,11 +349,11 @@ namespace BackendClassNameSpace
             logg.WriteEntry(message, EventLogEntryType.Error, 1);  // 1 is our id for backend errors
             logg.Dispose();
 
-            const string outputTemplate = "Backend/Service \t {Level} \n{Message}";
+            const string outputTemplate = "Backend/Service \t {Level} {NewLine}{Message}";
             var temporaryLokiLogger = new LoggerConfiguration()
                               .WriteTo.GrafanaLoki
                               (
-                                  "http://localhost:3100",
+                                  "http://172.18.46.211:3100",
                                   labels: new List<LokiLabel>
                                   {
                                       new LokiLabel(){ Key = "RepeaterSide", Value = "Backend/Service" },
