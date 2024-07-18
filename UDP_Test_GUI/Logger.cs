@@ -58,7 +58,7 @@ namespace UDP_Repeater_GUI
                 this.eventLog = new EventLog("UDP Packet Repeater");
                 this.eventLog.Source = "UDP_Repeater_Frontend";
 
-                const string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss} \t Frontend/Interface \t {Level} \n{Message}";
+                const string outputTemplate = "Frontend/Interface \t {Level} \n{Message}";
                 this.lokiLogger = new LoggerConfiguration()
                                   .WriteTo.GrafanaLoki
                                   (

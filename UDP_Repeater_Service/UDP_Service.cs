@@ -61,7 +61,7 @@ namespace UDP_Repeater_Service
             {
                 EventLog.CreateEventSource("UDP_Repeater_Frontend", "UDP Packet Repeater");
             }
-            outerBackendObject = new Backend("127.0.0.1", "7654", "127.0.0.1", "4567", 5, "minute", "idk");
+            outerBackendObject = new Backend();
         }
 
         public void DebuggerProcess()

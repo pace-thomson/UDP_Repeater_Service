@@ -31,6 +31,7 @@ using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Exporter;
 using System.Diagnostics.Metrics;
+using System.Runtime.CompilerServices;
 
 
 
@@ -120,7 +121,7 @@ namespace BackendClassNameSpace
 
 
                 // Loki event logger set up
-            const string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss} \t Backend/Service \t {Level} \n{Message}";
+            const string outputTemplate = "Backend/Service \t {Level} \n{Message}";
             this.lokiLogger = new LoggerConfiguration()
                               .WriteTo.GrafanaLoki
                               (
@@ -136,6 +137,7 @@ namespace BackendClassNameSpace
                               .Enrich.FromLogContext()
                               .CreateLogger();
 
+                // Prometheus metric tracker
             this.meterProvider = Sdk.CreateMeterProviderBuilder()
                                 .AddMeter("JT4.Repeater.MyLibrary")
                                 .AddOtlpExporter((exporterOptions, metricReaderOptions) =>
@@ -183,7 +185,55 @@ namespace BackendClassNameSpace
 
 
                 // Loki event logger set up
-            const string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss} \t Service \t {Level} \n{Message}";
+            const string outputTemplate = "Backend/Service \t {Level} \n{Message}";
+
+            this.lokiLogger = new LoggerConfiguration()
+                              .WriteTo.GrafanaLoki
+                              (
+                                  "http://localhost:3100",
+                                  labels: new List<LokiLabel>
+                                  {
+                                      new LokiLabel(){ Key = "RepeaterSide", Value = "Backend/Service" },
+                                      new LokiLabel(){ Key = "MachineName", Value = Environment.MachineName },
+                                      new LokiLabel(){ Key = "User", Value = Environment.UserName },
+                                      new LokiLabel(){ Key = "Level", Value = "{Level}" }
+
+                                  },
+                                  textFormatter: new MessageTemplateTextFormatter(outputTemplate, null)
+                              )
+                              .Enrich.FromLogContext()
+                              .CreateLogger();
+
+                // Prometheus metric tracker
+            this.meterProvider = Sdk.CreateMeterProviderBuilder()
+                                .AddMeter("JT4.Repeater.MyLibrary")
+                                .AddOtlpExporter((exporterOptions, metricReaderOptions) =>
+                                {
+                                    exporterOptions.Endpoint = new Uri("http://localhost:9090/api/v1/otlp/v1/metrics");
+                                    exporterOptions.Protocol = OtlpExportProtocol.HttpProtobuf;
+                                    metricReaderOptions.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 5000;
+                                })
+                                .Build();
+        }
+
+        public Backend()
+        {
+            this.receiveIp = "";
+            this.receivePort = 0;
+            this.sendIp = "";
+            this.sendPort = 0;
+            this.frequency = 0;
+            this.interval = "";
+            this.descriptionOfNIC = "";
+
+            // windows event logger set up
+            this.eventLog = new EventLog("UDP Packet Repeater");
+            eventLog.Source = "UDP_Repeater_Backend";
+
+
+                // Loki event logger set up
+            const string outputTemplate = "Backend/Service \t {Level} \n{Message}";
+
             this.lokiLogger = new LoggerConfiguration()
                               .WriteTo.GrafanaLoki
                               (
@@ -198,16 +248,6 @@ namespace BackendClassNameSpace
                               )
                               .Enrich.FromLogContext()
                               .CreateLogger();
-
-            this.meterProvider = Sdk.CreateMeterProviderBuilder()
-                                .AddMeter("JT4.Repeater.MyLibrary")
-                                .AddOtlpExporter((exporterOptions, metricReaderOptions) =>
-                                {
-                                    exporterOptions.Endpoint = new Uri("http://localhost:9090/api/v1/otlp/v1/metrics");
-                                    exporterOptions.Protocol = OtlpExportProtocol.HttpProtobuf;
-                                    metricReaderOptions.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 5000;
-                                })
-                                .Build();
         }
 
         /// <summary> Calculates and returns the current process memroy in bytes. </summary>
@@ -308,7 +348,7 @@ namespace BackendClassNameSpace
             logg.WriteEntry(message, EventLogEntryType.Error, 1);  // 1 is our id for backend errors
             logg.Dispose();
 
-            const string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss} \t Backend/Service \t {Level} \n{Message}";
+            const string outputTemplate = "Backend/Service \t {Level} \n{Message}";
             var temporaryLokiLogger = new LoggerConfiguration()
                               .WriteTo.GrafanaLoki
                               (
@@ -388,11 +428,11 @@ namespace BackendClassNameSpace
             string message = "";
             if (mode == "start")
             {
-                message = String.Format("Repeater Service started.");   
+                message = "Repeater Service started.";   
             } 
             else if (mode == "stop")
             {
-                message = String.Format("Repeater Service stopped.");
+                message = "Repeater Service stopped.";
             }
 
             eventLog.WriteEntry(message, EventLogEntryType.Information, 4);     // 4 is id for backend start/stop
