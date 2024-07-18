@@ -74,10 +74,11 @@ namespace BackendClassNameSpace
             /// <summary> Tracks the memory use of the backend. </summary>
         public readonly ObservableGauge<long> processMemory;
             /// <summary> Tracks average time for packet ingress/egress </summary>
-        public Histogram<long> packetHandling;
-
-
-
+        public readonly Histogram<long> packetHandling;
+            /// <summary> Keeps track of isRunning. Is always true unless the process is ending. </summary>
+        public int isRunningInt;
+            /// <summary> Reports to Grafana is we're running </summary>
+        public readonly ObservableGauge<int> isRunning;
 
 
         /// <summary> 
@@ -98,7 +99,6 @@ namespace BackendClassNameSpace
         /// </summary>
         public Backend(string ReceiveIp, string ReceivePort, string SendIp, string SendPort, int newFrequency, string newInterval, string NameOfNIC)
         {
-
                 // system configuration set up section
             this.receiveIp = ReceiveIp;
             this.receivePort = Convert.ToInt32(ReceivePort);
@@ -112,7 +112,6 @@ namespace BackendClassNameSpace
             this.eventLog = new EventLog("UDP Packet Repeater");
             eventLog.Source = "UDP_Repeater_Backend";
             eventLog.MaximumKilobytes = 256;
-
 
                 // Loki event logger set up section
             const string outputTemplate = "Backend/Service \t {Level} \n{Message}";
@@ -145,6 +144,8 @@ namespace BackendClassNameSpace
             this.TotalPacketsHandled = myMeter.CreateCounter<long>("TotalPacketsHandled");
             this.processMemory = myMeter.CreateObservableGauge("backendMemory", () => GetProcessMemory());
             this.packetHandling = myMeter.CreateHistogram<long>("packetHandling");
+            this.isRunningInt = 1;
+            this.isRunning = myMeter.CreateObservableGauge("serviceRunning", () => { return isRunningInt; });
         }
 
 
@@ -192,9 +193,7 @@ namespace BackendClassNameSpace
                                   {
                                       new LokiLabel(){ Key = "RepeaterSide", Value = "Backend/Service" },
                                       new LokiLabel(){ Key = "MachineName", Value = Environment.MachineName },
-                                      new LokiLabel(){ Key = "User", Value = Environment.UserName },
-                                      new LokiLabel(){ Key = "Level", Value = "{Level}" }
-
+                                      new LokiLabel(){ Key = "User", Value = Environment.UserName }
                                   },
                                   textFormatter: new MessageTemplateTextFormatter(outputTemplate, null)
                               )
@@ -215,6 +214,8 @@ namespace BackendClassNameSpace
             this.TotalPacketsHandled = myMeter.CreateCounter<long>("TotalPacketsHandled");
             this.processMemory = myMeter.CreateObservableGauge("backendMemory", () => GetProcessMemory());
             this.packetHandling = myMeter.CreateHistogram<long>("packetHandling");
+            this.isRunningInt = 1;
+            this.isRunning = myMeter.CreateObservableGauge("serviceRunning", () => { return isRunningInt; });
         }
 
         /// <summary> 
@@ -434,6 +435,8 @@ namespace BackendClassNameSpace
             else if (mode == "stop")
             {
                 message = "Repeater Service stopped.";
+                isRunningInt = 0;
+                Thread.Sleep(6000);
             }
 
             eventLog.WriteEntry(message, EventLogEntryType.Information, 4);     // 4 is id for backend start/stop
