@@ -40,7 +40,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
-            this.showConfigbutton = new System.Windows.Forms.Button();
+            this.reconfigureSettings = new System.Windows.Forms.Button();
             this.logButton = new System.Windows.Forms.Button();
             this.currentSendPort = new System.Windows.Forms.Label();
             this.currentReceivePort = new System.Windows.Forms.Label();
@@ -165,16 +165,16 @@
             this.label1.TabIndex = 6;
             this.label1.Text = "Packets Handled: ";
             // 
-            // showConfigbutton
+            // reconfigureSettings
             // 
-            this.showConfigbutton.FlatAppearance.BorderSize = 2;
-            this.showConfigbutton.Location = new System.Drawing.Point(462, 406);
-            this.showConfigbutton.Name = "showConfigbutton";
-            this.showConfigbutton.Size = new System.Drawing.Size(129, 26);
-            this.showConfigbutton.TabIndex = 18;
-            this.showConfigbutton.Text = "Reconfigure Settings";
-            this.showConfigbutton.UseVisualStyleBackColor = true;
-            this.showConfigbutton.Click += new System.EventHandler(this.showDialogbutton_Click);
+            this.reconfigureSettings.FlatAppearance.BorderSize = 2;
+            this.reconfigureSettings.Location = new System.Drawing.Point(462, 406);
+            this.reconfigureSettings.Name = "reconfigureSettings";
+            this.reconfigureSettings.Size = new System.Drawing.Size(129, 26);
+            this.reconfigureSettings.TabIndex = 18;
+            this.reconfigureSettings.Text = "Reconfigure Settings";
+            this.reconfigureSettings.UseVisualStyleBackColor = true;
+            this.reconfigureSettings.Click += new System.EventHandler(this.showDialogbutton_Click);
             // 
             // logButton
             // 
@@ -387,7 +387,7 @@
             this.Controls.Add(this.label13);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.logButton);
-            this.Controls.Add(this.showConfigbutton);
+            this.Controls.Add(this.reconfigureSettings);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.title_label);
@@ -414,7 +414,7 @@
         private System.Windows.Forms.Label packet_counter;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Button showConfigbutton;
+        private System.Windows.Forms.Button reconfigureSettings;
         private System.Windows.Forms.Button logButton;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label5;

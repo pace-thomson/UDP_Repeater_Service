@@ -8,7 +8,7 @@ using UDP_Repeater_GUI;
 namespace UDP_Test_GUI
 {
     /// <summary>  </summary>
-    public partial class NIC_Picker : Form
+    public partial class Setup : Form
     {
 
             /// <summary> Tracks whether the user selection was valid </summary>
@@ -17,7 +17,7 @@ namespace UDP_Test_GUI
         private Logger logger;
 
         /// <summary> The NIC_Picker form constructor </summary>
-        public NIC_Picker()
+        public Setup()
         {
             InitializeComponent();
 

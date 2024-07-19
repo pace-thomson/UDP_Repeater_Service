@@ -1,6 +1,6 @@
 ﻿namespace UDP_Test_GUI
 {
-    partial class NIC_Picker
+    partial class Setup
     {
         /// <summary>
         /// Required designer variable.
@@ -28,14 +28,18 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(NIC_Picker));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Setup));
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.sumbitButton = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
             this.nameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.descriptionColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.macAddressColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.sumbitButton = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.promEndpoint = new System.Windows.Forms.TextBox();
+            this.lokiEndpoint = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -48,45 +52,12 @@
             this.nameColumn,
             this.descriptionColumn,
             this.macAddressColumn});
-            this.dataGridView1.Location = new System.Drawing.Point(36, 113);
+            this.dataGridView1.Location = new System.Drawing.Point(36, 108);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.ReadOnly = true;
             this.dataGridView1.RowHeadersVisible = false;
             this.dataGridView1.Size = new System.Drawing.Size(562, 189);
             this.dataGridView1.TabIndex = 0;
-            // 
-            // sumbitButton
-            // 
-            this.sumbitButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.sumbitButton.Location = new System.Drawing.Point(266, 319);
-            this.sumbitButton.Name = "sumbitButton";
-            this.sumbitButton.Size = new System.Drawing.Size(75, 23);
-            this.sumbitButton.TabIndex = 1;
-            this.sumbitButton.Text = "Submit";
-            this.sumbitButton.UseVisualStyleBackColor = true;
-            this.sumbitButton.Click += new System.EventHandler(this.doneButton_Click);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(85, 65);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(440, 32);
-            this.label1.TabIndex = 2;
-            this.label1.Text = "Please select a Network Interface Card to use for listening on this system. \r\nThi" +
-    "s can be changed later if needed";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(260, 18);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(81, 29);
-            this.label2.TabIndex = 3;
-            this.label2.Text = "Setup";
             // 
             // nameColumn
             // 
@@ -108,17 +79,91 @@
             this.macAddressColumn.Name = "macAddressColumn";
             this.macAddressColumn.ReadOnly = true;
             // 
-            // NIC_Picker
+            // sumbitButton
+            // 
+            this.sumbitButton.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.sumbitButton.Location = new System.Drawing.Point(474, 324);
+            this.sumbitButton.Name = "sumbitButton";
+            this.sumbitButton.Size = new System.Drawing.Size(88, 33);
+            this.sumbitButton.TabIndex = 1;
+            this.sumbitButton.Text = "Submit";
+            this.sumbitButton.UseVisualStyleBackColor = true;
+            this.sumbitButton.Click += new System.EventHandler(this.doneButton_Click);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(68, 47);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(483, 48);
+            this.label1.TabIndex = 2;
+            this.label1.Text = "Please select a Network Interface Card to use for listening on this system. Pleas" +
+    "e\r\nalso input the Prometheus and Loki endpoints you wish to send to. \r\nThese set" +
+    "ting can be changed later if needed.";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Location = new System.Drawing.Point(249, 9);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(81, 29);
+            this.label2.TabIndex = 3;
+            this.label2.Text = "Setup";
+            // 
+            // promEndpoint
+            // 
+            this.promEndpoint.AllowDrop = true;
+            this.promEndpoint.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.promEndpoint.Location = new System.Drawing.Point(53, 337);
+            this.promEndpoint.Name = "promEndpoint";
+            this.promEndpoint.Size = new System.Drawing.Size(140, 20);
+            this.promEndpoint.TabIndex = 4;
+            // 
+            // lokiEndpoint
+            // 
+            this.lokiEndpoint.AllowDrop = true;
+            this.lokiEndpoint.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.lokiEndpoint.Location = new System.Drawing.Point(254, 337);
+            this.lokiEndpoint.Name = "lokiEndpoint";
+            this.lokiEndpoint.Size = new System.Drawing.Size(149, 20);
+            this.lokiEndpoint.TabIndex = 5;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(68, 318);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(111, 13);
+            this.label3.TabIndex = 6;
+            this.label3.Text = "Prometheus Endpoint:";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(289, 318);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(75, 13);
+            this.label4.TabIndex = 7;
+            this.label4.Text = "Loki Endpoint:";
+            // 
+            // Setup
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(630, 354);
+            this.ClientSize = new System.Drawing.Size(630, 380);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.lokiEndpoint);
+            this.Controls.Add(this.promEndpoint);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.sumbitButton);
             this.Controls.Add(this.dataGridView1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "NIC_Picker";
+            this.Name = "Setup";
             this.Text = "Packet Repeater Setup";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.NIC_Picker_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
@@ -136,5 +181,9 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn nameColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn descriptionColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn macAddressColumn;
+        private System.Windows.Forms.TextBox promEndpoint;
+        private System.Windows.Forms.TextBox lokiEndpoint;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label4;
     }
 }

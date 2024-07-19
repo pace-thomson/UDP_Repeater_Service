@@ -190,11 +190,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="NIC_Picker.cs">
+    <Compile Include="Setup.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="NIC_Picker.Designer.cs">
-      <DependentUpon>NIC_Picker.cs</DependentUpon>
+    <Compile Include="Setup.Designer.cs">
+      <DependentUpon>Setup.cs</DependentUpon>
     </Compile>
     <Compile Include="LogForm.cs">
       <SubType>Form</SubType>
@@ -217,8 +217,8 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="NIC_Picker.resx">
-      <DependentUpon>NIC_Picker.cs</DependentUpon>
+    <EmbeddedResource Include="Setup.resx">
+      <DependentUpon>Setup.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="LogForm.resx">
       <DependentUpon>LogForm.cs</DependentUpon>

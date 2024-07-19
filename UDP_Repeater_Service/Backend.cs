@@ -220,9 +220,9 @@ namespace BackendClassNameSpace
         public void AddNewPacketTimeHandled(long stopWatchTime)
         {
             packetHandling.Record(stopWatchTime);
-            if (stopWatchTime > 1.5)
+            if (stopWatchTime > 1)
             {
-                WarningLogger($"Packet handling time of {stopWatchTime}ms was greater than 1.5 seconds.");
+                WarningLogger($"Packet handling time of {stopWatchTime}ms was greater than 1 millisecond.");
             }
         }
 

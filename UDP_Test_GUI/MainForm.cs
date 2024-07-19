@@ -117,7 +117,7 @@ namespace UDP_Repeater_GUI
                 return;
             }
 
-            NIC_Picker picker = new NIC_Picker();   
+            Setup picker = new Setup();   
             picker.ShowDialog();
         }
 
@@ -493,7 +493,7 @@ namespace UDP_Repeater_GUI
             DialogResult response = messageDialog.ShowDialog();
             if (response == DialogResult.Abort)
             {
-                NIC_Picker picker = new NIC_Picker();
+                Setup picker = new Setup();
                 picker.ShowDialog();
             }
         }

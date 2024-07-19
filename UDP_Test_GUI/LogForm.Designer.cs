@@ -43,7 +43,6 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.inactivityInputBox = new System.Windows.Forms.NumericUpDown();
-            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             ((System.ComponentModel.ISupportInitialize)(this.reconfigLog)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.inactivityInputBox)).BeginInit();
             this.SuspendLayout();
@@ -52,6 +51,9 @@
             // 
             this.reconfigLog.AllowUserToAddRows = false;
             this.reconfigLog.AllowUserToDeleteRows = false;
+            this.reconfigLog.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.reconfigLog.ColumnHeadersHeight = 34;
             this.reconfigLog.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.reconfigLog.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
@@ -66,7 +68,7 @@
             dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.reconfigLog.RowsDefaultCellStyle = dataGridViewCellStyle2;
             this.reconfigLog.RowTemplate.DefaultCellStyle.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.reconfigLog.Size = new System.Drawing.Size(773, 321);
+            this.reconfigLog.Size = new System.Drawing.Size(833, 342);
             this.reconfigLog.TabIndex = 1;
             // 
             // entryType
@@ -186,7 +188,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(818, 436);
+            this.ClientSize = new System.Drawing.Size(865, 457);
             this.Controls.Add(this.inactivityInputBox);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label1);
@@ -221,6 +223,5 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn frontOrBack;
         private System.Windows.Forms.DataGridViewTextBoxColumn messageColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn timeStampColumn;
-        private System.ComponentModel.BackgroundWorker backgroundWorker1;
     }
 }

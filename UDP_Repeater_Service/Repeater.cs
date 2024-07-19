@@ -42,8 +42,8 @@ namespace Repeater
         public static int consecutiveEventsFired = 0;
                 /// <summary>Check every 5 seconds</summary>
         public static int checkInterval = 5000;
-                /// <summary> The specified time between packets </summary>
-        public static int timeoutThreshold;
+                /// <summary> The specified time between packets, in seconds </summary>
+        public static double timeoutThreshold;
                 /// <summary> This can either be the mose recent packet, or most recent log event </summary>
         public static DateTime mostRecentTimestamp;
                 /// <summary> A Backend object that we use to get the inactivity settings. </summary>
@@ -65,7 +65,7 @@ namespace Repeater
             try
             {
                 timer = new System.Timers.Timer(checkInterval);
-                timer.Elapsed += OnTimedEvent;
+                timer.Elapsed += OnTimerFiring;
 
                 timer.AutoReset = true;  
                 timer.Enabled = true;
@@ -78,19 +78,19 @@ namespace Repeater
                 switch (backendObject.interval)
                 {
                     case "minute":
-                        timeoutThreshold = (int)TimeSpan.FromMinutes(frequencyDouble).TotalMilliseconds;
+                        timeoutThreshold = TimeSpan.FromMinutes(frequencyDouble).TotalSeconds;
                         break;
                     case "hour":
-                        timeoutThreshold = (int)TimeSpan.FromHours(frequencyDouble).TotalMilliseconds;
+                        timeoutThreshold = TimeSpan.FromHours(frequencyDouble).TotalSeconds;
                         break;
                     case "day":
-                        timeoutThreshold = (int)TimeSpan.FromDays(frequencyDouble).TotalMilliseconds;
+                        timeoutThreshold = TimeSpan.FromDays(frequencyDouble).TotalSeconds;
                         break;
                 }
             }
             catch (Exception e)
             {
-                backendObject.ExceptionLogger(e);
+                BackendObject.ExceptionLogger(e);
             }
         }
 
@@ -105,9 +105,9 @@ namespace Repeater
         ///  
         /// Returns: None 
         /// </summary>
-        public static void OnTimedEvent(Object source, ElapsedEventArgs e)
+        public static void OnTimerFiring(Object source, ElapsedEventArgs e)
         {
-            if ((DateTime.Now - mostRecentTimestamp).TotalMilliseconds > timeoutThreshold)
+            if ((DateTime.Now - mostRecentTimestamp).TotalSeconds > timeoutThreshold)
             {
                 // Logs the event with the number of events fired multiplied by the frequency
                 // for example, with 5 minutes as the setting, the 3rd consecutive event would log 15 minutes
@@ -134,11 +134,6 @@ namespace Repeater
             mostRecentTimestamp = timeStamp;
             consecutiveEventsFired = 0;
         }
-
-        public void DisposeOfTimerObject()
-        {
-            timer.Dispose();
-        }
     }
 
 
@@ -154,7 +149,7 @@ namespace Repeater
         public static TimerClass timer { get; set; }
                 /// <summary> Tells us if the send ip is multicast or not. </summary>
         private static bool isMulticast { get; set; }
-
+                /// <summary> Times how long it takes to process packets. </summary>
         public static Stopwatch stopWatch { get; set; }
 
 
@@ -296,7 +291,7 @@ namespace Repeater
                 device.Open(DeviceModes.Promiscuous, readTimeoutMilliseconds);
 
                     // filters for out listening port
-                device.Filter = String.Format("udp port {0}", backendObject.receivePort);
+                device.Filter = $"udp port {backendObject.receivePort}";
 
 
                 device.StartCapture();
@@ -415,8 +410,6 @@ namespace Repeater
                 stopWatch = new Stopwatch();
 
                 StartReceiver(token);
-
-                timer.DisposeOfTimerObject();
 
                 return;
             }
