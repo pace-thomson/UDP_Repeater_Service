@@ -81,9 +81,9 @@ namespace GUIreceiver
             try
             {
                         // a new backendObject gets made to compare to the old one when this function returns
-                Backend newbackendObject = new Backend(backendObject.receiveIp, backendObject.receivePort.ToString(),
+                Backend newbackendObject = new Backend(true, backendObject.receiveIp, backendObject.receivePort.ToString(),
                                                        backendObject.sendIp, backendObject.sendPort.ToString(),
-                                                       backendObject.frequency, backendObject.interval);
+                                                       backendObject.frequency, backendObject.interval, backendObject.descriptionOfNIC);
 
                         // This resets the send or receive data if those options are selected
                         // and does nothing if defaults is selected, which is handled where this is called
@@ -116,6 +116,8 @@ namespace GUIreceiver
                         break;
                     case "nic":
                         newbackendObject.descriptionOfNIC = dataParts[0];
+                        break;
+                    default:        // if restore to defaults was picked
                         break;
                 }
 

@@ -65,10 +65,10 @@
             // 
             this.profileDropDown.FormattingEnabled = true;
             this.profileDropDown.Items.AddRange(new object[] {
-            "Sending To",
             "Receiving From",
-            "Default Send",
-            "Default Receive"});
+            "Sending To",
+            "Default Receive",
+            "Default Send"});
             this.profileDropDown.Location = new System.Drawing.Point(323, 124);
             this.profileDropDown.Name = "profileDropDown";
             this.profileDropDown.Size = new System.Drawing.Size(123, 21);

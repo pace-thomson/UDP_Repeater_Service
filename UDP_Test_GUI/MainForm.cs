@@ -124,7 +124,7 @@ namespace UDP_Repeater_GUI
         /// <summary> 
         ///  Class Name: gui_form  <br/><br/>
         ///
-        ///  Description: Overloaded version 1/3. Updates the current configuration group. <br/>
+        ///  Description: Overloaded version 1/4. Updates the current configuration group. <br/>
         ///  This one is used for the initial setting of the values in the group. <br/><br/>
         ///
         ///  Inputs: None <br/><br/>
@@ -151,7 +151,7 @@ namespace UDP_Repeater_GUI
         /// <summary> 
         ///  Class Name: gui_form  <br/><br/>
         ///
-        ///  Description: Overloaded version 2/3. Updates the current configuration group. <br/>
+        ///  Description: Overloaded version 2/4. Updates the current configuration group. <br/>
         ///  This one updates the ip/port values of the group. It's updated this way so <br/>
         ///  this doesn't have to wait for the backend to update "UDP_Repeater_Config.json". <br/>
         ///  This function gets called right after the user inputs a new setting. <br/><br/>
@@ -180,7 +180,7 @@ namespace UDP_Repeater_GUI
         /// <summary> 
         ///  Class Name: gui_form  <br/><br/>
         ///
-        ///  Description: Overloaded version 3/3. Updates the current configuration group. <br/>
+        ///  Description: Overloaded version 3/4. Updates the current configuration group. <br/>
         ///  This one updates the frequency and interval values of the group. It's updated this <br/>
         ///  way so this doesn't have to wait for the backend to update "UDP_Repeater_Config.json". <br/>
         ///  This function gets called right after the user inputs a new setting. <br/><br/>
@@ -199,6 +199,27 @@ namespace UDP_Repeater_GUI
             }
             currentFrequency.Text = frequency;
             currentInterval.Text = interval;
+        }
+
+        /// <summary> 
+        ///  Class Name: gui_form  <br/><br/>
+        ///
+        ///  Description: (Kind of) Overloaded version 4/4. Updates the current configuration group. <br/>
+        ///  This one is for when the settings are returned to default. <br/><br/>
+        ///
+        ///  Inputs: None <br/><br/>
+        ///  
+        ///  Returns: None
+        /// </summary>
+        public void UpdateCurrentConfigGroupWithDefaults()
+        {
+            string jsonString = File.ReadAllText("C:\\Windows\\SysWOW64\\UDP_Repeater_Config.json");
+            JObject jsonObject = JObject.Parse(jsonString);
+
+            currentReceiveIp.Text   = (string)jsonObject["defaultSettings"]["receiveFrom"]["ip"];
+            currentReceivePort.Text = (string)jsonObject["defaultSettings"]["receiveFrom"]["port"];
+            currentSendIp.Text      = (string)jsonObject["defaultSettings"]["sendTo"]["ip"];
+            currentSendPort.Text    = (string)jsonObject["defaultSettings"]["sendTo"]["port"];
         }
 
 

@@ -27,6 +27,7 @@ using Newtonsoft.Json;
 using System.Threading;
 using System.IO;
 using System.Diagnostics;
+using System.Web.Configuration;
 
 
 
@@ -162,7 +163,7 @@ class TheMainProgram
             string receivePort  =   (string)jsonObject["currentConfig"]["receiveFrom"]["port"];
             string sendIp       =   (string)jsonObject["currentConfig"]["sendTo"]["ip"];
             string sendPort     =   (string)jsonObject["currentConfig"]["sendTo"]["port"];
-            int frequency       =   ( int  )jsonObject["inactivitySettings"]["frequency"];
+            int    frequency    =   ( int  )jsonObject["inactivitySettings"]["frequency"];
             string interval     =   (string)jsonObject["inactivitySettings"]["interval"];
             string nameOfNIC    =   (string)jsonObject["descriptionOfNIC"];
 
@@ -196,7 +197,6 @@ class TheMainProgram
         {
             string jsonString = File.ReadAllText("UDP_Repeater_Config.json");
 
-
             JObject jsonObject = JObject.Parse(jsonString);
 
             string receiveIp   =  (string)jsonObject["defaultSettings"]["receiveFrom"]["ip"];
@@ -216,7 +216,7 @@ class TheMainProgram
             backendObject.sendPort     =  int.Parse(sendPort);
 
             var stringThing = JsonConvert.SerializeObject(jsonObject, Formatting.Indented);
-            File.WriteAllText("UDP_Repeater_Config.json", jsonString);
+            File.WriteAllText("UDP_Repeater_Config.json", stringThing);
         }
         catch (Exception e)
         {
@@ -331,12 +331,16 @@ class TheMainProgram
                 {
                     RestoreToDefaults(backendObject);
                 }
+                else if (backendObject == null)
+                {
+                    backendObject.WarningLogger("An error occured and the configuration settings weren't able to be changed.");
+                    continue;
+                }
                 else    // otherwise, some settings were changed, so we need to update our things
                 {
                     UpdateConfigJson(newbackendObject);  // updates config.json
-                    backendObject = SetConfig();         // updates backendObject to match what's in config.json
+                    backendObject.UpdateWithNewBackendObject(newbackendObject);     // updates the original backendObject with the new valuess
                 }
-                newbackendObject.eventLog.Dispose();
             }
         }
         catch (Exception e)

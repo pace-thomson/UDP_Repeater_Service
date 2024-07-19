@@ -67,7 +67,7 @@ namespace Repeater
                 timer = new System.Timers.Timer(checkInterval);
                 timer.Elapsed += OnTimedEvent;
 
-                timer.AutoReset = true;     // Hook up the Elapsed event for the timer.
+                timer.AutoReset = true;  
                 timer.Enabled = true;
 
                 backendObject = BackendObject;
@@ -412,7 +412,7 @@ namespace Repeater
 
                 timer = new TimerClass(BackendObject);
 
-                stopWatch = Stopwatch.StartNew();
+                stopWatch = new Stopwatch();
 
                 StartReceiver(token);
 

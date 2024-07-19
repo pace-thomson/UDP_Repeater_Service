@@ -48,7 +48,7 @@ namespace UDP_Repeater_GUI
             /// <summary> The main meter provider </summary>
         public MeterProvider meterProvider;
             /// <summary> Tracks the memory use of the gui </summary>
-        public static readonly ObservableGauge<long> processMemory = myMeter.CreateObservableGauge("frontendMemory", () => GetProcessMemory());
+        public static readonly ObservableGauge<double> processMemory = myMeter.CreateObservableGauge("frontendMemory", () => GetProcessMemory());
 
 
         public Logger()
@@ -56,7 +56,7 @@ namespace UDP_Repeater_GUI
             this.eventLog = new EventLog("UDP Packet Repeater");
             this.eventLog.Source = "UDP_Repeater_Frontend";
 
-            const string outputTemplate = "Frontend/Interface \t {Level} {NewLine}{Message}";
+            const string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss} \t Frontend/Interface \t {Level} {NewLine}{Message}";
             this.lokiLogger = new LoggerConfiguration()
                                 .WriteTo.GrafanaLoki
                                 (
@@ -84,24 +84,6 @@ namespace UDP_Repeater_GUI
                                 .Build();
         }
 
-        //public void PrometheusFruitCounterSender()
-        //{
-        //    // Testing one
-        //    Counter<long> MyFruitCounter = myMeter.CreateCounter<long>("MyFruitCounter");
-
-        //    //MyFruitCounter.Add(50, new KeyValuePair<string, object>("name", "apple"), new KeyValuePair<string, object>("color", "red"));
-        //    //MyFruitCounter.Add(50, new KeyValuePair<string, object>("name", "apple"), new KeyValuePair<string, object>("color", "green"));
-        //    //MyFruitCounter.Add(50, new KeyValuePair<string, object>("name", "lemon"), new KeyValuePair<string, object>("color", "yellow"));
-
-        //    Random random = new Random();
-        //    while (true)
-        //    {
-        //        MyFruitCounter.Add(1);
-
-        //        System.Threading.Thread.Sleep(random.Next(100, 10000));
-        //    }
-        //}
-
         /// <summary> 
         ///  Class Name: Logger  <br/> <br/>
         ///
@@ -111,10 +93,10 @@ namespace UDP_Repeater_GUI
         ///  
         ///  Returns:  long - the process memory
         /// </summary>
-        public static long GetProcessMemory()
+        public static double GetProcessMemory()
         {
-            Process proc = Process.GetCurrentProcess();
-            return proc.PrivateMemorySize64;
+            long bytes = Process.GetCurrentProcess().PrivateMemorySize64;
+            return (bytes / 1024f) / 1024f;
         }
 
         /// <summary> 
@@ -156,7 +138,7 @@ namespace UDP_Repeater_GUI
         public void LogConfigChange(string editType, string ip, string port)
         {
             string message = String.Format("The \"{0}\" settings were changed. \n" +
-                                            "IP Address: {1}    " +
+                                            "IP Address: {1} \n" +
                                             "Port: {2}", editType, ip, port);
 
             eventLog.WriteEntry(message, EventLogEntryType.Information, 6);  // 6 is id for ip/port config change
@@ -178,7 +160,7 @@ namespace UDP_Repeater_GUI
         public void LogInactivityChange(int frequency, string interval)
         {
             string message = String.Format("The \"Inactivity\" settings were changed. \n" +
-                                           "Frequency: {0}    " +
+                                           "Frequency: {0} \n" +
                                            "Interval: {1}", frequency, interval);
 
             eventLog.WriteEntry(message, EventLogEntryType.Information, 7);  // 7 is an inactivity config change
@@ -198,8 +180,8 @@ namespace UDP_Repeater_GUI
         /// </summary>
         public void LogNicChange(string description, string macAddress)
         {
-            string message = String.Format("The Network Interface Listening Card was changed. \n" +
-                                           "Description: {0}    " +
+            string message = String.Format("The listening Network Interface Card was changed. \n" +
+                                           "Description: {0} \n" +
                                            "Mac Address: {1}", description, macAddress);
 
             eventLog.WriteEntry(message, EventLogEntryType.Information, 8);  // 8 is a NIC config change

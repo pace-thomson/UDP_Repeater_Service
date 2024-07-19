@@ -157,6 +157,7 @@ namespace UDP_Repeater_GUI
                     byte[] bytes = Encoding.ASCII.GetBytes(",,");
                     sendRequest.Send(bytes, bytes.Length, "127.0.0.1", 50001);
                     theMainForm.logger.LogConfigChange("Reverted to Default", "N/A", "N/A");
+                    theMainForm.UpdateCurrentConfigGroupWithDefaults();
                 }
                 catch (Exception exception)
                 {
