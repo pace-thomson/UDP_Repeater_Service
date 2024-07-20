@@ -82,14 +82,16 @@ namespace GUIreceiver
             {
                         // a new backendObject gets made to compare to the old one when this function returns
                 Backend newbackendObject = new Backend(true, backendObject.receiveIp, backendObject.receivePort.ToString(),
-                                                       backendObject.sendIp, backendObject.sendPort.ToString(),
-                                                       backendObject.frequency, backendObject.interval, backendObject.descriptionOfNIC);
+                                                             backendObject.sendIp, backendObject.sendPort.ToString(),
+                                                             backendObject.frequency, backendObject.interval, 
+                                                             backendObject.promEndpoint, backendObject.lokiEndpoint,
+                                                             backendObject.descriptionOfNIC);
 
                         // This resets the send or receive data if those options are selected
                         // and does nothing if defaults is selected, which is handled where this is called
                 string[] dataParts = ReceivingFromGUI(backendObject);
 
-                        // dataParts[2] is mode 
+                        // dataParts[2] is the mode 
                 switch (dataParts[2])
                 {
                     case "Receiving From":
@@ -114,8 +116,10 @@ namespace GUIreceiver
                         newbackendObject.frequency = int.Parse(dataParts[0]);
                         newbackendObject.interval = dataParts[1];
                         break;
-                    case "nic":
-                        newbackendObject.descriptionOfNIC = dataParts[0];
+                    case "setup":
+                        newbackendObject.promEndpoint = dataParts[0];
+                        newbackendObject.lokiEndpoint = dataParts[1];
+                        newbackendObject.descriptionOfNIC = dataParts[3];
                         break;
                     default:        // if restore to defaults was picked
                         break;

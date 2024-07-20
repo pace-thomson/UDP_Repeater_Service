@@ -61,6 +61,7 @@
             this.label10 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
             this.statusLabel = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -145,13 +146,13 @@
             this.label2.TabIndex = 8;
             this.label2.Text = "This interface only begins running when the current user logs in. \r\nThe Packet Re" +
     "peater runs whenever this computer is on, so this \r\n is not a complete record of" +
-    " all packets sent by the service.";
+    " all packets handled by the service.";
             // 
             // panel1
             // 
             this.panel1.Controls.Add(this.packet_counter);
             this.panel1.Controls.Add(this.label1);
-            this.panel1.Location = new System.Drawing.Point(262, 408);
+            this.panel1.Location = new System.Drawing.Point(252, 413);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(161, 23);
             this.panel1.TabIndex = 15;
@@ -168,7 +169,7 @@
             // reconfigureSettings
             // 
             this.reconfigureSettings.FlatAppearance.BorderSize = 2;
-            this.reconfigureSettings.Location = new System.Drawing.Point(462, 406);
+            this.reconfigureSettings.Location = new System.Drawing.Point(462, 411);
             this.reconfigureSettings.Name = "reconfigureSettings";
             this.reconfigureSettings.Size = new System.Drawing.Size(129, 26);
             this.reconfigureSettings.TabIndex = 18;
@@ -178,11 +179,11 @@
             // 
             // logButton
             // 
-            this.logButton.Location = new System.Drawing.Point(73, 405);
+            this.logButton.Location = new System.Drawing.Point(66, 413);
             this.logButton.Name = "logButton";
             this.logButton.Size = new System.Drawing.Size(114, 26);
             this.logButton.TabIndex = 19;
-            this.logButton.Text = "System Log";
+            this.logButton.Text = "System Log*";
             this.logButton.UseVisualStyleBackColor = true;
             this.logButton.Click += new System.EventHandler(this.logButton_Click);
             // 
@@ -378,11 +379,21 @@
             this.statusLabel.TabIndex = 23;
             this.statusLabel.Text = "Checking ";
             // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(38, 396);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(170, 13);
+            this.label14.TabIndex = 24;
+            this.label14.Text = "* Inactivity Reconfiguration is Here";
+            // 
             // gui_form
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(655, 450);
+            this.ClientSize = new System.Drawing.Size(653, 453);
+            this.Controls.Add(this.label14);
             this.Controls.Add(this.statusLabel);
             this.Controls.Add(this.label13);
             this.Controls.Add(this.panel2);
@@ -441,6 +452,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn portColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn payloadColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn timeColumn;
+        private System.Windows.Forms.Label label14;
     }
 }
 

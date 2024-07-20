@@ -118,7 +118,7 @@
             // defaultButton
             // 
             this.defaultButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.defaultButton.Location = new System.Drawing.Point(195, 202);
+            this.defaultButton.Location = new System.Drawing.Point(186, 202);
             this.defaultButton.Name = "defaultButton";
             this.defaultButton.Size = new System.Drawing.Size(100, 38);
             this.defaultButton.TabIndex = 23;
@@ -133,7 +133,7 @@
             this.reconfigNicButton.Name = "reconfigNicButton";
             this.reconfigNicButton.Size = new System.Drawing.Size(100, 38);
             this.reconfigNicButton.TabIndex = 24;
-            this.reconfigNicButton.Text = "Reconfigure Network Inteface ";
+            this.reconfigNicButton.Text = "Reconfigure NIC \r\nor Monitoring ";
             this.reconfigNicButton.UseVisualStyleBackColor = true;
             this.reconfigNicButton.Click += new System.EventHandler(this.reconfigNicButton_Click);
             // 

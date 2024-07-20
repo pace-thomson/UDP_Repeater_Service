@@ -118,47 +118,12 @@ class TheMainProgram
     {
         try
         {
-            if (!File.Exists("UDP_Repeater_Config.json"))   // actual path: "C:\\Windows\\SysWOW64\\UDP_Repeater_Config.json"
+            while (!File.Exists("UDP_Repeater_Config.json"))   // actual path: "C:\\Windows\\SysWOW64\\UDP_Repeater_Config.json"
             {
-                // if UDP_Repeater_Config.json doense't exist, it make it and then poplulates it with this string
-                string defaults = @"        
-                {
-                    ""currentConfig"": {
-                        ""receiveFrom"": {
-                            ""ip"": ""172.18.46.213"",
-                            ""port"": ""763""
-                        },
-                        ""sendTo"": {
-                            ""ip"": ""172.18.46.213"",
-                            ""port"": ""722""
-                        }
-                    },
-
-                    ""defaultSettings"": {
-                        ""receiveFrom"": {
-                            ""ip"": ""127.0.0.255"",
-                            ""port"": ""7654""
-                        },
-                        ""sendTo"": {
-                            ""ip"": ""132.58.202.157"",
-                            ""port"": ""722""
-                        }
-                    },
-
-                    ""inactivitySettings"": {
-                        ""frequency"": ""5"",
-                        ""interval"": ""minute""
-                    },
-                    ""descriptionOfNIC"":""Temporary""
-                }";
-
-                // Write the JSON string to a file
-                File.WriteAllText("UDP_Repeater_Config.json", defaults);
+                Thread.Sleep(1000);
             }
 
             string jsonString = File.ReadAllText("UDP_Repeater_Config.json");
-
-
             JObject jsonObject = JObject.Parse(jsonString);
 
             string receiveIp    =   (string)jsonObject["currentConfig"]["receiveFrom"]["ip"];
@@ -167,10 +132,13 @@ class TheMainProgram
             string sendPort     =   (string)jsonObject["currentConfig"]["sendTo"]["port"];
             int    frequency    =   ( int  )jsonObject["inactivitySettings"]["frequency"];
             string interval     =   (string)jsonObject["inactivitySettings"]["interval"];
+            string promEndpoint =   (string)jsonObject["monitoring"]["prom"];
+            string lokiEndpoint =   (string)jsonObject["monitoring"]["loki"];
             string nameOfNIC    =   (string)jsonObject["descriptionOfNIC"];
 
 
-            Backend backendObject = new Backend(receiveIp, receivePort, sendIp, sendPort, frequency, interval, nameOfNIC);
+            Backend backendObject = new Backend(receiveIp, receivePort, sendIp, sendPort, frequency, interval, 
+                                                promEndpoint, lokiEndpoint, nameOfNIC);
 
             return backendObject;
         }
@@ -265,9 +233,11 @@ class TheMainProgram
                 jsonObject["currentConfig"]["sendTo"]["ip"]         =   backendObject.sendIp;
                 jsonObject["currentConfig"]["sendTo"]["port"]       =   backendObject.sendPort.ToString();
             }
-                            // always updates the inactivitySettings
+                            // always updates the inactivity Settings and monitoring endpoints
             jsonObject["inactivitySettings"]["frequency"]  =  backendObject.frequency.ToString();
             jsonObject["inactivitySettings"]["interval"]   =  backendObject.interval;
+            jsonObject["monitoring"]["prom"]               =  backendObject.promEndpoint;
+            jsonObject["monitoring"]["loki"]               =  backendObject.lokiEndpoint;
             jsonObject["descriptionOfNIC"]                 =  backendObject.descriptionOfNIC;    
 
             var stringThing = JsonConvert.SerializeObject(jsonObject, Formatting.Indented);

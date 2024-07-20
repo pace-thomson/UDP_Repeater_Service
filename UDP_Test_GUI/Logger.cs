@@ -188,6 +188,27 @@ namespace UDP_Repeater_GUI
             lokiLogger.Information(message);
         }
 
+        /// <summary> 
+        ///  Class Name: Logger  <br/><br/>
+        ///
+        ///  Description: Logs NIC changes into the event log. <br/><br/>
+        ///
+        ///  Inputs:  <br/>
+        ///  string <paramref name="promEndpoint"/> - The uri for the prometheus endpoint. <br/>
+        ///  string <paramref name="lokiEndpoint"/> - The uri for the loki endpoint. <br/><br/>
+        ///  
+        ///  Returns:  None
+        /// </summary>
+        public void LogMonitoringChange(string promEndpoint, string lokiEndpoint)
+        {
+            string message = $"The monitoring endpoints have changed. \n" +
+                             $"Prometheus: {promEndpoint} \n" +
+                             $"Loki: {lokiEndpoint}";
+
+            eventLog.WriteEntry(message, EventLogEntryType.Information, 10);  // 10 is a NIC config change
+            lokiLogger.Information(message);
+        }
+
 
         /// <summary> 
         ///  Class Name: Logger  <br/><br/>

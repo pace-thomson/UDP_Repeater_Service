@@ -70,6 +70,7 @@
             this.reconfigLog.RowTemplate.DefaultCellStyle.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.reconfigLog.Size = new System.Drawing.Size(833, 342);
             this.reconfigLog.TabIndex = 1;
+            this.reconfigLog.UseWaitCursor = true;
             // 
             // entryType
             // 
@@ -110,6 +111,7 @@
             this.label2.Size = new System.Drawing.Size(225, 42);
             this.label2.TabIndex = 3;
             this.label2.Text = "System Log";
+            this.label2.UseWaitCursor = true;
             // 
             // label3
             // 
@@ -120,16 +122,18 @@
             this.label3.Size = new System.Drawing.Size(188, 16);
             this.label3.TabIndex = 6;
             this.label3.Text = "Configure Inactivity Period";
+            this.label3.UseWaitCursor = true;
             // 
             // inactivityButton
             // 
             this.inactivityButton.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.inactivityButton.Location = new System.Drawing.Point(699, 64);
+            this.inactivityButton.Location = new System.Drawing.Point(707, 64);
             this.inactivityButton.Name = "inactivityButton";
             this.inactivityButton.Size = new System.Drawing.Size(76, 23);
             this.inactivityButton.TabIndex = 7;
             this.inactivityButton.Text = "Send";
             this.inactivityButton.UseVisualStyleBackColor = true;
+            this.inactivityButton.UseWaitCursor = true;
             this.inactivityButton.Click += new System.EventHandler(this.inactivityButton_Click);
             // 
             // inactivityDropdown
@@ -141,10 +145,11 @@
             "Minute(s)",
             "Hour(s)",
             "Day(s)"});
-            this.inactivityDropdown.Location = new System.Drawing.Point(572, 66);
+            this.inactivityDropdown.Location = new System.Drawing.Point(577, 66);
             this.inactivityDropdown.Name = "inactivityDropdown";
             this.inactivityDropdown.Size = new System.Drawing.Size(121, 21);
             this.inactivityDropdown.TabIndex = 8;
+            this.inactivityDropdown.UseWaitCursor = true;
             // 
             // label1
             // 
@@ -155,6 +160,7 @@
             this.label1.Size = new System.Drawing.Size(57, 13);
             this.label1.TabIndex = 9;
             this.label1.Text = "Frequency";
+            this.label1.UseWaitCursor = true;
             // 
             // label4
             // 
@@ -164,6 +170,7 @@
             this.label4.Size = new System.Drawing.Size(42, 13);
             this.label4.TabIndex = 10;
             this.label4.Text = "Interval";
+            this.label4.UseWaitCursor = true;
             // 
             // inactivityInputBox
             // 
@@ -178,6 +185,7 @@
             this.inactivityInputBox.Size = new System.Drawing.Size(68, 20);
             this.inactivityInputBox.TabIndex = 11;
             this.inactivityInputBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.inactivityInputBox.UseWaitCursor = true;
             this.inactivityInputBox.Value = new decimal(new int[] {
             1,
             0,
@@ -202,6 +210,7 @@
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "System Log";
+            this.UseWaitCursor = true;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.LogForm_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.reconfigLog)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.inactivityInputBox)).EndInit();

@@ -1,9 +1,11 @@
 ﻿using System;
 using SharpPcap;
+using System.IO;
 using System.Net.Sockets;
 using System.Text;
 using System.Windows.Forms;
 using UDP_Repeater_GUI;
+using Newtonsoft.Json.Linq;
 
 namespace UDP_Test_GUI
 {
@@ -23,6 +25,8 @@ namespace UDP_Test_GUI
 
             PopulateNICs();
 
+            PopulateCurrentConfig();
+
             logger = new Logger();
 
             isValid = true;
@@ -33,53 +37,78 @@ namespace UDP_Test_GUI
         /// <summary> Fills out the data grid view with all the NIC's on the system </summary>
         private void PopulateNICs()
         {
-            var devices = CaptureDeviceList.Instance;
-            foreach (ICaptureDevice dev in devices)
+            try
             {
-                int rowNum = dataGridView1.Rows.Add();
-                DataGridViewRow row = dataGridView1.Rows[rowNum];
-
-                row.Cells["nameColumn"].Value = dev.Name;
-                row.Cells["descriptionColumn"].Value = dev.Description;
-                row.Cells["macAddressColumn"].Value = dev.MacAddress;
-                if (dev.MacAddress == null)
+                var devices = CaptureDeviceList.Instance;
+                foreach (ICaptureDevice dev in devices)
                 {
-                    row.Cells["macAddressColumn"].Value = "N/A";
+                    int rowNum = dataGridView1.Rows.Add();
+                    DataGridViewRow row = dataGridView1.Rows[rowNum];
+
+                    row.Cells["nameColumn"].Value = dev.Name;
+                    row.Cells["descriptionColumn"].Value = dev.Description;
+                    row.Cells["macAddressColumn"].Value = dev.MacAddress;
+                    if (dev.MacAddress == null)
+                    {
+                        row.Cells["macAddressColumn"].Value = "N/A";
+                    }
                 }
             }
+            catch (Exception ex) { logger.LogException(ex); }
+        }
+
+        private void PopulateCurrentConfig()
+        {
+            string jsonString = File.ReadAllText("C:\\Windows\\SysWOW64\\UDP_Repeater_Config.json");
+            JObject jsonObject = JObject.Parse(jsonString);
+
+            promLabel.Text = (string)jsonObject["monitoring"]["prom"];
+            lokiLabel.Text = (string)jsonObject["monitoring"]["loki"];
+            nicLabel.Text = (string)jsonObject["descriptionOfNIC"];
         }
 
         /// <summary> Handles the done button click. Validates input and then sends to the Backend. </summary>
         private void doneButton_Click(object sender, EventArgs e)
         {
-            int selectedRowCount = dataGridView1.Rows.GetRowCount(DataGridViewElementStates.Selected);
-            if (selectedRowCount == 1)
+            try
             {
-                DataGridViewRow row = dataGridView1.SelectedRows[0];
-                string selected = row.Cells["descriptionColumn"].Value.ToString();
-
-                using (UdpClient sendRequest = new UdpClient())
+                isValid = true;
+                int selectedRowCount = dataGridView1.Rows.GetRowCount(DataGridViewElementStates.Selected);
+                if (selectedRowCount == 1)
                 {
-                    try
+                    if (promEndpoint.Text != "" && lokiEndpoint.Text != "")
                     {
-                        byte[] bytes = Encoding.ASCII.GetBytes($"{selected},irrelevant,nic");
-                        sendRequest.Send(bytes, bytes.Length, "127.0.0.1", 50001);
-                        logger.LogNicChange(selected, row.Cells["macAddressColumn"].Value.ToString());
+                        DataGridViewRow row = dataGridView1.SelectedRows[0];
+                        string nic = row.Cells["descriptionColumn"].Value.ToString();
+                        string prom = promEndpoint.Text;
+                        string loki = lokiEndpoint.Text;
+
+                        using (UdpClient sendRequest = new UdpClient())
+                        {
+                            byte[] bytes = Encoding.ASCII.GetBytes($"{prom},{loki},setup,{nic}");
+                            sendRequest.Send(bytes, bytes.Length, "127.0.0.1", 50001);
+
+                            logger.LogNicChange(nic, row.Cells["macAddressColumn"].Value.ToString());
+                            logger.LogMonitoringChange(prom, loki);
+                           
+                            sendRequest.Close();
+                        }
                     }
-                    catch (Exception exception)
+                    else
                     {
-                        logger.LogException(exception);
+                        MessageBox.Show("Please fill in both endpoint fields.");
+                        isValid = false;
                         return;
                     }
-                    sendRequest.Close();
+                }
+                else
+                {
+                    MessageBox.Show("Please only pick one row.");
+                    isValid = false;
+                    return;
                 }
             }
-            else
-            {
-                MessageBox.Show("Please pick one row and then press Sumbit.");
-                isValid = false;
-                return;
-            }
+            catch (Exception ex) { logger.LogException(ex); }
         }
 
         /// <summary> Checks if isValid is true, and either cancels the form closing or 
@@ -89,6 +118,7 @@ namespace UDP_Test_GUI
             if (!isValid)
             {
                 e.Cancel = true;
+                return;
             }
             logger.eventLog.Dispose();
         }

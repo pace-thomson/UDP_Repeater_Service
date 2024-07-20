@@ -231,6 +231,10 @@ namespace UDP_Repeater_GUI
                     row.Cells["entryType"].Style.BackColor = Color.LightGoldenrodYellow;
                     row.Cells["frontOrBack"].Value = "Service";
                     break;
+                case 10:
+                    row.Cells["entryType"].Value = "Monitoring Change";
+                    row.Cells["frontOrBack"].Value = "General";
+                    break;
             }
             row.Cells["messageColumn"].Value = entry.Message;
             row.Cells["timeStampColumn"].Value = entry.TimeWritten;
