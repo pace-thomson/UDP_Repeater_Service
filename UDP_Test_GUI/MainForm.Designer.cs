@@ -36,7 +36,6 @@
             this.payloadColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.timeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.title_label = new System.Windows.Forms.Label();
-            this.packet_counter = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
@@ -62,6 +61,7 @@
             this.label13 = new System.Windows.Forms.Label();
             this.statusLabel = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
+            this.packetCounter = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -71,6 +71,8 @@
             // 
             this.dataGridView1.AllowUserToAddRows = false;
             this.dataGridView1.AllowUserToDeleteRows = false;
+            this.dataGridView1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.indexColumn,
@@ -128,16 +130,6 @@
             this.title_label.TabIndex = 5;
             this.title_label.Text = "UDP Packet Repeater";
             // 
-            // packet_counter
-            // 
-            this.packet_counter.AutoSize = true;
-            this.packet_counter.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.packet_counter.Location = new System.Drawing.Point(104, 5);
-            this.packet_counter.Name = "packet_counter";
-            this.packet_counter.Size = new System.Drawing.Size(35, 16);
-            this.packet_counter.TabIndex = 7;
-            this.packet_counter.Text = "1572";
-            // 
             // label2
             // 
             this.label2.AutoSize = true;
@@ -151,7 +143,7 @@
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.packet_counter);
+            this.panel1.Controls.Add(this.packetCounter);
             this.panel1.Controls.Add(this.label1);
             this.panel1.Location = new System.Drawing.Point(252, 413);
             this.panel1.Name = "panel1";
@@ -383,11 +375,21 @@
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(38, 396);
+            this.label14.Location = new System.Drawing.Point(44, 396);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(167, 13);
             this.label14.TabIndex = 24;
             this.label14.Text = "*Inactivity Reconfiguration is Here";
+            // 
+            // packetCounter
+            // 
+            this.packetCounter.AutoSize = true;
+            this.packetCounter.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.packetCounter.Location = new System.Drawing.Point(100, 6);
+            this.packetCounter.Name = "packetCounter";
+            this.packetCounter.Size = new System.Drawing.Size(14, 16);
+            this.packetCounter.TabIndex = 7;
+            this.packetCounter.Text = "0";
             // 
             // gui_form
             // 
@@ -423,7 +425,6 @@
         #endregion
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.Label title_label;
-        private System.Windows.Forms.Label packet_counter;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button reconfigureSettings;
@@ -454,6 +455,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn payloadColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn timeColumn;
         private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label packetCounter;
     }
 }
 

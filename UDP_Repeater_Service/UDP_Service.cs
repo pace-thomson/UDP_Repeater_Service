@@ -112,7 +112,7 @@ class TheMainProgram
     ///
     ///  Inputs: None <br/><br/>
     ///  
-    ///  Returns:  Backend backendObject - A new Backend object.
+    ///  Returns:  Backend newbackendObject - A new Backend object.
     /// </summary>
     public static Backend SetConfig()
     {
@@ -193,14 +193,14 @@ class TheMainProgram
     /// <summary> 
     ///  Class Name: TheMainProgram  <br/><br/> 
     ///
-    ///  Description: Restores the values in "UDP_Repeater_Config.json" to match those found in the new <paramref name="backendObject"/>. <br/><br/>
+    ///  Description: Restores the values in "UDP_Repeater_Config.json" to match those found in the new <paramref name="newbackendObject"/>. <br/><br/>
     ///
     ///  Inputs:  <br/>
-    ///  Backend <paramref name="backendObject"/> - The Backend object to update with the new settings. <br/><br/>
+    ///  Backend <paramref name="newbackendObject"/> - The Backend object to update with the new settings. <br/><br/>
     ///  
     ///  Returns:  None
     /// </summary>
-    public static void UpdateConfigJson(Backend backendObject)
+    public static void UpdateConfigJson(Backend newbackendObject, Backend oldBackendObject)
     {
         try
         {
@@ -208,40 +208,42 @@ class TheMainProgram
 
             JObject jsonObject = JObject.Parse(jsonString);
 
-            // This checks to see if the selected option was to to change the defaults
-            if (backendObject.sendPort == -1 || backendObject.receivePort == -1)
+                // Default changing configuration was chosen
+            if (newbackendObject.sendPort == -1 || newbackendObject.receivePort == -1)
             {
-                if (backendObject.sendPort == -1)    // if the reconfigure default RECEIVE was chosen
+                if (newbackendObject.sendPort == -1)    // if the reconfigure default RECEIVE was chosen
                 {
-                    jsonObject["defaultSettings"]["receiveFrom"]["ip"]    =   backendObject.receiveIp;
-                    jsonObject["defaultSettings"]["receiveFrom"]["port"]  =   backendObject.receivePort.ToString();
+                    jsonObject["defaultSettings"]["receiveFrom"]["ip"]    =   newbackendObject.receiveIp;
+                    jsonObject["defaultSettings"]["receiveFrom"]["port"]  =   newbackendObject.receivePort.ToString();
+                    newbackendObject.sendPort = oldBackendObject.sendPort;
                 }
-                else if (backendObject.receivePort == -1)    // if the reconfigure default SEND was chosen
+                else if (newbackendObject.receivePort == -1)    // if the reconfigure default SEND was chosen
                 {
-                    jsonObject["defaultSettings"]["sendTo"]["ip"]   =  backendObject.sendIp;
-                    jsonObject["defaultSettings"]["sendTo"]["port"] =  backendObject.sendPort.ToString();
+                    jsonObject["defaultSettings"]["sendTo"]["ip"]   =  newbackendObject.sendIp;
+                    jsonObject["defaultSettings"]["sendTo"]["port"] =  newbackendObject.sendPort.ToString();
+                    newbackendObject.receivePort = oldBackendObject.receivePort;
                 }
             }
             else              // normal (non-default changing) configuration was chosen
             {
-                jsonObject["currentConfig"]["receiveFrom"]["ip"]    =   backendObject.receiveIp;
-                jsonObject["currentConfig"]["receiveFrom"]["port"]  =   backendObject.receivePort.ToString();
-                jsonObject["currentConfig"]["sendTo"]["ip"]         =   backendObject.sendIp;
-                jsonObject["currentConfig"]["sendTo"]["port"]       =   backendObject.sendPort.ToString();
+                jsonObject["currentConfig"]["receiveFrom"]["ip"]    =   newbackendObject.receiveIp;
+                jsonObject["currentConfig"]["receiveFrom"]["port"]  =   newbackendObject.receivePort.ToString();
+                jsonObject["currentConfig"]["sendTo"]["ip"]         =   newbackendObject.sendIp;
+                jsonObject["currentConfig"]["sendTo"]["port"]       =   newbackendObject.sendPort.ToString();
             }
                             // always updates the inactivity Settings and monitoring endpoints
-            jsonObject["inactivitySettings"]["frequency"]  =  backendObject.frequency.ToString();
-            jsonObject["inactivitySettings"]["interval"]   =  backendObject.interval;
-            jsonObject["monitoring"]["prom"]               =  backendObject.promEndpoint;
-            jsonObject["monitoring"]["loki"]               =  backendObject.lokiEndpoint;
-            jsonObject["descriptionOfNIC"]                 =  backendObject.descriptionOfNIC;    
+            jsonObject["inactivitySettings"]["frequency"]  =  newbackendObject.frequency.ToString();
+            jsonObject["inactivitySettings"]["interval"]   =  newbackendObject.interval;
+            jsonObject["monitoring"]["prom"]               =  newbackendObject.promEndpoint;
+            jsonObject["monitoring"]["loki"]               =  newbackendObject.lokiEndpoint;
+            jsonObject["descriptionOfNIC"]                 =  newbackendObject.descriptionOfNIC;    
 
             var stringThing = JsonConvert.SerializeObject(jsonObject, Formatting.Indented);
             File.WriteAllText("UDP_Repeater_Config.json", stringThing);
         }
         catch (Exception e)
         {
-            backendObject.ExceptionLogger(e);
+            newbackendObject.ExceptionLogger(e);
         }
     }
 
@@ -303,10 +305,10 @@ class TheMainProgram
                 {
                     continue;
                 }
-                else    // otherwise, some settings were changed, so we need to update our things
+                else    // some settings were changed, so we need to update our things
                 {
-                    UpdateConfigJson(newbackendObject);                             // updates config.json
-                    backendObject.UpdateWithNewBackendObject(newbackendObject);     // updates the original backendObject with the new valuess
+                    UpdateConfigJson(newbackendObject, backendObject);              // updates config.json
+                    backendObject.UpdateWithNewBackendObject(newbackendObject);     // updates the original newbackendObject with the new valuess
                 }
             }
         }

@@ -66,10 +66,10 @@ namespace BackendClassNameSpace
             /// <summary> Our machine-local windows event log. </summary>
         public EventLog eventLog;
             /// <summary> The loki log that our logs get sent to, in addition to the windows log. </summary>
-        public ILogger lokiLogger; // http://172.18.46.211:3100
+        public ILogger lokiLogger; // endpoint for my testing: http://172.18.46.211:3100
 
         /// <summary> The main meter provider for all of the prometheus metrics </summary>
-        public MeterProvider meterProvider; // http://172.18.46.211:9090/api/v1/otlp/v1/metrics
+        public MeterProvider meterProvider; // endpoint for my testing: http://172.18.46.211:9090/api/v1/otlp/v1/metrics
         /// <summary> Our Meter object (the base for all of the metric instrumentation) </summary>
         public Meter myMeter;
             /// <summary> The counter for packets handled </summary>
@@ -296,37 +296,41 @@ namespace BackendClassNameSpace
 
             try
             {
-                // Loki event logger set up fields
-                const string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss} \t Backend/Service \t {Level} \n{Message}";
-                this.lokiLogger = new LoggerConfiguration()
-                                  .WriteTo.GrafanaLoki
-                                  (
-                                      this.lokiEndpoint,
-                                      labels: new List<LokiLabel>
-                                      {
+                if (this.lokiLogger == null)
+                {
+                    const string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss} \t Backend/Service \t {Level} \n{Message}";
+                    this.lokiLogger = new LoggerConfiguration()
+                                      .WriteTo.GrafanaLoki
+                                      (
+                                          this.lokiEndpoint,
+                                          labels: new List<LokiLabel>
+                                          {
                                       new LokiLabel(){ Key = "RepeaterSide", Value = "Backend/Service" },
                                       new LokiLabel(){ Key = "MachineName", Value = Environment.MachineName },
                                       new LokiLabel(){ Key = "User", Value = Environment.UserName }
-                                      },
-                                      textFormatter: new MessageTemplateTextFormatter(outputTemplate, null)
-                                  )
-                                  .Enrich.FromLogContext()
-                                  .CreateLogger();
+                                          },
+                                          textFormatter: new MessageTemplateTextFormatter(outputTemplate, null)
+                                      )
+                                      .Enrich.FromLogContext()
+                                      .CreateLogger();
+                }
 
-                // Prometheus set up fields
-                this.meterProvider = Sdk.CreateMeterProviderBuilder()
-                                    .AddMeter("JT4.Repeater.MyLibrary")
-                                    .AddOtlpExporter((exporterOptions, metricReaderOptions) =>
-                                    {
-                                        exporterOptions.Endpoint = new Uri(this.promEndpoint);
-                                        exporterOptions.Protocol = OtlpExportProtocol.HttpProtobuf;
-                                        metricReaderOptions.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 5000;
-                                    })
-                                    .Build();
-                this.myMeter = new Meter("JT4.Repeater.MyLibrary", "1.0");
-                this.TotalPacketsHandled = myMeter.CreateCounter<long>("TotalPacketsHandled");
-                this.processMemory = myMeter.CreateObservableGauge("backendMemory", () => GetProcessMemory());
-                this.packetHandling = myMeter.CreateHistogram<double>("packetHandling");
+                if (this.meterProvider == null)
+                {
+                    this.meterProvider = Sdk.CreateMeterProviderBuilder()
+                                        .AddMeter("JT4.Repeater.MyLibrary")
+                                        .AddOtlpExporter((exporterOptions, metricReaderOptions) =>
+                                        {
+                                            exporterOptions.Endpoint = new Uri(this.promEndpoint);
+                                            exporterOptions.Protocol = OtlpExportProtocol.HttpProtobuf;
+                                            metricReaderOptions.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 5000;
+                                        })
+                                        .Build();
+                    this.myMeter = new Meter("JT4.Repeater.MyLibrary", "1.0");
+                    this.TotalPacketsHandled = myMeter.CreateCounter<long>("TotalPacketsHandled");
+                    this.processMemory = myMeter.CreateObservableGauge("backendMemory", () => GetProcessMemory());
+                    this.packetHandling = myMeter.CreateHistogram<double>("packetHandling");
+                }
             }
             catch (UriFormatException ex)
             {

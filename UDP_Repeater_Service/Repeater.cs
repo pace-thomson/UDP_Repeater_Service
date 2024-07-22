@@ -334,8 +334,8 @@ namespace Repeater
                     // input the metric for our packet ingress/egress
                 stopWatch.Stop();
 
+                    // time the packet handling perfomance
                 double ticks = (double)stopWatch.ElapsedTicks;
-
                 backendObject.AddNewPacketTimeHandled(1000 * ticks / Stopwatch.Frequency);
                 stopWatch.Reset();
 

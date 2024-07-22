@@ -321,7 +321,6 @@ namespace UDP_Repeater_GUI
                     }
 
                     // Updates DataGridView with received data
-
                     row.Cells["indexColumn"].Value = (index + 1);
                     row.Cells["ipColumn"].Value = dataParts[0];
                     row.Cells["portColumn"].Value = dataParts[1];
@@ -329,17 +328,15 @@ namespace UDP_Repeater_GUI
                     row.Cells["timeColumn"].Value = DateTime.Now.ToString();
                     index++;
 
+                    // changes sort direction to keep the most recent packet at the top.
+                    // MAKE SURE IT'S SORTING INTEGERS AND NOT STRINGS.
+                    dataGridView1.Sort(dataGridView1.Columns[0], ListSortDirection.Descending);
                 });
-                // changes sort direction to keep the most recent packet at the top.
-                // MAKE SURE IT'S SORTING INTEGERS AND NOT STRINGS.
-                dataGridView1.Sort(dataGridView1.Columns[0], ListSortDirection.Descending);
 
                 // updates packet counter
-                packet_counter.Text = index.ToString();
-            } catch (Exception e) 
-            {
-                logger.LogException(e);
+                packetCounter.Text = index.ToString();
             }
+            catch (Exception e) { logger.LogException(e); }
         }
 
         /// <summary> 
