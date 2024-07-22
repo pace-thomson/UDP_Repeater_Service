@@ -188,7 +188,6 @@ namespace Repeater
                 {
                     backendObject.ExceptionLogger(e);
                 }
-                
             } 
             else
             {

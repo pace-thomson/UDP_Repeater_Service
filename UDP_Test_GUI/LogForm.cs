@@ -228,7 +228,7 @@ namespace UDP_Repeater_GUI
                     break;
                 case 9:
                     row.Cells["entryType"].Value = "Warning";
-                    row.Cells["entryType"].Style.BackColor = Color.LightGoldenrodYellow;
+                    row.Cells["entryType"].Style.BackColor = Color.Yellow;
                     row.Cells["frontOrBack"].Value = "Service";
                     break;
                 case 10:

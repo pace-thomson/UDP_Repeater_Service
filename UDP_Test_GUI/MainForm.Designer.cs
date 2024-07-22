@@ -142,11 +142,11 @@
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(14, 85);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(313, 39);
+            this.label2.Size = new System.Drawing.Size(310, 39);
             this.label2.TabIndex = 8;
-            this.label2.Text = "This interface only begins running when the current user logs in. \r\nThe Packet Re" +
-    "peater runs whenever this computer is on, so this \r\n is not a complete record of" +
-    " all packets handled by the service.";
+            this.label2.Text = "This interface only begins running when the current user logs in.\r\nThe Packet Rep" +
+    "eater runs whenever this computer is on, so this\r\n is not a complete record of a" +
+    "ll packets handled by the service.";
             // 
             // panel1
             // 

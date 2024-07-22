@@ -66,19 +66,18 @@ namespace BackendClassNameSpace
             /// <summary> Our machine-local windows event log. </summary>
         public EventLog eventLog;
             /// <summary> The loki log that our logs get sent to, in addition to the windows log. </summary>
-        public ILogger lokiLogger;
+        public ILogger lokiLogger; // http://172.18.46.211:3100
 
-
-            /// <summary> The main meter provider for all of the prometheus metrics </summary>
-        public MeterProvider meterProvider;
-            /// <summary> Our Meter object (the base for all of the metric instrumentation) </summary>
-        public readonly Meter myMeter;
+        /// <summary> The main meter provider for all of the prometheus metrics </summary>
+        public MeterProvider meterProvider; // http://172.18.46.211:9090/api/v1/otlp/v1/metrics
+        /// <summary> Our Meter object (the base for all of the metric instrumentation) </summary>
+        public Meter myMeter;
             /// <summary> The counter for packets handled </summary>
-        public readonly Counter<long> TotalPacketsHandled;
+        public Counter<long> TotalPacketsHandled; 
             /// <summary> Tracks the memory use of the backend. </summary>
-        public readonly ObservableGauge<double> processMemory;
+        public ObservableGauge<double> processMemory;
             /// <summary> Tracks average time for packet ingress/egress </summary>
-        public readonly Histogram<long> packetHandling;
+        public Histogram<long> packetHandling;
 
 
         /// <summary> 
@@ -151,7 +150,7 @@ namespace BackendClassNameSpace
             }
             catch (UriFormatException ex) 
             {
-                eventLog.WriteEntry("Invalid enpoint configured, not logging currently.", EventLogEntryType.Warning, 9); 
+                eventLog.WriteEntry("Invalid endpoint configured, no monitoring currently.", EventLogEntryType.Warning, 9);
             }
         }
 
@@ -172,19 +171,17 @@ namespace BackendClassNameSpace
         ///  
         /// Returns: A Backend Object
         /// </summary>
-        public Backend(bool isJustConfigObject, string ReceiveIp, string ReceivePort, string SendIp, string SendPort, 
-                        int newFrequency, string newInterval, string PromEndpoint, string LokiEndpoint, string NameOfNIC)
+        public Backend(Backend originalBackendObject)
         {
-            this.receiveIp = ReceiveIp;
-            this.receivePort = Convert.ToInt32(ReceivePort);
-            this.sendIp = SendIp;
-            this.sendPort = Convert.ToInt32(SendPort);
-            this.frequency = newFrequency;
-            this.interval = newInterval;
-            this.descriptionOfNIC = NameOfNIC;
-            this.promEndpoint = PromEndpoint;
-            this.lokiEndpoint = LokiEndpoint;
-            this.descriptionOfNIC = NameOfNIC;
+            this.receiveIp          =   originalBackendObject.receiveIp;
+            this.receivePort        =   originalBackendObject.receivePort;
+            this.sendIp             =   originalBackendObject.sendIp;
+            this.sendPort           =   originalBackendObject.sendPort;
+            this.frequency          =   originalBackendObject.frequency;
+            this.interval           =   originalBackendObject.interval;
+            this.promEndpoint       =   originalBackendObject.promEndpoint;
+            this.lokiEndpoint       =   originalBackendObject.lokiEndpoint;
+            this.descriptionOfNIC   =   originalBackendObject.descriptionOfNIC;
         }
 
         /// <summary> 
@@ -199,73 +196,80 @@ namespace BackendClassNameSpace
         /// </summary>
         public Backend()
         {
-            if (!File.Exists("UDP_Repeater_Config.json"))   // actual path: "C:\\Windows\\SysWOW64\\UDP_Repeater_Config.json"
+            try
             {
-                // if UDP_Repeater_Config.json doense't exist, it make it and then poplulates it with this string
-                string defaults = @"        
+                if (!File.Exists("UDP_Repeater_Config.json"))   // actual path: "C:\\Windows\\SysWOW64\\UDP_Repeater_Config.json"
                 {
-                    ""currentConfig"": {
-                        ""receiveFrom"": {
-                            ""ip"": ""172.18.46.213"",
-                            ""port"": ""763""
+                    // if UDP_Repeater_Config.json doense't exist, it make it and then poplulates it with this string
+                    string defaults = @"        
+                    {
+                        ""currentConfig"": {
+                            ""receiveFrom"": {
+                                ""ip"": ""172.18.46.213"",
+                                ""port"": ""763""
+                            },
+                            ""sendTo"": {
+                                ""ip"": ""172.18.46.213"",
+                                ""port"": ""722""
+                            }
                         },
-                        ""sendTo"": {
-                            ""ip"": ""172.18.46.213"",
-                            ""port"": ""722""
-                        }
-                    },
 
-                    ""defaultSettings"": {
-                        ""receiveFrom"": {
-                            ""ip"": ""127.0.0.1"",
-                            ""port"": ""7654""
+                        ""defaultSettings"": {
+                            ""receiveFrom"": {
+                                ""ip"": ""127.0.0.1"",
+                                ""port"": ""7654""
+                            },
+                            ""sendTo"": {
+                                ""ip"": ""132.58.202.157"",
+                                ""port"": ""722""
+                            }
                         },
-                        ""sendTo"": {
-                            ""ip"": ""132.58.202.157"",
-                            ""port"": ""722""
-                        }
-                    },
 
-                    ""inactivitySettings"": {
-                        ""frequency"": ""5"",
-                        ""interval"": ""minute""
-                    },
-                    ""monitoring"": {
-                        ""prom"": ""Not Configured Yet"",
-                        ""loki"": ""Not Configured Yet""
-                    },
-                    ""descriptionOfNIC"":""Not Configured Yet"" 
-                }";
+                        ""inactivitySettings"": {
+                            ""frequency"": ""5"",
+                            ""interval"": ""minute""
+                        },
+                        ""monitoring"": {
+                            ""prom"": ""Not Configured Yet"",
+                            ""loki"": ""Not Configured Yet""
+                        },
+                        ""descriptionOfNIC"":""Not Configured Yet"" 
+                    }";
 
-                // Write the JSON string to a file
-                File.WriteAllText("UDP_Repeater_Config.json", defaults);
+                    // Write the JSON string to a file
+                    File.WriteAllText("UDP_Repeater_Config.json", defaults);
+                }
+
+                    // get the loki endpoint form confi.json
+                string jsonString = File.ReadAllText("UDP_Repeater_Config.json");
+                JObject jsonObject = JObject.Parse(jsonString);
+                this.lokiEndpoint = (string)jsonObject["monitoring"]["loki"];
+
+                    // windows event logger set up
+                this.eventLog = new EventLog("UDP Packet Repeater");
+                eventLog.Source = "UDP_Repeater_Backend";
+
+                    // Loki event logger set up
+                const string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss} \t Backend/Service \t {Level} \n{Message}";
+                this.lokiLogger = new LoggerConfiguration()
+                                  .WriteTo.GrafanaLoki
+                                  (
+                                      this.lokiEndpoint,
+                                      labels: new List<LokiLabel>
+                                      {
+                                          new LokiLabel(){ Key = "RepeaterSide", Value = "Backend/Service" },
+                                          new LokiLabel(){ Key = "MachineName", Value = Environment.MachineName },
+                                          new LokiLabel(){ Key = "User", Value = Environment.UserName }
+                                      },
+                                      textFormatter: new MessageTemplateTextFormatter(outputTemplate, null)
+                                  )
+                                  .Enrich.FromLogContext()
+                                  .CreateLogger();
             }
-
-            // get the loki endpoint form confi.json
-            string jsonString = File.ReadAllText("UDP_Repeater_Config.json");
-            JObject jsonObject = JObject.Parse(jsonString);
-            this.lokiEndpoint = (string)jsonObject["monitoring"]["loki"];
-
-                // windows event logger set up
-            this.eventLog = new EventLog("UDP Packet Repeater");
-            eventLog.Source = "UDP_Repeater_Backend";
-
-                // Loki event logger set up
-            const string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss} \t Backend/Service \t {Level} \n{Message}";
-            this.lokiLogger = new LoggerConfiguration()
-                              .WriteTo.GrafanaLoki
-                              (
-                                  this.lokiEndpoint,
-                                  labels: new List<LokiLabel>
-                                  {
-                                      new LokiLabel(){ Key = "RepeaterSide", Value = "Backend/Service" },
-                                      new LokiLabel(){ Key = "MachineName", Value = Environment.MachineName },
-                                      new LokiLabel(){ Key = "User", Value = Environment.UserName }
-                                  },
-                                  textFormatter: new MessageTemplateTextFormatter(outputTemplate, null)
-                              )
-                              .Enrich.FromLogContext()
-                              .CreateLogger();
+            catch (UriFormatException ex) 
+            {
+                eventLog.WriteEntry("Invalid endpoint configured, no monitoring currently.", EventLogEntryType.Warning, 9);
+            }
         }
 
         /// <summary> Calculates and returns the current process memroy in bytes. </summary>
@@ -277,11 +281,19 @@ namespace BackendClassNameSpace
         /// <summary> Increments total packets handled for our prometheus metrics. </summary>
         public void IncrementTotalPacketsHandled()
         {
+            if (TotalPacketsHandled == null)
+            {
+                return;
+            }
             TotalPacketsHandled.Add(1);
         }
         /// <summary> Inputs the metric for our packet ingress/egress calculation. </summary>
         public void AddNewPacketTimeHandled(long stopWatchTime)
         {
+            if (packetHandling == null)
+            {
+                return;
+            }
             packetHandling.Record(stopWatchTime);
             if (stopWatchTime >= 3)
             {
@@ -335,6 +347,45 @@ namespace BackendClassNameSpace
             this.promEndpoint = newBackendObject.promEndpoint;
             this.lokiEndpoint = newBackendObject.lokiEndpoint;
             this.descriptionOfNIC = newBackendObject.descriptionOfNIC;
+
+            try
+            {
+                // Loki event logger set up fields
+                const string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss} \t Backend/Service \t {Level} \n{Message}";
+                this.lokiLogger = new LoggerConfiguration()
+                                  .WriteTo.GrafanaLoki
+                                  (
+                                      this.lokiEndpoint,
+                                      labels: new List<LokiLabel>
+                                      {
+                                      new LokiLabel(){ Key = "RepeaterSide", Value = "Backend/Service" },
+                                      new LokiLabel(){ Key = "MachineName", Value = Environment.MachineName },
+                                      new LokiLabel(){ Key = "User", Value = Environment.UserName }
+                                      },
+                                      textFormatter: new MessageTemplateTextFormatter(outputTemplate, null)
+                                  )
+                                  .Enrich.FromLogContext()
+                                  .CreateLogger();
+
+                // Prometheus set up fields
+                this.meterProvider = Sdk.CreateMeterProviderBuilder()
+                                    .AddMeter("JT4.Repeater.MyLibrary")
+                                    .AddOtlpExporter((exporterOptions, metricReaderOptions) =>
+                                    {
+                                        exporterOptions.Endpoint = new Uri(this.promEndpoint);
+                                        exporterOptions.Protocol = OtlpExportProtocol.HttpProtobuf;
+                                        metricReaderOptions.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 5000;
+                                    })
+                                    .Build();
+                this.myMeter = new Meter("JT4.Repeater.MyLibrary", "1.0");
+                this.TotalPacketsHandled = myMeter.CreateCounter<long>("TotalPacketsHandled");
+                this.processMemory = myMeter.CreateObservableGauge("backendMemory", () => GetProcessMemory());
+                this.packetHandling = myMeter.CreateHistogram<long>("packetHandling");
+            }
+            catch (UriFormatException ex)
+            {
+                eventLog.WriteEntry("Invalid endpoint configured, no monitoring currently.", EventLogEntryType.Warning, 9);
+            }
         }
 
         /// <summary> 
@@ -356,7 +407,10 @@ namespace BackendClassNameSpace
                                            $"{formattedStackString.Last().TrimStart()}");
 
             eventLog.WriteEntry(message, EventLogEntryType.Error, 1);  // 1 is our id for backend errors
-            lokiLogger.Error(message);
+            if (lokiLogger != null)
+            {
+                lokiLogger.Error(message);
+            }
         }
 
         /// <summary> 
@@ -385,11 +439,16 @@ namespace BackendClassNameSpace
             logg.WriteEntry(message, EventLogEntryType.Error, 1);  // 1 is our id for backend errors
             logg.Dispose();
 
-            const string outputTemplate = "Backend/Service \t {Level} {NewLine}{Message}";
-            var temporaryLokiLogger = new LoggerConfiguration()
+            string jsonString = File.ReadAllText("UDP_Repeater_Config.json");
+            JObject jsonObject = JObject.Parse(jsonString);
+            string temporaryLokiEndpoint = (string)jsonObject["monitoring"]["loki"];
+            const string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss} \t Backend/Service \t {Level} {NewLine}{Message}";
+            try
+            {
+                var temporaryLokiLogger = new LoggerConfiguration()
                               .WriteTo.GrafanaLoki
                               (
-                                  "http://172.18.46.211:3100",
+                                  temporaryLokiEndpoint,
                                   labels: new List<LokiLabel>
                                   {
                                       new LokiLabel(){ Key = "RepeaterSide", Value = "Backend/Service" },
@@ -401,7 +460,12 @@ namespace BackendClassNameSpace
                               .Enrich.FromLogContext()
                               .CreateLogger();
 
-            temporaryLokiLogger.Error(message);
+                temporaryLokiLogger.Error(message);
+            }
+            catch (UriFormatException ex) 
+            {
+                logg.WriteEntry("Invalid endpoint configured, no monitoring currently.", EventLogEntryType.Warning, 9);
+            }
         }
 
 
@@ -428,25 +492,28 @@ namespace BackendClassNameSpace
             if (totalTime > 1 && frequency > 1)
             {
                 message = String.Format("It has been {0} {1} since last packet was received. ", totalTime, interval);
-                message += String.Format("The Service is currenty configured to log inactivity every {0} {1}.", frequency, interval);
+                message += String.Format("The Service is currently configured to log inactivity every {0} {1}.", frequency, interval);
             }
             else if (totalTime > 1 && frequency == 1)
             {
                 message = String.Format("It has been {0} {1} since last packet was received. ", totalTime, interval);
                 interval = interval.Remove(interval.Length - 1);
-                message += String.Format("The Service is currenty configured to log inactivity every {0} {1}.", frequency, interval);
+                message += String.Format("The Service is currently configured to log inactivity every {0} {1}.", frequency, interval);
             }
             else
             {
                 interval = interval.Remove(interval.Length - 1);
                 message = String.Format("It has been {0} {1} since last packet was received. ", totalTime, interval);
-                message += String.Format("The Service is currenty configured to log inactivity every {0} {1}.", frequency, interval);
+                message += String.Format("The Service is currently configured to log inactivity every {0} {1}.", frequency, interval);
             }
 
             // Write an entry to the event log.
             eventLog.WriteEntry(message, EventLogEntryType.Warning, 3);     // 3 is the id for backend inactivity
 
-            lokiLogger.Warning(message);
+            if (lokiLogger != null)
+            {
+                lokiLogger.Warning(message);
+            }
         }
 
         /// <summary> 
@@ -474,7 +541,11 @@ namespace BackendClassNameSpace
             }
 
             eventLog.WriteEntry(message, EventLogEntryType.Information, 4);     // 4 is id for backend start/stop
-            lokiLogger.Information(message);
+
+            if (lokiLogger != null)
+            {
+                lokiLogger.Information(message);
+            }
         }
 
         /// <summary> 
@@ -494,7 +565,10 @@ namespace BackendClassNameSpace
 
             eventLog.WriteEntry(message, EventLogEntryType.Warning, 9);     // 9 is id for backend general warnings
 
-            lokiLogger.Warning(message);
+            if (lokiLogger != null)
+            {
+                lokiLogger.Warning(message);
+            }
         }
     }
 }

@@ -118,11 +118,7 @@ class TheMainProgram
     {
         try
         {
-            while (!File.Exists("UDP_Repeater_Config.json"))   // actual path: "C:\\Windows\\SysWOW64\\UDP_Repeater_Config.json"
-            {
-                Thread.Sleep(1000);
-            }
-
+                // actual path: "C:\\Windows\\SysWOW64\\UDP_Repeater_Config.json"
             string jsonString = File.ReadAllText("UDP_Repeater_Config.json");
             JObject jsonObject = JObject.Parse(jsonString);
 
@@ -305,12 +301,11 @@ class TheMainProgram
                 }
                 else if (backendObject == null)
                 {
-                    backendObject.WarningLogger("An error occured and the configuration settings weren't able to be changed.");
                     continue;
                 }
                 else    // otherwise, some settings were changed, so we need to update our things
                 {
-                    UpdateConfigJson(newbackendObject);  // updates config.json
+                    UpdateConfigJson(newbackendObject);                             // updates config.json
                     backendObject.UpdateWithNewBackendObject(newbackendObject);     // updates the original backendObject with the new valuess
                 }
             }

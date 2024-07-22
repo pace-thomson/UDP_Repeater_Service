@@ -78,20 +78,30 @@ namespace UDP_Test_GUI
                 {
                     if (promEndpoint.Text != "" && lokiEndpoint.Text != "")
                     {
-                        DataGridViewRow row = dataGridView1.SelectedRows[0];
-                        string nic = row.Cells["descriptionColumn"].Value.ToString();
-                        string prom = promEndpoint.Text;
-                        string loki = lokiEndpoint.Text;
-
-                        using (UdpClient sendRequest = new UdpClient())
+                        if (Uri.IsWellFormedUriString(promEndpoint.Text, UriKind.Absolute) &&
+                            Uri.IsWellFormedUriString(lokiEndpoint.Text, UriKind.Absolute))
                         {
-                            byte[] bytes = Encoding.ASCII.GetBytes($"{prom},{loki},setup,{nic}");
-                            sendRequest.Send(bytes, bytes.Length, "127.0.0.1", 50001);
+                            DataGridViewRow row = dataGridView1.SelectedRows[0];
+                            string nic = row.Cells["descriptionColumn"].Value.ToString();
+                            string prom = promEndpoint.Text;
+                            string loki = lokiEndpoint.Text;
 
-                            logger.LogNicChange(nic, row.Cells["macAddressColumn"].Value.ToString());
-                            logger.LogMonitoringChange(prom, loki);
-                           
-                            sendRequest.Close();
+                            using (UdpClient sendRequest = new UdpClient())
+                            {
+                                byte[] bytes = Encoding.ASCII.GetBytes($"{prom},{loki},setup,{nic}");
+                                sendRequest.Send(bytes, bytes.Length, "127.0.0.1", 50001);
+
+                                logger.LogNicChange(nic, row.Cells["macAddressColumn"].Value.ToString());
+                                logger.LogMonitoringChange(prom, loki);
+
+                                sendRequest.Close();
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("Invalid uri endpoint input. Please try again.");
+                            isValid = false;
+                            return;
                         }
                     }
                     else
