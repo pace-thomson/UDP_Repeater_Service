@@ -137,9 +137,17 @@ namespace UDP_Repeater_GUI
         /// </summary>
         public void LogConfigChange(string editType, string ip, string port)
         {
-            string message = String.Format("The \"{0}\" settings were changed. \n" +
-                                            "IP Address: {1} \n" +
-                                            "Port: {2}", editType, ip, port);
+            string message;
+            if (editType == "Reverted to Default")
+            {
+                message = "System IP and Port configurations were returned to their default settings.";
+            }
+            else
+            {
+                message = String.Format("The \"{0}\" settings were changed. \n" +
+                                                "IP Address: {1} \n" +
+                                                "Port: {2}", editType, ip, port);
+            }
 
             eventLog.WriteEntry(message, EventLogEntryType.Information, 6);  // 6 is id for ip/port config change
             lokiLogger.Information(message);

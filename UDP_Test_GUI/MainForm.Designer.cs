@@ -131,11 +131,12 @@
             // packet_counter
             // 
             this.packet_counter.AutoSize = true;
-            this.packet_counter.Location = new System.Drawing.Point(104, 4);
+            this.packet_counter.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.packet_counter.Location = new System.Drawing.Point(104, 5);
             this.packet_counter.Name = "packet_counter";
-            this.packet_counter.Size = new System.Drawing.Size(13, 13);
+            this.packet_counter.Size = new System.Drawing.Size(35, 16);
             this.packet_counter.TabIndex = 7;
-            this.packet_counter.Text = "0";
+            this.packet_counter.Text = "1572";
             // 
             // label2
             // 
@@ -154,13 +155,13 @@
             this.panel1.Controls.Add(this.label1);
             this.panel1.Location = new System.Drawing.Point(252, 413);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(161, 23);
+            this.panel1.Size = new System.Drawing.Size(161, 26);
             this.panel1.TabIndex = 15;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(3, 5);
+            this.label1.Location = new System.Drawing.Point(3, 7);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(95, 13);
             this.label1.TabIndex = 6;
@@ -169,7 +170,7 @@
             // reconfigureSettings
             // 
             this.reconfigureSettings.FlatAppearance.BorderSize = 2;
-            this.reconfigureSettings.Location = new System.Drawing.Point(462, 411);
+            this.reconfigureSettings.Location = new System.Drawing.Point(459, 413);
             this.reconfigureSettings.Name = "reconfigureSettings";
             this.reconfigureSettings.Size = new System.Drawing.Size(129, 26);
             this.reconfigureSettings.TabIndex = 18;
@@ -384,9 +385,9 @@
             this.label14.AutoSize = true;
             this.label14.Location = new System.Drawing.Point(38, 396);
             this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(170, 13);
+            this.label14.Size = new System.Drawing.Size(167, 13);
             this.label14.TabIndex = 24;
-            this.label14.Text = "* Inactivity Reconfiguration is Here";
+            this.label14.Text = "*Inactivity Reconfiguration is Here";
             // 
             // gui_form
             // 

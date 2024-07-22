@@ -44,9 +44,20 @@ namespace GUIreceiver
         /// </summary>
         public static string[] ReceivingFromGUI(Backend backendObject)
         {
+            bool socketOpen = false;
+            UdpClient listener = new UdpClient();
             try
             {
-                UdpClient listener = new UdpClient(50001);
+                while (!socketOpen)
+                {
+                    try
+                    {
+                        listener = new UdpClient(50001);
+                        socketOpen = true;
+                    }
+                    catch (SocketException) { System.Threading.Thread.Sleep(500); }
+                }
+                
                 IPEndPoint senderEndPoint = new IPEndPoint(IPAddress.Any, 0);
 
 

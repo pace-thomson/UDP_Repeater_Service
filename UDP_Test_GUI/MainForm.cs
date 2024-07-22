@@ -429,11 +429,12 @@ namespace UDP_Repeater_GUI
             if (WindowState == FormWindowState.Minimized)
             {
                 WindowState = FormWindowState.Normal;
+                this.BringToFront();
                 this.Focus();
             }
             else
             {
-                this.Focus();
+                WindowState = FormWindowState.Minimized;
             }
         }
 

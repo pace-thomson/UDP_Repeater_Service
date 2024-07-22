@@ -333,7 +333,10 @@ namespace Repeater
 
                     // input the metric for our packet ingress/egress
                 stopWatch.Stop();
-                backendObject.AddNewPacketTimeHandled(stopWatch.ElapsedMilliseconds);
+
+                double ticks = (double)stopWatch.ElapsedTicks;
+
+                backendObject.AddNewPacketTimeHandled(1000 * ticks / Stopwatch.Frequency);
                 stopWatch.Reset();
 
                     // sending to GUI section

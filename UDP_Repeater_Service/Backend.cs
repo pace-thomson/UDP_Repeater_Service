@@ -77,7 +77,7 @@ namespace BackendClassNameSpace
             /// <summary> Tracks the memory use of the backend. </summary>
         public ObservableGauge<double> processMemory;
             /// <summary> Tracks average time for packet ingress/egress </summary>
-        public Histogram<long> packetHandling;
+        public Histogram<double> packetHandling;
 
 
         /// <summary> 
@@ -146,7 +146,7 @@ namespace BackendClassNameSpace
                 this.myMeter = new Meter("JT4.Repeater.MyLibrary", "1.0");
                 this.TotalPacketsHandled = myMeter.CreateCounter<long>("TotalPacketsHandled");
                 this.processMemory = myMeter.CreateObservableGauge("backendMemory", () => GetProcessMemory());
-                this.packetHandling = myMeter.CreateHistogram<long>("packetHandling");
+                this.packetHandling = myMeter.CreateHistogram<double>("packetHandling");
             }
             catch (UriFormatException ex) 
             {
@@ -272,60 +272,6 @@ namespace BackendClassNameSpace
             }
         }
 
-        /// <summary> Calculates and returns the current process memroy in bytes. </summary>
-        public static double GetProcessMemory()
-        {
-            long bytes = Process.GetCurrentProcess().PrivateMemorySize64;
-            return (bytes / 1024f) / 1024f;
-        }
-        /// <summary> Increments total packets handled for our prometheus metrics. </summary>
-        public void IncrementTotalPacketsHandled()
-        {
-            if (TotalPacketsHandled == null)
-            {
-                return;
-            }
-            TotalPacketsHandled.Add(1);
-        }
-        /// <summary> Inputs the metric for our packet ingress/egress calculation. </summary>
-        public void AddNewPacketTimeHandled(long stopWatchTime)
-        {
-            if (packetHandling == null)
-            {
-                return;
-            }
-            packetHandling.Record(stopWatchTime);
-            if (stopWatchTime >= 3)
-            {
-                WarningLogger($"Packet handling time of {stopWatchTime}ms was greater than or equal to 3 milliseconds.");
-            }
-        }
-
-
-        /// <summary> 
-        ///  Class Name: Backend  <br/><br/> 
-        ///
-        ///  Description: Returns if two Backend objects have identical attributes <br/><br/>
-        ///
-        ///  Inputs:  <br/>
-        ///  Backend <paramref name="other"/> - The other Backend object to compare with <br/><br/>
-        ///  
-        ///  Returns:  bool – Whether the two objects are equal.
-        /// </summary>
-        public bool Equals(Backend other)
-        {       
-            return other != null &&
-                   this.receiveIp == other.receiveIp &&
-                   this.receivePort == other.receivePort &&
-                   this.sendIp == other.sendIp &&
-                   this.sendPort == other.sendPort &&
-                   this.frequency == other.frequency &&
-                   this.interval == other.interval &&
-                   this.promEndpoint == other.promEndpoint &&
-                   this.lokiEndpoint == other.lokiEndpoint  &&
-                   this.descriptionOfNIC == other.descriptionOfNIC;
-        }
-
         /// <summary> 
         ///  Class Name: Backend  <br/><br/> 
         ///
@@ -380,12 +326,67 @@ namespace BackendClassNameSpace
                 this.myMeter = new Meter("JT4.Repeater.MyLibrary", "1.0");
                 this.TotalPacketsHandled = myMeter.CreateCounter<long>("TotalPacketsHandled");
                 this.processMemory = myMeter.CreateObservableGauge("backendMemory", () => GetProcessMemory());
-                this.packetHandling = myMeter.CreateHistogram<long>("packetHandling");
+                this.packetHandling = myMeter.CreateHistogram<double>("packetHandling");
             }
             catch (UriFormatException ex)
             {
                 eventLog.WriteEntry("Invalid endpoint configured, no monitoring currently.", EventLogEntryType.Warning, 9);
             }
+        }
+
+
+        /// <summary> Calculates and returns the current process memroy in bytes. </summary>
+        public static double GetProcessMemory()
+        {
+            long bytes = Process.GetCurrentProcess().PrivateMemorySize64;
+            return (bytes / 1024f) / 1024f;
+        }
+        /// <summary> Increments total packets handled for our prometheus metrics. </summary>
+        public void IncrementTotalPacketsHandled()
+        {
+            if (TotalPacketsHandled == null)
+            {
+                return;
+            }
+            TotalPacketsHandled.Add(1);
+        }
+        /// <summary> Inputs the metric for our packet ingress/egress calculation. </summary>
+        public void AddNewPacketTimeHandled(double stopWatchTime)
+        {
+            if (packetHandling == null)
+            {
+                return;
+            }
+            packetHandling.Record(stopWatchTime);
+            if (stopWatchTime >= 3)
+            {
+                WarningLogger($"Packet handling time of {stopWatchTime}ms was greater than or equal to 3 milliseconds.");
+            }
+        }
+
+
+        /// <summary> 
+        ///  Class Name: Backend  <br/><br/> 
+        ///
+        ///  Description: Returns if two Backend objects have identical attributes <br/><br/>
+        ///
+        ///  Inputs:  <br/>
+        ///  Backend <paramref name="other"/> - The other Backend object to compare with <br/><br/>
+        ///  
+        ///  Returns:  bool – Whether the two objects are equal.
+        /// </summary>
+        public bool Equals(Backend other)
+        {       
+            return other != null &&
+                   this.receiveIp == other.receiveIp &&
+                   this.receivePort == other.receivePort &&
+                   this.sendIp == other.sendIp &&
+                   this.sendPort == other.sendPort &&
+                   this.frequency == other.frequency &&
+                   this.interval == other.interval &&
+                   this.promEndpoint == other.promEndpoint &&
+                   this.lokiEndpoint == other.lokiEndpoint  &&
+                   this.descriptionOfNIC == other.descriptionOfNIC;
         }
 
         /// <summary> 
