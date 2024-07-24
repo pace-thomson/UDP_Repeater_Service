@@ -159,7 +159,7 @@ namespace Repeater
         ///  Description: Sends the processed package out <br/><br/>
         ///
         ///  Inputs:  <br/>
-        ///  byte[] <paramref name="messageBytes"/> - The byte array payload of the received packet <br/><br/>
+        ///  byte[] <paramref name="messageBytes"/> - The byte array wholePacket of the received packet <br/><br/>
         ///  
         ///  Returns:  None
         /// </summary>
@@ -213,11 +213,11 @@ namespace Repeater
         ///  Description: Sends packet information to the GUI <br/><br/>
         ///
         ///  Inputs:  <br/>
-        ///  byte[] <paramref name="messageBytes"/> - The byte array payload of the received packet <br/><br/>
+        ///  byte[] <paramref name="messageBytes"/> - The byte array wholePacket of the received packet <br/><br/>
         ///  
         ///  Returns:  None
         /// </summary>
-        public static void SendToGUI(byte[] messageBytes)
+        public static void SendToGUI(int payloadLength)
         {
             using (UdpClient sender = new UdpClient())
             {
@@ -225,7 +225,7 @@ namespace Repeater
                 {
                     string receiveIp = backendObject.receiveIp;
                     string receivePort = backendObject.receivePort.ToString();
-                    string dataLength = messageBytes.Length.ToString();
+                    string dataLength = payloadLength.ToString();
 
                     byte[] bytes = Encoding.ASCII.GetBytes(receiveIp + "," + receivePort + "," + dataLength);
 
@@ -323,26 +323,30 @@ namespace Repeater
         private static void device_OnPacketArrival(object sender, PacketCapture e)
         {
             try
-            {
+            {       // start timing for packet ingress/egress
                 stopWatch.Start();
+
+                    // get the whole packet
                 RawCapture rawPacket = e.GetPacket();
-                byte[] payload = rawPacket.Data;
+                byte[] wholePacket = rawPacket.Data;
+
+                    // get the actual data section of the packet
+                byte[] dataSection = new byte[wholePacket.Length - 42];
+                Array.Copy(wholePacket, 42, dataSection, 0, dataSection.Length);
 
                     // actual sending section
-                SendMessageOut(payload);
+                SendMessageOut(dataSection);
 
-                    // input the metric for our packet ingress/egress
+                    // stop the stopwatch, time the packet handling perfomance and record it
                 stopWatch.Stop();
-
-                    // time the packet handling perfomance
                 double ticks = (double)stopWatch.ElapsedTicks;
                 backendObject.AddNewPacketTimeHandled(1000 * ticks / Stopwatch.Frequency);
                 stopWatch.Reset();
 
                     // sending to GUI section
-                SendToGUI(payload);
+                SendToGUI(dataSection.Length);
 
-                    // update last received
+                    // update last received packet time for inactivity checker
                 timer.UpdateLastReceivedTime(DateTime.Now);
 
                     // increment the packets received counter for prometheus

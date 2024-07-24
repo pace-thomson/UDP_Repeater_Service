@@ -30,14 +30,10 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(gui_form));
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.indexColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ipColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.portColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.payloadColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.timeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.title_label = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.packetCounter = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.reconfigureSettings = new System.Windows.Forms.Button();
             this.logButton = new System.Windows.Forms.Button();
@@ -61,7 +57,11 @@
             this.label13 = new System.Windows.Forms.Label();
             this.statusLabel = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
-            this.packetCounter = new System.Windows.Forms.Label();
+            this.indexColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ipColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.portColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.payloadColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.timeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -87,38 +87,6 @@
             this.dataGridView1.RowHeadersWidth = 70;
             this.dataGridView1.Size = new System.Drawing.Size(624, 251);
             this.dataGridView1.TabIndex = 4;
-            // 
-            // indexColumn
-            // 
-            this.indexColumn.HeaderText = "Packet Number";
-            this.indexColumn.Name = "indexColumn";
-            this.indexColumn.ReadOnly = true;
-            // 
-            // ipColumn
-            // 
-            this.ipColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.ipColumn.HeaderText = "IP Address";
-            this.ipColumn.Name = "ipColumn";
-            this.ipColumn.ReadOnly = true;
-            // 
-            // portColumn
-            // 
-            this.portColumn.HeaderText = "Port";
-            this.portColumn.Name = "portColumn";
-            this.portColumn.ReadOnly = true;
-            // 
-            // payloadColumn
-            // 
-            this.payloadColumn.HeaderText = "Payload Length (Bytes)";
-            this.payloadColumn.Name = "payloadColumn";
-            this.payloadColumn.ReadOnly = true;
-            // 
-            // timeColumn
-            // 
-            this.timeColumn.HeaderText = "Time Stamp";
-            this.timeColumn.Name = "timeColumn";
-            this.timeColumn.ReadOnly = true;
-            this.timeColumn.Width = 175;
             // 
             // title_label
             // 
@@ -149,6 +117,16 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(161, 26);
             this.panel1.TabIndex = 15;
+            // 
+            // packetCounter
+            // 
+            this.packetCounter.AutoSize = true;
+            this.packetCounter.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.packetCounter.Location = new System.Drawing.Point(100, 6);
+            this.packetCounter.Name = "packetCounter";
+            this.packetCounter.Size = new System.Drawing.Size(14, 16);
+            this.packetCounter.TabIndex = 7;
+            this.packetCounter.Text = "0";
             // 
             // label1
             // 
@@ -381,15 +359,37 @@
             this.label14.TabIndex = 24;
             this.label14.Text = "*Inactivity Reconfiguration is Here";
             // 
-            // packetCounter
+            // indexColumn
             // 
-            this.packetCounter.AutoSize = true;
-            this.packetCounter.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.packetCounter.Location = new System.Drawing.Point(100, 6);
-            this.packetCounter.Name = "packetCounter";
-            this.packetCounter.Size = new System.Drawing.Size(14, 16);
-            this.packetCounter.TabIndex = 7;
-            this.packetCounter.Text = "0";
+            this.indexColumn.HeaderText = "Packet Number";
+            this.indexColumn.Name = "indexColumn";
+            this.indexColumn.ReadOnly = true;
+            // 
+            // ipColumn
+            // 
+            this.ipColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.ipColumn.HeaderText = "IP Address";
+            this.ipColumn.Name = "ipColumn";
+            this.ipColumn.ReadOnly = true;
+            // 
+            // portColumn
+            // 
+            this.portColumn.HeaderText = "Port";
+            this.portColumn.Name = "portColumn";
+            this.portColumn.ReadOnly = true;
+            // 
+            // payloadColumn
+            // 
+            this.payloadColumn.HeaderText = "Data Length (Bytes)";
+            this.payloadColumn.Name = "payloadColumn";
+            this.payloadColumn.ReadOnly = true;
+            // 
+            // timeColumn
+            // 
+            this.timeColumn.HeaderText = "Time Stamp";
+            this.timeColumn.Name = "timeColumn";
+            this.timeColumn.ReadOnly = true;
+            this.timeColumn.Width = 175;
             // 
             // gui_form
             // 
@@ -449,13 +449,13 @@
         private System.Windows.Forms.Label currentInterval;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label statusLabel;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label packetCounter;
         private System.Windows.Forms.DataGridViewTextBoxColumn indexColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn ipColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn portColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn payloadColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn timeColumn;
-        private System.Windows.Forms.Label label14;
-        private System.Windows.Forms.Label packetCounter;
     }
 }
 

@@ -334,7 +334,7 @@ namespace BackendClassNameSpace
             }
             catch (UriFormatException ex)
             {
-                eventLog.WriteEntry("Invalid endpoint configured, no monitoring currently.", EventLogEntryType.Warning, 9);
+                eventLog.WriteEntry("Invalid endpoint uri configured, no monitoring currently.", EventLogEntryType.Warning, 9);
             }
         }
 
@@ -362,9 +362,9 @@ namespace BackendClassNameSpace
                 return;
             }
             packetHandling.Record(stopWatchTime);
-            if (stopWatchTime >= 3)
+            if (stopWatchTime >= 4)
             {
-                WarningLogger($"Packet handling time of {stopWatchTime}ms was greater than or equal to 3 milliseconds.");
+                WarningLogger($"Packet handling time of {stopWatchTime}ms was greater than or equal to 4 milliseconds.");
             }
         }
 
