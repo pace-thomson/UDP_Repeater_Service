@@ -31,7 +31,7 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LogForm));
-            this.reconfigLog = new System.Windows.Forms.DataGridView();
+            this.logDataGridView = new System.Windows.Forms.DataGridView();
             this.entryType = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.frontOrBack = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.messageColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -43,33 +43,34 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.inactivityInputBox = new System.Windows.Forms.NumericUpDown();
-            ((System.ComponentModel.ISupportInitialize)(this.reconfigLog)).BeginInit();
+            this.loadingLabel = new System.Windows.Forms.Label();
+            ((System.ComponentModel.ISupportInitialize)(this.logDataGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.inactivityInputBox)).BeginInit();
             this.SuspendLayout();
             // 
-            // reconfigLog
+            // logDataGridView
             // 
-            this.reconfigLog.AllowUserToAddRows = false;
-            this.reconfigLog.AllowUserToDeleteRows = false;
-            this.reconfigLog.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.logDataGridView.AllowUserToAddRows = false;
+            this.logDataGridView.AllowUserToDeleteRows = false;
+            this.logDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.reconfigLog.ColumnHeadersHeight = 34;
-            this.reconfigLog.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            this.reconfigLog.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.logDataGridView.ColumnHeadersHeight = 34;
+            this.logDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            this.logDataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.entryType,
             this.frontOrBack,
             this.messageColumn,
             this.timeStampColumn});
-            this.reconfigLog.Location = new System.Drawing.Point(20, 103);
-            this.reconfigLog.Name = "reconfigLog";
-            this.reconfigLog.ReadOnly = true;
-            this.reconfigLog.RowHeadersVisible = false;
+            this.logDataGridView.Location = new System.Drawing.Point(20, 103);
+            this.logDataGridView.Name = "logDataGridView";
+            this.logDataGridView.ReadOnly = true;
+            this.logDataGridView.RowHeadersVisible = false;
             dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.reconfigLog.RowsDefaultCellStyle = dataGridViewCellStyle2;
-            this.reconfigLog.RowTemplate.DefaultCellStyle.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.reconfigLog.Size = new System.Drawing.Size(833, 342);
-            this.reconfigLog.TabIndex = 1;
+            this.logDataGridView.RowsDefaultCellStyle = dataGridViewCellStyle2;
+            this.logDataGridView.RowTemplate.DefaultCellStyle.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.logDataGridView.Size = new System.Drawing.Size(833, 342);
+            this.logDataGridView.TabIndex = 1;
             // 
             // entryType
             // 
@@ -184,11 +185,23 @@
             0,
             0});
             // 
+            // loadingLabel
+            // 
+            this.loadingLabel.AutoSize = true;
+            this.loadingLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 36F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.loadingLabel.ForeColor = System.Drawing.Color.DarkGoldenrod;
+            this.loadingLabel.Location = new System.Drawing.Point(312, 265);
+            this.loadingLabel.Name = "loadingLabel";
+            this.loadingLabel.Size = new System.Drawing.Size(245, 55);
+            this.loadingLabel.TabIndex = 12;
+            this.loadingLabel.Text = "Loading...";
+            // 
             // LogForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(865, 457);
+            this.Controls.Add(this.loadingLabel);
             this.Controls.Add(this.inactivityInputBox);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label1);
@@ -196,14 +209,15 @@
             this.Controls.Add(this.inactivityButton);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
-            this.Controls.Add(this.reconfigLog);
+            this.Controls.Add(this.logDataGridView);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "LogForm";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "System Log";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.LogForm_FormClosing);
-            ((System.ComponentModel.ISupportInitialize)(this.reconfigLog)).EndInit();
+            this.Shown += new System.EventHandler(this.LogForm_Shown);
+            ((System.ComponentModel.ISupportInitialize)(this.logDataGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.inactivityInputBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -211,7 +225,7 @@
         }
 
         #endregion
-        private System.Windows.Forms.DataGridView reconfigLog;
+        private System.Windows.Forms.DataGridView logDataGridView;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button inactivityButton;
@@ -223,5 +237,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn frontOrBack;
         private System.Windows.Forms.DataGridViewTextBoxColumn messageColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn timeStampColumn;
+        private System.Windows.Forms.Label loadingLabel;
     }
 }

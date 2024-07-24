@@ -24,6 +24,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Diagnostics;
 using System.Drawing;
+using System.Threading.Tasks;
 
 
 
@@ -61,10 +62,11 @@ namespace UDP_Repeater_GUI
 
             theMainForm = mainForm;
 
-                    // this makes sure that the rows can fit if there's multiple lines of text
-            reconfigLog.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+                // this makes sure that the rows can fit if there's multiple lines of text
+            logDataGridView.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
 
-            PopulateTable();
+                // hides the logs until the they're finished loading
+            logDataGridView.Visible = false;
         }
 
         /// <summary> 
@@ -88,7 +90,7 @@ namespace UDP_Repeater_GUI
                 }
 
                 // sort by newest entry first
-                reconfigLog.Sort(reconfigLog.Columns["timeStampColumn"], ListSortDirection.Descending);
+                logDataGridView.Sort(logDataGridView.Columns["timeStampColumn"], ListSortDirection.Descending);
             }
             catch (Exception e)
             {
@@ -181,14 +183,14 @@ namespace UDP_Repeater_GUI
         public void OnEntryWritten(object source, EntryWrittenEventArgs e)
         {
             Invoke(new Action(() => AddNewRow(e.Entry)));
-            Invoke(new Action(() => reconfigLog.Sort(reconfigLog.Columns["timeStampColumn"], ListSortDirection.Descending)));
+            Invoke(new Action(() => logDataGridView.Sort(logDataGridView.Columns["timeStampColumn"], ListSortDirection.Descending)));
         }
 
         /// <summary> Adds a new row to the configLog data grid view.s </summary>
         public void AddNewRow(EventLogEntry entry)
         {
-            int rowNum = reconfigLog.Rows.Add();
-            DataGridViewRow row = reconfigLog.Rows[rowNum];
+            int rowNum = logDataGridView.Rows.Add();
+            DataGridViewRow row = logDataGridView.Rows[rowNum];
 
             switch (entry.EventID)
             {
@@ -240,6 +242,15 @@ namespace UDP_Repeater_GUI
             row.Cells["timeStampColumn"].Value = entry.TimeWritten;
         }
 
+        /// <summary> Finishes the controls rendering and then populates the table while the 
+        /// loading label is shown. When done, it then hides the loading label and shows the table. </summary>
+        private void LogForm_Shown(object sender, EventArgs e)
+        {
+            Application.DoEvents();
+            PopulateTable();
+            loadingLabel.Visible = false;
+            logDataGridView.Visible = true;
+        }
         /// <summary> Disposes of both of the eventLog objects. </summary>
         private void LogForm_FormClosing(object sender, FormClosingEventArgs e)
         {
