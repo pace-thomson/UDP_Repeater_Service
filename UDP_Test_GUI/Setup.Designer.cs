@@ -48,6 +48,7 @@
             this.label8 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
+            this.cancelButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
@@ -92,9 +93,9 @@
             // 
             this.sumbitButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.sumbitButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.sumbitButton.Location = new System.Drawing.Point(463, 386);
+            this.sumbitButton.Location = new System.Drawing.Point(371, 400);
             this.sumbitButton.Name = "sumbitButton";
-            this.sumbitButton.Size = new System.Drawing.Size(112, 42);
+            this.sumbitButton.Size = new System.Drawing.Size(112, 32);
             this.sumbitButton.TabIndex = 1;
             this.sumbitButton.Text = "Submit";
             this.sumbitButton.UseVisualStyleBackColor = true;
@@ -128,7 +129,7 @@
             this.promEndpoint.AllowDrop = true;
             this.promEndpoint.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.promEndpoint.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.promEndpoint.Location = new System.Drawing.Point(48, 408);
+            this.promEndpoint.Location = new System.Drawing.Point(32, 408);
             this.promEndpoint.Name = "promEndpoint";
             this.promEndpoint.Size = new System.Drawing.Size(140, 20);
             this.promEndpoint.TabIndex = 4;
@@ -138,7 +139,7 @@
             this.lokiEndpoint.AllowDrop = true;
             this.lokiEndpoint.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.lokiEndpoint.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.lokiEndpoint.Location = new System.Drawing.Point(252, 407);
+            this.lokiEndpoint.Location = new System.Drawing.Point(197, 408);
             this.lokiEndpoint.Name = "lokiEndpoint";
             this.lokiEndpoint.Size = new System.Drawing.Size(149, 20);
             this.lokiEndpoint.TabIndex = 5;
@@ -147,7 +148,7 @@
             // 
             this.label3.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(62, 388);
+            this.label3.Location = new System.Drawing.Point(46, 388);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(111, 13);
             this.label3.TabIndex = 6;
@@ -157,7 +158,7 @@
             // 
             this.label4.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(289, 388);
+            this.label4.Location = new System.Drawing.Point(234, 389);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(75, 13);
             this.label4.TabIndex = 7;
@@ -243,11 +244,23 @@
             this.label6.TabIndex = 0;
             this.label6.Text = "Network Interface Card:";
             // 
+            // cancelButton
+            // 
+            this.cancelButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.cancelButton.Location = new System.Drawing.Point(496, 400);
+            this.cancelButton.Name = "cancelButton";
+            this.cancelButton.Size = new System.Drawing.Size(112, 32);
+            this.cancelButton.TabIndex = 10;
+            this.cancelButton.Text = "Cancel";
+            this.cancelButton.UseVisualStyleBackColor = true;
+            // 
             // Setup
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(630, 448);
+            this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
@@ -291,5 +304,6 @@
         private System.Windows.Forms.Label lokiLabel;
         private System.Windows.Forms.Label promLabel;
         private System.Windows.Forms.Label nicLabel;
+        private System.Windows.Forms.Button cancelButton;
     }
 }

@@ -20,6 +20,7 @@
 using System;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
+using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using OpenTelemetry;
@@ -28,6 +29,7 @@ using OpenTelemetry.Exporter;
 using Serilog;
 using Serilog.Sinks.Grafana.Loki;
 using Serilog.Formatting.Display;
+using Newtonsoft.Json.Linq;
 
 
 
@@ -44,11 +46,11 @@ namespace UDP_Repeater_GUI
         public ILogger lokiLogger { get; set; }
 
             /// <summary> Our Meter object (the base for all of the metric instrumentation) </summary>
-        private static readonly Meter myMeter = new Meter("JT4.Repeater.MyLibrary", "1.0");
+        private Meter myMeter;
             /// <summary> The main meter provider </summary>
         public MeterProvider meterProvider;
             /// <summary> Tracks the memory use of the gui </summary>
-        public static readonly ObservableGauge<double> processMemory = myMeter.CreateObservableGauge("frontendMemory", () => GetProcessMemory());
+        public ObservableGauge<double> processMemory;
 
 
         public Logger()
@@ -56,11 +58,16 @@ namespace UDP_Repeater_GUI
             this.eventLog = new EventLog("UDP Packet Repeater");
             this.eventLog.Source = "UDP_Repeater_Frontend";
 
-            const string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss} \t Frontend/Interface \t {Level} {NewLine}{Message}";
-            this.lokiLogger = new LoggerConfiguration()
+            GetEndpoints(out string promURI, out string lokiURI);
+
+            try
+            {
+                const string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss} \t Frontend/Interface \t {Level} {NewLine}{Message}";
+
+                this.lokiLogger = new LoggerConfiguration()
                                 .WriteTo.GrafanaLoki
                                 (
-                                    "http://172.18.46.211:3100",
+                                    lokiURI,
                                     labels: new List<LokiLabel>
                                     {
                                     new LokiLabel(){ Key = "RepeaterSide", Value = "Frontend/Interface" },
@@ -73,15 +80,22 @@ namespace UDP_Repeater_GUI
                                 .CreateLogger();
 
 
-            this.meterProvider = Sdk.CreateMeterProviderBuilder()
-                                .AddMeter("JT4.Repeater.MyLibrary")
-                                .AddOtlpExporter((exporterOptions, metricReaderOptions) =>
-                                {
-                                    exporterOptions.Endpoint = new Uri("http://172.18.46.211:9090/api/v1/otlp/v1/metrics");
-                                    exporterOptions.Protocol = OtlpExportProtocol.HttpProtobuf;
-                                    metricReaderOptions.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 5000;
-                                })
-                                .Build();
+                this.meterProvider = Sdk.CreateMeterProviderBuilder()
+                                    .AddMeter("JT4.Repeater.MyLibrary")
+                                    .AddOtlpExporter((exporterOptions, metricReaderOptions) =>
+                                    {
+                                        exporterOptions.Endpoint = new Uri(promURI);
+                                        exporterOptions.Protocol = OtlpExportProtocol.HttpProtobuf;
+                                        metricReaderOptions.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 5000;
+                                    })
+                                    .Build();
+                this.myMeter = new Meter("JT4.Repeater.MyLibrary", "1.0");
+                this.processMemory = myMeter.CreateObservableGauge("frontendMemory", () => GetProcessMemory());
+            }
+            catch (UriFormatException ex) 
+            {
+                eventLog.WriteEntry("Invalid endpoint configured, no monitoring currently.", EventLogEntryType.Warning, 9);
+            }
         }
 
         /// <summary> 
@@ -97,6 +111,77 @@ namespace UDP_Repeater_GUI
         {
             long bytes = Process.GetCurrentProcess().PrivateMemorySize64;
             return (bytes / 1024f) / 1024f;
+        }
+
+        public void UpdateMonitoringFields(string promURI, string lokiURI)
+        {
+            try
+            {
+                if (this.lokiLogger == null)
+                {
+                    const string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss} \t Frontend/Interface \t {Level} {NewLine}{Message}";
+
+                    this.lokiLogger = new LoggerConfiguration()
+                                .WriteTo.GrafanaLoki
+                                (
+                                    lokiURI,
+                                    labels: new List<LokiLabel>
+                                    {
+                                    new LokiLabel(){ Key = "RepeaterSide", Value = "Frontend/Interface" },
+                                    new LokiLabel(){ Key = "MachineName", Value = Environment.MachineName },
+                                    new LokiLabel(){ Key = "User", Value = Environment.UserName }
+                                    },
+                                    textFormatter: new MessageTemplateTextFormatter(outputTemplate, null)
+                                )
+                                .Enrich.FromLogContext()
+                                .CreateLogger();
+                }
+                
+
+                if (this.lokiLogger == null)
+                {
+                    this.meterProvider = Sdk.CreateMeterProviderBuilder()
+                                    .AddMeter("JT4.Repeater.MyLibrary")
+                                    .AddOtlpExporter((exporterOptions, metricReaderOptions) =>
+                                    {
+                                        exporterOptions.Endpoint = new Uri(promURI);
+                                        exporterOptions.Protocol = OtlpExportProtocol.HttpProtobuf;
+                                        metricReaderOptions.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 5000;
+                                    })
+                                    .Build();
+                    this.myMeter = new Meter("JT4.Repeater.MyLibrary", "1.0");
+                    this.processMemory = myMeter.CreateObservableGauge("frontendMemory", () => GetProcessMemory());
+                }
+            }
+            catch (UriFormatException ex)
+            {
+                eventLog.WriteEntry("Invalid endpoint configured, no monitoring currently.", EventLogEntryType.Warning, 9);
+            }
+        }
+
+        /// <summary> 
+        ///  Class Name: Logger  <br/> <br/>
+        ///
+        ///  Description: Gets the montoring endpoints from the config.json file. <br/><br/>
+        ///
+        ///  Inputs: None <br/>
+        ///  out string <paramref name="prom"/> - The out string for the prometheus endpoint <br/>
+        ///  out string <paramref name="loki"/> - The out string for the loki endpoint <br/><br/>
+        ///  
+        ///  Returns:  None
+        /// </summary>
+        public static void GetEndpoints(out string prom, out string loki)
+        {
+            while (!File.Exists("C:\\Windows\\SysWOW64\\UDP_Repeater_Config.json"))
+            {
+                System.Threading.Thread.Sleep(1000);
+            }
+
+            string jsonString = File.ReadAllText("C:\\Windows\\SysWOW64\\UDP_Repeater_Config.json");
+            JObject jsonObject = JObject.Parse(jsonString);
+
+            prom = (string)jsonObject["monitoring"]["prom"];
+            loki = (string)jsonObject["monitoring"]["loki"];
         }
 
         /// <summary> 

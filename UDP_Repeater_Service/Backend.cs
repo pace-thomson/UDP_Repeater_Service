@@ -86,13 +86,13 @@ namespace BackendClassNameSpace
         ///  Description: Overload 1/3. The main Backend Constructor. Initializes all of the fields. <br/><br/>
         ///
         ///  Inputs:  <br/>
-        ///  string <paramref name="ReceiveIp"/> - The IP being listened to. <br/>
-        ///  string <paramref name="ReceivePort"/> - The Port being listened to. <br/>
-        ///  string <paramref name="SendIp"/> - The IP being sent to. <br/>
-        ///  string <paramref name="SendPort"/> - The Port being sent to. <br/>
-        ///  int    <paramref name="newFrequency"/> - The Frequency (number) at which the service reports inactivity <br/>
-        ///  string <paramref name="newInterval"/> - The Interval (minute, day, hour) at which the service reports inactivity <br/>
-        ///  string <paramref name="NameOfNIC"/> - The name of the NIC we're listening on <br/><br/> 
+        ///  string <paramref name="ReceiveIp"/>    -    The IP being listened to. <br/>
+        ///  string <paramref name="ReceivePort"/>  -    The Port being listened to. <br/>
+        ///  string <paramref name="SendIp"/>       -    The IP being sent to. <br/>
+        ///  string <paramref name="SendPort"/>     -    The Port being sent to. <br/>
+        ///  int    <paramref name="newFrequency"/> -    The Frequency (number) at which the service reports inactivity <br/>
+        ///  string <paramref name="newInterval"/>  -    The Interval (minute, day, hour) at which the service reports inactivity <br/>
+        ///  string <paramref name="NameOfNIC"/>    -    The name of the NIC we're listening on <br/><br/> 
         ///  
         /// Returns: A Backend Object
         /// </summary>
@@ -158,16 +158,11 @@ namespace BackendClassNameSpace
         /// <summary> 
         ///  Class Name: Backend  <br/><br/> 
         ///
-        ///  Description: Overload 2/3. The Backend Constructor that just includes the config fields (newBackendObject) <br/><br/>
+        ///  Description: Overload 2/3. The Backend Constructor that just includes the config fields. 
+        ///                             Used to construct the "newBackendObject". <br/><br/>
         ///
         ///  Inputs:  <br/>
-        ///  string <paramref name="ReceiveIp"/> - The IP being listened to. <br/>
-        ///  string <paramref name="ReceivePort"/> - The Port being listened to. <br/>
-        ///  string <paramref name="SendIp"/> - The IP being sent to. <br/>
-        ///  string <paramref name="SendPort"/> - The Port being sent to. <br/>
-        ///  int    <paramref name="newFrequency"/> - The Frequency (number) at which the service reports inactivity <br/>
-        ///  string <paramref name="newInterval"/> - The Interval (minute, day, hour) at which the service reports inactivity <br/>
-        ///  string <paramref name="NameOfNIC"/> - The name of the NIC we're listening on <br/><br/> 
+        ///  Backend <paramref name="originalBackendObject"/> - The original backendObject to copy values from. <br/><br/> 
         ///  
         /// Returns: A Backend Object
         /// </summary>
@@ -196,60 +191,61 @@ namespace BackendClassNameSpace
         /// </summary>
         public Backend()
         {
+            
+            if (!File.Exists("UDP_Repeater_Config.json"))   // actual path: "C:\\Windows\\SysWOW64\\UDP_Repeater_Config.json"
+            {
+                // if UDP_Repeater_Config.json doense't exist, it make it and then poplulates it with this string
+                string defaults = @"        
+                {
+                    ""currentConfig"": {
+                        ""receiveFrom"": {
+                            ""ip"": ""172.18.46.213"",
+                            ""port"": ""763""
+                        },
+                        ""sendTo"": {
+                            ""ip"": ""172.18.46.213"",
+                            ""port"": ""722""
+                        }
+                    },
+
+                    ""defaultSettings"": {
+                        ""receiveFrom"": {
+                            ""ip"": ""127.0.0.1"",
+                            ""port"": ""7654""
+                        },
+                        ""sendTo"": {
+                            ""ip"": ""132.58.202.157"",
+                            ""port"": ""722""
+                        }
+                    },
+
+                    ""inactivitySettings"": {
+                        ""frequency"": ""5"",
+                        ""interval"": ""minute""
+                    },
+                    ""monitoring"": {
+                        ""prom"": ""Not Configured Yet"",
+                        ""loki"": ""Not Configured Yet""
+                    },
+                    ""descriptionOfNIC"":""Not Configured Yet"" 
+                }";
+
+                // Write the JSON string to a file
+                File.WriteAllText("UDP_Repeater_Config.json", defaults);
+            }
+
+                // get the loki endpoint form confi.json
+            string jsonString = File.ReadAllText("UDP_Repeater_Config.json");
+            JObject jsonObject = JObject.Parse(jsonString);
+            this.lokiEndpoint = (string)jsonObject["monitoring"]["loki"];
+
+                // windows event logger set up
+            this.eventLog = new EventLog("UDP Packet Repeater");
+            eventLog.Source = "UDP_Repeater_Backend";
+
             try
             {
-                if (!File.Exists("UDP_Repeater_Config.json"))   // actual path: "C:\\Windows\\SysWOW64\\UDP_Repeater_Config.json"
-                {
-                    // if UDP_Repeater_Config.json doense't exist, it make it and then poplulates it with this string
-                    string defaults = @"        
-                    {
-                        ""currentConfig"": {
-                            ""receiveFrom"": {
-                                ""ip"": ""172.18.46.213"",
-                                ""port"": ""763""
-                            },
-                            ""sendTo"": {
-                                ""ip"": ""172.18.46.213"",
-                                ""port"": ""722""
-                            }
-                        },
-
-                        ""defaultSettings"": {
-                            ""receiveFrom"": {
-                                ""ip"": ""127.0.0.1"",
-                                ""port"": ""7654""
-                            },
-                            ""sendTo"": {
-                                ""ip"": ""132.58.202.157"",
-                                ""port"": ""722""
-                            }
-                        },
-
-                        ""inactivitySettings"": {
-                            ""frequency"": ""5"",
-                            ""interval"": ""minute""
-                        },
-                        ""monitoring"": {
-                            ""prom"": ""Not Configured Yet"",
-                            ""loki"": ""Not Configured Yet""
-                        },
-                        ""descriptionOfNIC"":""Not Configured Yet"" 
-                    }";
-
-                    // Write the JSON string to a file
-                    File.WriteAllText("UDP_Repeater_Config.json", defaults);
-                }
-
-                    // get the loki endpoint form confi.json
-                string jsonString = File.ReadAllText("UDP_Repeater_Config.json");
-                JObject jsonObject = JObject.Parse(jsonString);
-                this.lokiEndpoint = (string)jsonObject["monitoring"]["loki"];
-
-                    // windows event logger set up
-                this.eventLog = new EventLog("UDP Packet Repeater");
-                eventLog.Source = "UDP_Repeater_Backend";
-
-                    // Loki event logger set up
+                // Loki event logger set up
                 const string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss} \t Backend/Service \t {Level} \n{Message}";
                 this.lokiLogger = new LoggerConfiguration()
                                   .WriteTo.GrafanaLoki
@@ -338,6 +334,31 @@ namespace BackendClassNameSpace
             }
         }
 
+        /// <summary> 
+        ///  Class Name: Backend  <br/><br/> 
+        ///
+        ///  Description: Returns if two Backend objects have identical configuration fields
+        ///  <br/><br/>
+        ///
+        ///  Inputs:  <br/>
+        ///  Backend <paramref name="other"/> - The other Backend object to compare with. <br/><br/>
+        ///  
+        ///  Returns:  bool – Whether the two objects' configuration fields are equal.
+        /// </summary>
+        public bool Equals(Backend other)
+        {
+            return other != null &&
+                   this.receiveIp == other.receiveIp &&
+                   this.receivePort == other.receivePort &&
+                   this.sendIp == other.sendIp &&
+                   this.sendPort == other.sendPort &&
+                   this.frequency == other.frequency &&
+                   this.interval == other.interval &&
+                   this.promEndpoint == other.promEndpoint &&
+                   this.lokiEndpoint == other.lokiEndpoint &&
+                   this.descriptionOfNIC == other.descriptionOfNIC;
+        }
+
 
         /// <summary> Calculates and returns the current process memroy in bytes. </summary>
         public static double GetProcessMemory()
@@ -368,30 +389,6 @@ namespace BackendClassNameSpace
             }
         }
 
-
-        /// <summary> 
-        ///  Class Name: Backend  <br/><br/> 
-        ///
-        ///  Description: Returns if two Backend objects have identical attributes <br/><br/>
-        ///
-        ///  Inputs:  <br/>
-        ///  Backend <paramref name="other"/> - The other Backend object to compare with <br/><br/>
-        ///  
-        ///  Returns:  bool – Whether the two objects are equal.
-        /// </summary>
-        public bool Equals(Backend other)
-        {       
-            return other != null &&
-                   this.receiveIp == other.receiveIp &&
-                   this.receivePort == other.receivePort &&
-                   this.sendIp == other.sendIp &&
-                   this.sendPort == other.sendPort &&
-                   this.frequency == other.frequency &&
-                   this.interval == other.interval &&
-                   this.promEndpoint == other.promEndpoint &&
-                   this.lokiEndpoint == other.lokiEndpoint  &&
-                   this.descriptionOfNIC == other.descriptionOfNIC;
-        }
 
         /// <summary> 
         ///  Class Name: Backend  <br/> <br/>

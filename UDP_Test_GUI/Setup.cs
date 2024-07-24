@@ -15,11 +15,11 @@ namespace UDP_Test_GUI
 
             /// <summary> Tracks whether the user selection was valid </summary>
         public bool isValid;
-            /// <summary> This forms Logger object </summary>
-        private Logger logger;
+            /// <summary>The main form's object.</summary>
+        private gui_form theMainForm;
 
         /// <summary> The NIC_Picker form constructor </summary>
-        public Setup()
+        public Setup(gui_form TheMainForm)
         {
             InitializeComponent();
 
@@ -27,9 +27,9 @@ namespace UDP_Test_GUI
 
             PopulateCurrentConfig();
 
-            logger = new Logger();
+            this.theMainForm = TheMainForm;
 
-            isValid = true;
+            this.isValid = true;
 
             dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
         }
@@ -54,7 +54,7 @@ namespace UDP_Test_GUI
                     }
                 }
             }
-            catch (Exception ex) { logger.LogException(ex); }
+            catch (Exception ex) { theMainForm.logger.LogException(ex); }
         }
 
         private void PopulateCurrentConfig()
@@ -64,7 +64,7 @@ namespace UDP_Test_GUI
 
             promLabel.Text = (string)jsonObject["monitoring"]["prom"];
             lokiLabel.Text = (string)jsonObject["monitoring"]["loki"];
-            nicLabel.Text = (string)jsonObject["descriptionOfNIC"];
+            nicLabel.Text  = (string)jsonObject["descriptionOfNIC"];
         }
 
         /// <summary> Handles the done button click. Validates input and then sends to the Backend. </summary>
@@ -91,8 +91,9 @@ namespace UDP_Test_GUI
                                 byte[] bytes = Encoding.ASCII.GetBytes($"{prom},{loki},setup,{nic}");
                                 sendRequest.Send(bytes, bytes.Length, "127.0.0.1", 50001);
 
-                                logger.LogNicChange(nic, row.Cells["macAddressColumn"].Value.ToString());
-                                logger.LogMonitoringChange(prom, loki);
+                                theMainForm.logger.UpdateMonitoringFields(prom, loki);
+                                theMainForm.logger.LogNicChange(nic, row.Cells["macAddressColumn"].Value.ToString());
+                                theMainForm.logger.LogMonitoringChange(prom, loki);
 
                                 sendRequest.Close();
                             }
@@ -113,12 +114,12 @@ namespace UDP_Test_GUI
                 }
                 else
                 {
-                    MessageBox.Show("Please only pick one row.");
+                    MessageBox.Show("Please pick one Network Interface Card.");
                     isValid = false;
                     return;
                 }
             }
-            catch (Exception ex) { logger.LogException(ex); }
+            catch (Exception ex) { theMainForm.logger.LogException(ex); }
         }
 
         /// <summary> Checks if isValid is true, and either cancels the form closing or 
@@ -128,9 +129,9 @@ namespace UDP_Test_GUI
             if (!isValid)
             {
                 e.Cancel = true;
+                isValid = true;
                 return;
             }
-            logger.eventLog.Dispose();
         }
     }
 }

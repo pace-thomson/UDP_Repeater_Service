@@ -27,7 +27,6 @@ using Newtonsoft.Json;
 using System.Threading;
 using System.IO;
 using System.Diagnostics;
-using System.Linq;
 
 
 
@@ -57,12 +56,10 @@ namespace UDP_Repeater_Service
             if (!EventLog.SourceExists("UDP_Repeater_Backend"))
             {
                 EventLog.CreateEventSource("UDP_Repeater_Backend", "UDP Packet Repeater");
-                EventLog.GetEventLogs().First(x => x.Log == "UDP Packet Repeater").MaximumKilobytes = 256;
             }
             if (!EventLog.SourceExists("UDP_Repeater_Frontend"))
             {
                 EventLog.CreateEventSource("UDP_Repeater_Frontend", "UDP Packet Repeater");
-                EventLog.GetEventLogs().First(x => x.Log == "UDP Packet Repeater").MaximumKilobytes = 256;
             }
             outerBackendObject = new Backend();
         }
@@ -93,7 +90,7 @@ namespace UDP_Repeater_Service
         protected override void OnStop()
         {
             outerBackendObject.StartStopLogger("stop");
-            Thread.Sleep(1000);
+            Thread.Sleep(1500);
         }
     }
 }

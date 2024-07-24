@@ -118,7 +118,7 @@ namespace UDP_Repeater_GUI
                 return;
             }
 
-            Setup picker = new Setup();   
+            Setup picker = new Setup(this);   
             picker.ShowDialog();
         }
 
@@ -492,7 +492,7 @@ namespace UDP_Repeater_GUI
             DialogResult response = messageDialog.ShowDialog();
             if (response == DialogResult.Abort)
             {
-                Setup picker = new Setup();
+                Setup picker = new Setup(this);
                 picker.ShowDialog();
             }
         }
