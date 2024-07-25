@@ -81,7 +81,7 @@ namespace UDP_Repeater_GUI
                 {
                     portInt = int.Parse(port_field.Text);
                 }
-                catch (FormatException ex)
+                catch (FormatException)
                 {
                     MessageBox.Show("Please fill in all input fields.");
                     inputValid = false;

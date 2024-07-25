@@ -18,19 +18,18 @@
 //---------------------------------------------------
 
 using Newtonsoft.Json.Linq;
-using System;
-using System.Diagnostics;
-using System.Linq;
-using System.IO;
-using Serilog;
-using Serilog.Sinks.Grafana.Loki;
-using System.Collections.Generic;
-using System.Threading;
-using Serilog.Formatting.Display;
 using OpenTelemetry;
-using OpenTelemetry.Metrics;
 using OpenTelemetry.Exporter;
+using OpenTelemetry.Metrics;
+using Serilog;
+using Serilog.Formatting.Display;
+using Serilog.Sinks.Grafana.Loki;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Metrics;
+using System.IO;
+using System.Linq;
 
 
 
@@ -62,16 +61,32 @@ namespace BackendClassNameSpace
             /// <summary> The device.Description of the network card that we're listening on. </summary>
         public string descriptionOfNIC;
 
+            /// <summary> How we keep track of the change type. Only used with newBackendObject. </summary>
+        public changeType change;
+            /// <summary> All the different change types. </summary>
+        public enum changeType
+        {
+            receivingFrom,
+            sendingTo,
+            defaultSend,
+            defaultRecieve,
+            inactive,
+            setup,
+            restoreToDefaults
+        }
+
 
             /// <summary> Our machine-local windows event log. </summary>
         public EventLog eventLog;
             /// <summary> The loki log that our logs get sent to, in addition to the windows log.
-            /// Endpoints for testing -      local: http://localhost:3100       sandbox: http://172.18.46.211:3100
+            /// Endpoints for testing -      local: http://localhost:3100       
+            ///                              sandbox: http://172.18.46.211:3100
             /// </summary>
         public ILogger lokiLogger; // 
 
             /// <summary> The main meter provider for all of the prometheus metrics. 
-            /// Endpoints for testing -  local: http://localhost:9090/api/v1/otlp/v1/metrics  sandbox: http://172.18.46.211:9090/api/v1/otlp/v1/metrics
+            /// Endpoints for testing -  local: http://localhost:9090/api/v1/otlp/v1/metrics  
+            ///                          sandbox: http://172.18.46.211:9090/api/v1/otlp/v1/metrics
             /// </summary>
         public MeterProvider meterProvider;
             /// <summary> Our Meter object (the base for all of the metric instrumentation) </summary>
@@ -158,7 +173,7 @@ namespace BackendClassNameSpace
                 this.processMemory = myMeter.CreateObservableGauge("backendMemory", () => GetProcessMemory());
                 this.packetHandling = myMeter.CreateHistogram<double>("packetHandling");
             }
-            catch (UriFormatException ex) 
+            catch (UriFormatException) 
             {
                 eventLog.WriteEntry("Invalid endpoint configured, no monitoring currently.", EventLogEntryType.Warning, 9);
             }
@@ -204,7 +219,7 @@ namespace BackendClassNameSpace
             
             if (!File.Exists("UDP_Repeater_Config.json"))   // actual path: "C:\\Windows\\SysWOW64\\UDP_Repeater_Config.json"
             {
-                // if UDP_Repeater_Config.json doense't exist, it make it and then poplulates it with this string
+                // if UDP_Repeater_Config.json doense't exist, it makes it and then poplulates it with this json string
                 string defaults = @"        
                 {
                     ""currentConfig"": {
@@ -244,7 +259,7 @@ namespace BackendClassNameSpace
                 File.WriteAllText("UDP_Repeater_Config.json", defaults);
             }
 
-                // get the loki endpoint form confi.json
+                // get the loki endpoint form config.json
             string jsonString = File.ReadAllText("UDP_Repeater_Config.json");
             JObject jsonObject = JObject.Parse(jsonString);
             this.lokiEndpoint = (string)jsonObject["monitoring"]["loki"];
@@ -277,7 +292,7 @@ namespace BackendClassNameSpace
                                   .Enrich.FromLogContext()
                                   .CreateLogger();
             }
-            catch (UriFormatException ex) 
+            catch (UriFormatException) 
             {
                 eventLog.WriteEntry("Invalid endpoint configured, no monitoring currently.", EventLogEntryType.Warning, 9);
             }
@@ -301,83 +316,6 @@ namespace BackendClassNameSpace
             this.sendPort = newBackendObject.sendPort;
             this.frequency = newBackendObject.frequency;
             this.interval = newBackendObject.interval;
-            this.promEndpoint = newBackendObject.promEndpoint;
-            this.lokiEndpoint = newBackendObject.lokiEndpoint;
-            this.descriptionOfNIC = newBackendObject.descriptionOfNIC;
-
-            try
-            {
-                if (!Uri.IsWellFormedUriString(this.promEndpoint, UriKind.Absolute) ||
-                    !Uri.IsWellFormedUriString(this.lokiEndpoint, UriKind.Absolute))
-                {
-                    throw new UriFormatException();
-                }
-
-                if (this.lokiLogger == null)
-                {
-                    const string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss} \t Backend/Service \t {Level} \n{Message}";
-                    this.lokiLogger = new LoggerConfiguration()
-                                      .WriteTo.GrafanaLoki
-                                      (
-                                          this.lokiEndpoint,
-                                          labels: new List<LokiLabel>
-                                          {
-                                      new LokiLabel(){ Key = "RepeaterSide", Value = "Backend/Service" },
-                                      new LokiLabel(){ Key = "MachineName", Value = Environment.MachineName },
-                                      new LokiLabel(){ Key = "User", Value = Environment.UserName }
-                                          },
-                                          textFormatter: new MessageTemplateTextFormatter(outputTemplate, null)
-                                      )
-                                      .Enrich.FromLogContext()
-                                      .CreateLogger();
-                }
-
-                if (this.meterProvider == null)
-                {
-                    this.meterProvider = Sdk.CreateMeterProviderBuilder()
-                                        .AddMeter("JT4.Repeater.MyLibrary")
-                                        .AddOtlpExporter((exporterOptions, metricReaderOptions) =>
-                                        {
-                                            exporterOptions.Endpoint = new Uri(this.promEndpoint);
-                                            exporterOptions.Protocol = OtlpExportProtocol.HttpProtobuf;
-                                            metricReaderOptions.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 5000;
-                                        })
-                                        .Build();
-                    this.myMeter = new Meter("JT4.Repeater.MyLibrary", "1.0");
-                    this.TotalPacketsHandled = myMeter.CreateCounter<long>("TotalPacketsHandled");
-                    this.processMemory = myMeter.CreateObservableGauge("backendMemory", () => GetProcessMemory());
-                    this.packetHandling = myMeter.CreateHistogram<double>("packetHandling");
-                }
-            }
-            catch (UriFormatException ex)
-            {
-                eventLog.WriteEntry("Invalid endpoint uri configured, no monitoring currently.", EventLogEntryType.Warning, 9);
-            }
-        }
-
-        /// <summary> 
-        ///  Class Name: Backend  <br/><br/> 
-        ///
-        ///  Description: Returns if two Backend objects have identical configuration fields
-        ///  <br/><br/>
-        ///
-        ///  Inputs:  <br/>
-        ///  Backend <paramref name="other"/> - The other Backend object to compare with. <br/><br/>
-        ///  
-        ///  Returns:  bool – Whether the two objects' configuration fields are equal.
-        /// </summary>
-        public bool Equals(Backend other)
-        {
-            return other != null &&
-                   this.receiveIp == other.receiveIp &&
-                   this.receivePort == other.receivePort &&
-                   this.sendIp == other.sendIp &&
-                   this.sendPort == other.sendPort &&
-                   this.frequency == other.frequency &&
-                   this.interval == other.interval &&
-                   this.promEndpoint == other.promEndpoint &&
-                   this.lokiEndpoint == other.lokiEndpoint &&
-                   this.descriptionOfNIC == other.descriptionOfNIC;
         }
 
 
@@ -425,9 +363,8 @@ namespace BackendClassNameSpace
         {
             string[] formattedStackString = e.StackTrace.Split('\n');
 
-            string message = String.Format($"Error Message: {e.Message} \n" +
-                                           $"Error location: Backend/Service. \n" +
-                                           $"{formattedStackString.Last().TrimStart()}");
+            string message = String.Format($"Message: {e.Message} \n" +
+                                           $"Stack trace: {formattedStackString.Last().TrimStart()}");
 
             eventLog.WriteEntry(message, EventLogEntryType.Error, 1);  // 1 is our id for backend errors
             if (lokiLogger != null)
@@ -451,8 +388,8 @@ namespace BackendClassNameSpace
             string[] formattedStackString = e.StackTrace.Split('\n');
 
 
-            string message = String.Format($"Error Message: {e.Message} \n" +
-                                           $"Error location: Backend/Service. \n" +
+            string message = String.Format($"Message: {e.Message} \n" +
+                                           $"location: Backend/Service. \n" +
                                            $"{formattedStackString.Last().TrimStart()}");
 
             using (EventLog logg = new EventLog("UDP Packet Repeater"))
@@ -487,7 +424,7 @@ namespace BackendClassNameSpace
                     temporaryLokiLogger.Error(message);
                     temporaryLokiLogger.Dispose();
                 }
-                catch (UriFormatException ex)
+                catch (UriFormatException)
                 {
                     logg.WriteEntry("Invalid endpoint configured, no monitoring currently.", EventLogEntryType.Warning, 9);
                 }
@@ -509,7 +446,7 @@ namespace BackendClassNameSpace
         /// </summary>
         public void InactivityLogger(int consecutiveEvents, int frequency, string interval)
         {
-                // this whole fields is just to find if the interval word in the log message should have an 's' or not 
+                // this whole fields is just to find if the interval word in the log eventLogMessage should have an 's' or not 
                 // this has to be so much more complicated than it should be
             int totalTime = consecutiveEvents * frequency;
             string message;
@@ -555,22 +492,25 @@ namespace BackendClassNameSpace
         /// </summary>
         public void StartStopLogger(string mode)
         {
-            string message = "";
+            string eventLogMessage = "";
+            string lokiLogMessage = "";
+
             if (mode == "start")
             {
-                message = "Repeater Service started.";   
-            } 
+                eventLogMessage = "Repeater Service started.";
+                lokiLogMessage = "Repeater Service \u001b[32mstarted\u001b[0m.";
+            }
             else if (mode == "stop")
             {
-                message = "Repeater Service stopped.";
-                Thread.Sleep(6000);
+                eventLogMessage = "Repeater Service stopped.";
+                lokiLogMessage = "Repeater Service \u001B[31mstopped\u001B[0m.";
             }
 
-            eventLog.WriteEntry(message, EventLogEntryType.Information, 4);     // 4 is id for backend start/stop
+            eventLog.WriteEntry(eventLogMessage, EventLogEntryType.Information, 4);     // 4 is id for backend start/stop
 
             if (lokiLogger != null)
             {
-                lokiLogger.Information(message);
+                lokiLogger.Information(lokiLogMessage);
             }
         }
 
@@ -580,14 +520,14 @@ namespace BackendClassNameSpace
         ///  Description: Logs general warnings. <br/><br/>
         ///
         ///  Inputs:  <br/>
-        ///  string <paramref name="message"/> - The warning message to log. <br/><br/>
+        ///  string <paramref name="message"/> - The warning eventLogMessage to log. <br/><br/>
         ///  
         ///  Returns:  None
         /// </summary>
         public void WarningLogger(string message)
         {
-            string actual = String.Format($"Warning Message: {message} \n" +
-                                          $"Warning location: Backend/Service.");
+            string actual = String.Format($"Message: {message} \n" +
+                                          $"location: Backend/Service.");
 
             eventLog.WriteEntry(message, EventLogEntryType.Warning, 9);     // 9 is id for backend general warnings
 

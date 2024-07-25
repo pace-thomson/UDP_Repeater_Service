@@ -98,7 +98,7 @@ namespace UDP_Repeater_GUI
                 this.myMeter = new Meter("JT4.Repeater.MyLibrary", "1.0");
                 this.processMemory = myMeter.CreateObservableGauge("frontendMemory", () => GetProcessMemory());
             }
-            catch (UriFormatException ex) 
+            catch (UriFormatException) 
             {
                 eventLog.WriteEntry("Invalid endpoint configured, no monitoring currently.", EventLogEntryType.Warning, 9);
             }
@@ -170,7 +170,7 @@ namespace UDP_Repeater_GUI
                 this.myMeter = new Meter("JT4.Repeater.MyLibrary", "1.0");
                 this.processMemory = myMeter.CreateObservableGauge("frontendMemory", () => GetProcessMemory());
             }
-            catch (UriFormatException ex)
+            catch (UriFormatException)
             {
                 eventLog.WriteEntry("Invalid endpoint configured, no monitoring currently.", EventLogEntryType.Warning, 9);
             }
@@ -333,21 +333,25 @@ namespace UDP_Repeater_GUI
         /// </summary>
         public void StartStopLogger(string mode)
         {
-            string message = "";
+            string eventLogMessage = "";
+            string lokiLogMessage = "";
+
             if (mode == "start")
             {
-                message = "User Interface started.";
+                eventLogMessage = "User Interface started.";
+                lokiLogMessage = "User Interface \u001b[32mstarted\u001b[0m.";
             }                                         
             else if (mode == "stop")                  
-            {                                         
-                message = "User Interface stopped.";
+            {
+                eventLogMessage = "User Interface stopped.";
+                lokiLogMessage = "User Interface \u001B[31mstopped\u001B[0m.";
             }
 
-            eventLog.WriteEntry(message, EventLogEntryType.Information, 5);     // 5 is id for frontend start/stop
+            eventLog.WriteEntry(eventLogMessage, EventLogEntryType.Information, 5);     // 5 is id for frontend start/stop
 
             if (lokiLogger != null)
             {
-                lokiLogger.Information(message);
+                lokiLogger.Information(lokiLogMessage);
             }
         }
     }

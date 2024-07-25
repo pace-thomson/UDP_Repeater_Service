@@ -90,6 +90,7 @@ namespace UDP_Test_GUI
                         {
                             DataGridViewRow row = dataGridView1.SelectedRows[0];
                             string nic = row.Cells["descriptionColumn"].Value.ToString();
+                            string mac = row.Cells["macAddressColumn"].Value.ToString();
 
 
                             using (UdpClient sendRequest = new UdpClient())
@@ -98,7 +99,7 @@ namespace UDP_Test_GUI
                                 sendRequest.Send(bytes, bytes.Length, "127.0.0.1", 50001);
 
                                 theMainForm.logger.UpdateMonitoringFields(this.prom, this.loki);
-                                theMainForm.logger.LogNicChange(nic, row.Cells["macAddressColumn"].Value.ToString());
+                                theMainForm.logger.LogNicChange(nic, mac);
                                 theMainForm.logger.LogMonitoringChange(this.prom, this.loki);
 
                                 sendRequest.Close();
@@ -130,7 +131,7 @@ namespace UDP_Test_GUI
 
 
         /// <summary> Checks if isValid is true, and either cancels the form closing or 
-        /// lets it close and disposes of the logger objects eventLog.</summary>
+        /// lets it close. </summary>
         private void NIC_Picker_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (!isValid)

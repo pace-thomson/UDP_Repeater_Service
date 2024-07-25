@@ -278,8 +278,8 @@ namespace Repeater
                 if (device == null)
                 {
                     device = devices[0];
-                    backendObject.WarningLogger($"No matching network device was found, {device.Description} is being used. " +
-                                                "Ignore this warning if the system was just installed.");
+                    backendObject.WarningLogger($"No device matching \"{backendObject.descriptionOfNIC}\" was found, " +
+                                                $"{device.Description} is being used.");
                 }
 
                     // Register our handler function to the 'packet arrival' event

@@ -23,6 +23,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using BackendClassNameSpace;
+using static TheMainProgram;
 
 namespace GUIreceiver
 {
@@ -45,6 +46,7 @@ namespace GUIreceiver
         public static string[] ReceivingFromGUI(Backend backendObject)
         {
             bool socketOpen = false;
+            int socketCantConnectCount = 0;
             UdpClient listener = new UdpClient();
             try
             {
@@ -55,7 +57,13 @@ namespace GUIreceiver
                         listener = new UdpClient(50001);
                         socketOpen = true;
                     }
-                    catch (SocketException) { System.Threading.Thread.Sleep(500); }
+                    catch (SocketException) 
+                    {
+                        socketCantConnectCount++;
+                        backendObject.WarningLogger("Receiving from GUI port 50001 not open, trying to connect" +
+                                                    $" again in 1 second. \n Attempt number: {socketCantConnectCount}");
+                        System.Threading.Thread.Sleep(1000); 
+                    }
                 }
                 
                 IPEndPoint senderEndPoint = new IPEndPoint(IPAddress.Any, 0);
@@ -104,31 +112,37 @@ namespace GUIreceiver
                     case "Receiving From":
                         newbackendObject.receiveIp = dataParts[0];
                         newbackendObject.receivePort = int.Parse(dataParts[1]);
+                        newbackendObject.change = Backend.changeType.receivingFrom;
                         break;
                     case "Sending To":
                         newbackendObject.sendIp = dataParts[0];
                         newbackendObject.sendPort = int.Parse(dataParts[1]);
+                        newbackendObject.change = Backend.changeType.sendingTo;
                         break;
                     case "Default Send":
                         newbackendObject.sendIp = dataParts[0];
                         newbackendObject.sendPort = int.Parse(dataParts[1]);
-                        newbackendObject.receivePort = -1;                       // setting the untouched port to -1 lets UpdateConfigJson 
-                        break;                                                   // know that we want to change the defaults
+                        newbackendObject.change = Backend.changeType.defaultSend;
+                        break;                                                   
                     case "Default Receive":
                         newbackendObject.receiveIp = dataParts[0];
                         newbackendObject.receivePort = int.Parse(dataParts[1]);
-                        newbackendObject.sendPort = -1;                          // setting the untouched port to -1 lets UpdateConfigJson 
-                        break;                                                   // know that we want to change the defaults
+                        newbackendObject.change = Backend.changeType.defaultRecieve;
+                        break;                                                   
                     case "inactive":
                         newbackendObject.frequency = int.Parse(dataParts[0]);
                         newbackendObject.interval = dataParts[1];
+                        newbackendObject.change = Backend.changeType.inactive;
                         break;
                     case "setup":
                         newbackendObject.promEndpoint = dataParts[0];
                         newbackendObject.lokiEndpoint = dataParts[1];
                         newbackendObject.descriptionOfNIC = dataParts[3];
+                        newbackendObject.change = Backend.changeType.setup;
+                        backendObject.WarningLogger("Restarting due to NIC/Endpoint reconfiguration.");
                         break;
-                    default:        // if restore to defaults was picked
+                    default:
+                        newbackendObject.change = Backend.changeType.restoreToDefaults;
                         break;
                 }
 

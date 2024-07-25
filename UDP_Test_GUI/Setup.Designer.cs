@@ -93,9 +93,9 @@
             // 
             this.sumbitButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.sumbitButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.sumbitButton.Location = new System.Drawing.Point(371, 400);
+            this.sumbitButton.Location = new System.Drawing.Point(371, 392);
             this.sumbitButton.Name = "sumbitButton";
-            this.sumbitButton.Size = new System.Drawing.Size(112, 32);
+            this.sumbitButton.Size = new System.Drawing.Size(112, 38);
             this.sumbitButton.TabIndex = 1;
             this.sumbitButton.Text = "Submit";
             this.sumbitButton.UseVisualStyleBackColor = true;
@@ -248,9 +248,9 @@
             // 
             this.cancelButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.cancelButton.Location = new System.Drawing.Point(496, 400);
+            this.cancelButton.Location = new System.Drawing.Point(496, 392);
             this.cancelButton.Name = "cancelButton";
-            this.cancelButton.Size = new System.Drawing.Size(112, 32);
+            this.cancelButton.Size = new System.Drawing.Size(112, 38);
             this.cancelButton.TabIndex = 10;
             this.cancelButton.Text = "Cancel";
             this.cancelButton.UseVisualStyleBackColor = true;

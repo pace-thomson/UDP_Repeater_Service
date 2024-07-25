@@ -90,7 +90,7 @@ namespace UDP_Repeater_Service
         protected override void OnStop()
         {
             outerBackendObject.StartStopLogger("stop");
-            Thread.Sleep(1500);
+            Thread.Sleep(2000);
         }
     }
 }
@@ -101,6 +101,8 @@ namespace UDP_Repeater_Service
 /// </summary>
 class TheMainProgram
 {
+    
+
     /// <summary> 
     ///  Class Name: TheMainProgram  <br/><br/> 
     ///
@@ -142,58 +144,15 @@ class TheMainProgram
         }
     }
 
-
     /// <summary> 
     ///  Class Name: TheMainProgram  <br/><br/> 
     ///
-    ///  Description: Restores the values in <paramref name="backendObject"/> to match those found in "UDP_Repeater_Config.json"  <br/>
-    ///  under defaultSettings. Also updates the settings under currentConfig in "UDP_Repeater_Config.json" the same way.<br/><br/>
+    ///  Description: Restores the values in "UDP_Repeater_Config.json" to match those found in the <paramref name="newbackendObject"/>, 
+    ///               or it restores them to defaults. <br/><br/>
     ///
     ///  Inputs:  <br/>
-    ///  Backend <paramref name="backendObject"/> - The Backend object to update with the default settings. <br/><br/>
-    ///  
-    ///  Returns:  None
-    /// </summary>
-    public static void RestoreToDefaults(Backend backendObject)
-    {
-        try
-        {
-            string jsonString = File.ReadAllText("UDP_Repeater_Config.json");
-
-            JObject jsonObject = JObject.Parse(jsonString);
-
-            string receiveIp   =  (string)jsonObject["defaultSettings"]["receiveFrom"]["ip"];
-            string receivePort =  (string)jsonObject["defaultSettings"]["receiveFrom"]["port"];
-            string sendIp      =  (string)jsonObject["defaultSettings"]["sendTo"]["ip"];
-            string sendPort    =  (string)jsonObject["defaultSettings"]["sendTo"]["port"];
-
-            jsonObject["currentConfig"]["receiveFrom"]["ip"]   =  receiveIp;
-            jsonObject["currentConfig"]["receiveFrom"]["port"] =  receivePort;
-            jsonObject["currentConfig"]["sendTo"]["ip"]        =  sendIp;
-            jsonObject["currentConfig"]["sendTo"]["port"]      =  sendPort;
-
-
-            backendObject.receiveIp    =  receiveIp;
-            backendObject.receivePort  =  int.Parse(receivePort);
-            backendObject.sendIp       =  sendIp;
-            backendObject.sendPort     =  int.Parse(sendPort);
-
-            var stringThing = JsonConvert.SerializeObject(jsonObject, Formatting.Indented);
-            File.WriteAllText("UDP_Repeater_Config.json", stringThing);
-        }
-        catch (Exception e)
-        {
-            backendObject.ExceptionLogger(e);
-        }
-    }
-
-    /// <summary> 
-    ///  Class Name: TheMainProgram  <br/><br/> 
-    ///
-    ///  Description: Restores the values in "UDP_Repeater_Config.json" to match those found in the new <paramref name="newbackendObject"/>. <br/><br/>
-    ///
-    ///  Inputs:  <br/>
-    ///  Backend <paramref name="newbackendObject"/> - The Backend object to update with the new settings. <br/><br/>
+    ///  Backend <paramref name="newbackendObject"/> - The Backend object to update with the new settings. <br/>
+    ///  Backend <paramref name="oldBackendObject"/> - The Backend object just for error logging. <br/><br/>
     ///  
     ///  Returns:  None
     /// </summary>
@@ -202,57 +161,67 @@ class TheMainProgram
         try
         {
             string jsonString = File.ReadAllText("UDP_Repeater_Config.json");
-
             JObject jsonObject = JObject.Parse(jsonString);
 
-                // Default changing configuration was chosen
-            if (newbackendObject.sendPort == -1 || newbackendObject.receivePort == -1)
+            switch (newbackendObject.change)
             {
-                if (newbackendObject.sendPort == -1)    // if the reconfigure default RECEIVE was chosen
-                {
-                    jsonObject["defaultSettings"]["receiveFrom"]["ip"]    =   newbackendObject.receiveIp;
-                    jsonObject["defaultSettings"]["receiveFrom"]["port"]  =   newbackendObject.receivePort.ToString();
-                    newbackendObject.sendPort = oldBackendObject.sendPort;
-                }
-                else if (newbackendObject.receivePort == -1)    // if the reconfigure default SEND was chosen
-                {
-                    jsonObject["defaultSettings"]["sendTo"]["ip"]   =  newbackendObject.sendIp;
-                    jsonObject["defaultSettings"]["sendTo"]["port"] =  newbackendObject.sendPort.ToString();
-                    newbackendObject.receivePort = oldBackendObject.receivePort;
-                }
+                case Backend.changeType.receivingFrom:
+                    jsonObject["currentConfig"]["receiveFrom"]["ip"] = newbackendObject.receiveIp;
+                    jsonObject["currentConfig"]["receiveFrom"]["port"] = newbackendObject.receivePort.ToString();
+                    break;
+                case Backend.changeType.sendingTo:
+                    jsonObject["currentConfig"]["sendTo"]["ip"] = newbackendObject.sendIp;
+                    jsonObject["currentConfig"]["sendTo"]["port"] = newbackendObject.sendPort.ToString();
+                    break;
+                case Backend.changeType.defaultSend:
+                    jsonObject["defaultSettings"]["sendTo"]["ip"] = newbackendObject.sendIp;
+                    jsonObject["defaultSettings"]["sendTo"]["port"] = newbackendObject.sendPort.ToString();
+                    break;
+                case Backend.changeType.defaultRecieve:
+                    jsonObject["defaultSettings"]["receiveFrom"]["ip"] = newbackendObject.receiveIp;
+                    jsonObject["defaultSettings"]["receiveFrom"]["port"] = newbackendObject.receivePort.ToString();
+                    break;
+                case Backend.changeType.inactive:
+                    jsonObject["inactivitySettings"]["frequency"] = newbackendObject.frequency.ToString();
+                    jsonObject["inactivitySettings"]["interval"] = newbackendObject.interval;
+                    break;
+                case Backend.changeType.setup:
+                    jsonObject["monitoring"]["prom"] = newbackendObject.promEndpoint;
+                    jsonObject["monitoring"]["loki"] = newbackendObject.lokiEndpoint;
+                    jsonObject["descriptionOfNIC"] = newbackendObject.descriptionOfNIC;
+                    break;
+                case Backend.changeType.restoreToDefaults:
+                    jsonObject["currentConfig"]["receiveFrom"]["ip"]    =   (string)jsonObject["defaultSettings"]["receiveFrom"]["ip"];
+                    jsonObject["currentConfig"]["receiveFrom"]["port"]  =   (string)jsonObject["defaultSettings"]["receiveFrom"]["port"];
+                    jsonObject["currentConfig"]["sendTo"]["ip"]         =   (string)jsonObject["defaultSettings"]["sendTo"]["ip"];
+                    jsonObject["currentConfig"]["sendTo"]["port"]       =   (string)jsonObject["defaultSettings"]["sendTo"]["port"];
+                    break;
             }
-            else              // normal (non-default changing) configuration was chosen
-            {
-                jsonObject["currentConfig"]["receiveFrom"]["ip"]    =   newbackendObject.receiveIp;
-                jsonObject["currentConfig"]["receiveFrom"]["port"]  =   newbackendObject.receivePort.ToString();
-                jsonObject["currentConfig"]["sendTo"]["ip"]         =   newbackendObject.sendIp;
-                jsonObject["currentConfig"]["sendTo"]["port"]       =   newbackendObject.sendPort.ToString();
-            }
-                            // always updates the inactivity Settings and monitoring endpoints
-            jsonObject["inactivitySettings"]["frequency"]  =  newbackendObject.frequency.ToString();
-            jsonObject["inactivitySettings"]["interval"]   =  newbackendObject.interval;
-            jsonObject["monitoring"]["prom"]               =  newbackendObject.promEndpoint;
-            jsonObject["monitoring"]["loki"]               =  newbackendObject.lokiEndpoint;
-            jsonObject["descriptionOfNIC"]                 =  newbackendObject.descriptionOfNIC;    
 
-            var stringThing = JsonConvert.SerializeObject(jsonObject, Formatting.Indented);
+            string stringThing = JsonConvert.SerializeObject(jsonObject, Formatting.Indented);
             File.WriteAllText("UDP_Repeater_Config.json", stringThing);
         }
         catch (Exception e)
         {
-            newbackendObject.ExceptionLogger(e);
+            oldBackendObject.ExceptionLogger(e);
         }
     }
 
     public static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
     {
-        string message = String.Format($"Unhandled Error Message: {e} \n" +
-                                       $"Error location: Backend/Service.");
-        
-        EventLog eventLog = new EventLog("UDP Packet Repeater");
-        eventLog.Source = "UDP_Repeater_Backend";
 
-        eventLog.WriteEntry(message, EventLogEntryType.Error, 1);  // 1 is our id for backend errors
+        Exception ex = (Exception)e.ExceptionObject;
+
+        string message = String.Format($"Error Message: {ex.Message} \n" +
+                                       $"Error location: Backend/Service \n" +
+                                       $"{ex.StackTrace}");
+
+        using (EventLog tempLog = new EventLog("UDP Packet Repeater"))
+        {
+            tempLog.Source = "UDP_Repeater_Backend";
+
+            tempLog.WriteEntry(message, EventLogEntryType.Error, 1);  // 1 is our id for backend errors
+        }
     }
 
 
@@ -292,21 +261,13 @@ class TheMainProgram
                 repeaterThread.Join();                  // Wait for the send thread to complete
                 cts = new CancellationTokenSource();    // Reset the cancellation token for the next iteration
 
-
-                // this checks to see if the option was to restore defaultst
-                if (backendObject.Equals(newbackendObject))
+                
+                UpdateConfigJson(newbackendObject, backendObject);              // updates config.json
+                if (newbackendObject.change == Backend.changeType.setup)
                 {
-                    RestoreToDefaults(backendObject);
+                    Environment.Exit(1); // forces restart because the loki/prom change is weird and this service is set to restart on failure
                 }
-                else if (backendObject == null)
-                {
-                    continue;
-                }
-                else    // some settings were changed, so we need to update our things
-                {
-                    UpdateConfigJson(newbackendObject, backendObject);              // updates config.json
-                    backendObject.UpdateWithNewBackendObject(newbackendObject);     // updates the original newbackendObject with the new valuess
-                }
+                backendObject.UpdateWithNewBackendObject(newbackendObject);     // updates the original backendObject with the new values
             }
         }
         catch (Exception e)
