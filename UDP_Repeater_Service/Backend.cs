@@ -65,15 +65,19 @@ namespace BackendClassNameSpace
 
             /// <summary> Our machine-local windows event log. </summary>
         public EventLog eventLog;
-            /// <summary> The loki log that our logs get sent to, in addition to the windows log. </summary>
-        public ILogger lokiLogger; // endpoint for my testing: http://172.18.46.211:3100
+            /// <summary> The loki log that our logs get sent to, in addition to the windows log.
+            /// Endpoints for testing -      local: http://localhost:3100       sandbox: http://172.18.46.211:3100
+            /// </summary>
+        public ILogger lokiLogger; // 
 
-        /// <summary> The main meter provider for all of the prometheus metrics </summary>
-        public MeterProvider meterProvider; // endpoint for my testing: http://172.18.46.211:9090/api/v1/otlp/v1/metrics
-        /// <summary> Our Meter object (the base for all of the metric instrumentation) </summary>
+            /// <summary> The main meter provider for all of the prometheus metrics. 
+            /// Endpoints for testing -  local: http://localhost:9090/api/v1/otlp/v1/metrics  sandbox: http://172.18.46.211:9090/api/v1/otlp/v1/metrics
+            /// </summary>
+        public MeterProvider meterProvider;
+            /// <summary> Our Meter object (the base for all of the metric instrumentation) </summary>
         public Meter myMeter;
             /// <summary> The counter for packets handled </summary>
-        public Counter<long> TotalPacketsHandled; 
+        public Counter<long> TotalPacketsHandled;
             /// <summary> Tracks the memory use of the backend. </summary>
         public ObservableGauge<double> processMemory;
             /// <summary> Tracks average time for packet ingress/egress </summary>
@@ -116,6 +120,12 @@ namespace BackendClassNameSpace
 
             try
             {
+                if (!Uri.IsWellFormedUriString(this.promEndpoint, UriKind.Absolute) ||
+                    !Uri.IsWellFormedUriString(this.lokiEndpoint, UriKind.Absolute))
+                {
+                    throw new UriFormatException();
+                }
+
                 // Loki event logger set up fields
                 const string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss} \t Backend/Service \t {Level} \n{Message}";
                 this.lokiLogger = new LoggerConfiguration()
@@ -245,6 +255,11 @@ namespace BackendClassNameSpace
 
             try
             {
+                if (!Uri.IsWellFormedUriString(this.lokiEndpoint, UriKind.Absolute))
+                {
+                    throw new UriFormatException();
+                }
+
                 // Loki event logger set up
                 const string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss} \t Backend/Service \t {Level} \n{Message}";
                 this.lokiLogger = new LoggerConfiguration()
@@ -292,6 +307,12 @@ namespace BackendClassNameSpace
 
             try
             {
+                if (!Uri.IsWellFormedUriString(this.promEndpoint, UriKind.Absolute) ||
+                    !Uri.IsWellFormedUriString(this.lokiEndpoint, UriKind.Absolute))
+                {
+                    throw new UriFormatException();
+                }
+
                 if (this.lokiLogger == null)
                 {
                     const string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss} \t Backend/Service \t {Level} \n{Message}";
@@ -364,7 +385,7 @@ namespace BackendClassNameSpace
         public static double GetProcessMemory()
         {
             long bytes = Process.GetCurrentProcess().PrivateMemorySize64;
-            return (bytes / 1024f) / 1024f;
+            return (bytes / 1024.0) / 1024.0;
         }
         /// <summary> Increments total packets handled for our prometheus metrics. </summary>
         public void IncrementTotalPacketsHandled()
@@ -427,9 +448,6 @@ namespace BackendClassNameSpace
         /// </summary>
         public static void ExceptionLoggerStatic(Exception e)
         {
-            EventLog logg = new EventLog("UDP Packet Repeater");
-            logg.Source = "UDP_Repeater_Backend";
-
             string[] formattedStackString = e.StackTrace.Split('\n');
 
 
@@ -437,36 +455,42 @@ namespace BackendClassNameSpace
                                            $"Error location: Backend/Service. \n" +
                                            $"{formattedStackString.Last().TrimStart()}");
 
-            // Write an entry to the event log.
-            logg.WriteEntry(message, EventLogEntryType.Error, 1);  // 1 is our id for backend errors
-            logg.Dispose();
-
-            string jsonString = File.ReadAllText("UDP_Repeater_Config.json");
-            JObject jsonObject = JObject.Parse(jsonString);
-            string temporaryLokiEndpoint = (string)jsonObject["monitoring"]["loki"];
-            const string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss} \t Backend/Service \t {Level} {NewLine}{Message}";
-            try
+            using (EventLog logg = new EventLog("UDP Packet Repeater"))
             {
-                var temporaryLokiLogger = new LoggerConfiguration()
-                              .WriteTo.GrafanaLoki
-                              (
-                                  temporaryLokiEndpoint,
-                                  labels: new List<LokiLabel>
-                                  {
+                logg.Source = "UDP_Repeater_Backend";
+
+                // Write an entry to the event log.
+                logg.WriteEntry(message, EventLogEntryType.Error, 1);  // 1 is our id for backend errors
+
+
+                string jsonString = File.ReadAllText("UDP_Repeater_Config.json");
+                JObject jsonObject = JObject.Parse(jsonString);
+                string temporaryLokiEndpoint = (string)jsonObject["monitoring"]["loki"];
+                const string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss} \t Backend/Service \t {Level} {NewLine}{Message}";
+                try
+                {
+                    var temporaryLokiLogger = new LoggerConfiguration()
+                                  .WriteTo.GrafanaLoki
+                                  (
+                                      temporaryLokiEndpoint,
+                                      labels: new List<LokiLabel>
+                                      {
                                       new LokiLabel(){ Key = "RepeaterSide", Value = "Backend/Service" },
                                       new LokiLabel(){ Key = "MachineName", Value = Environment.MachineName },
                                       new LokiLabel(){ Key = "User", Value = Environment.UserName }
-                                  },
-                                  textFormatter: new MessageTemplateTextFormatter(outputTemplate, null)
-                              )
-                              .Enrich.FromLogContext()
-                              .CreateLogger();
+                                      },
+                                      textFormatter: new MessageTemplateTextFormatter(outputTemplate, null)
+                                  )
+                                  .Enrich.FromLogContext()
+                                  .CreateLogger();
 
-                temporaryLokiLogger.Error(message);
-            }
-            catch (UriFormatException ex) 
-            {
-                logg.WriteEntry("Invalid endpoint configured, no monitoring currently.", EventLogEntryType.Warning, 9);
+                    temporaryLokiLogger.Error(message);
+                    temporaryLokiLogger.Dispose();
+                }
+                catch (UriFormatException ex)
+                {
+                    logg.WriteEntry("Invalid endpoint configured, no monitoring currently.", EventLogEntryType.Warning, 9);
+                }
             }
         }
 
@@ -556,7 +580,7 @@ namespace BackendClassNameSpace
         ///  Description: Logs general warnings. <br/><br/>
         ///
         ///  Inputs:  <br/>
-        ///  string <paramref name="message"/> - The message to log. <br/><br/>
+        ///  string <paramref name="message"/> - The warning message to log. <br/><br/>
         ///  
         ///  Returns:  None
         /// </summary>

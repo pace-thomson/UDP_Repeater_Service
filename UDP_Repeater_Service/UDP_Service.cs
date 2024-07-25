@@ -279,12 +279,12 @@ class TheMainProgram
 
             while (true)
             {
-                // Starts the Sending/Receiving thread
+                    // Starts the Sending/Receiving thread
                 Thread repeaterThread = new Thread(() => RepeaterClass.main(backendObject, cts.Token));
                 repeaterThread.Start();
 
 
-                // Use Task<Backend> to call the method asynchronously and get the backend object it returns
+                    // Use Task<Backend> to call the method asynchronously and get the backend object it returns
                 Task<Backend> receiveFromGUITask = Task.Run(() => ReceiveFromGUI.main(backendObject));
                 Backend newbackendObject = await receiveFromGUITask;
 

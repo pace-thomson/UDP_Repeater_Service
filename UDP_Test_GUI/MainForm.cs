@@ -457,7 +457,7 @@ namespace UDP_Repeater_GUI
             if (dialogResult == DialogResult.Yes)
             {
                 logger.StartStopLogger("stop");
-                System.Threading.Thread.Sleep(800);
+                System.Threading.Thread.Sleep(1000);
                 if (logger.eventLog != null)
                 {
                     logger.eventLog.Dispose();
@@ -488,12 +488,16 @@ namespace UDP_Repeater_GUI
         /// </summary>
         private void showDialogbutton_Click(object sender, EventArgs e)
         {
-            configDialog messageDialog = new configDialog(this);
-            DialogResult response = messageDialog.ShowDialog();
-            if (response == DialogResult.Abort)
+            using (configDialog messageDialog = new configDialog(this))
             {
-                Setup picker = new Setup(this);
-                picker.ShowDialog();
+                DialogResult response = messageDialog.ShowDialog();
+                if (response == DialogResult.Abort)
+                {
+                    using (Setup picker = new Setup(this))
+                    {
+                        DialogResult result = picker.ShowDialog();
+                    }
+                }
             }
         }
 
@@ -510,8 +514,10 @@ namespace UDP_Repeater_GUI
         /// </summary>
         private void logButton_Click(object sender, EventArgs e)
         {
-            LogForm logForm = new LogForm(this);
-            logForm.Show();
+            using (LogForm logForm = new LogForm(this))
+            {
+                logForm.Show();
+            }
         }
 
         /// <summary>
@@ -532,11 +538,11 @@ namespace UDP_Repeater_GUI
                                            $"Error location: Frontend/User Interface \n" +
                                            $"{ex.StackTrace}");
 
-            EventLog eventLog = new EventLog("UDP Packet Repeater");
-            eventLog.Source = "UDP_Repeater_Frontend";
+            EventLog tempLog = new EventLog("UDP Packet Repeater");
+            tempLog.Source = "UDP_Repeater_Frontend";
 
-            eventLog.WriteEntry(message, EventLogEntryType.Error, 2);  // 2 is our id for Frontend errors
-            eventLog.Dispose();
+            tempLog.WriteEntry(message, EventLogEntryType.Error, 2);  // 2 is our id for Frontend errors
+            tempLog.Dispose();
         }
 
         private static void ThreadExceptionHandlerFunction(object sender, System.Threading.ThreadExceptionEventArgs t)
@@ -547,11 +553,11 @@ namespace UDP_Repeater_GUI
                                            $"Error location: Frontend/User Interface \n" +
                                            $"{ex.StackTrace}");
 
-            EventLog eventLog = new EventLog("UDP Packet Repeater");
-            eventLog.Source = "UDP_Repeater_Frontend";
+            EventLog tempLog = new EventLog("UDP Packet Repeater");
+            tempLog.Source = "UDP_Repeater_Frontend";
 
-            eventLog.WriteEntry(message, EventLogEntryType.Error, 2);  // 2 is our id for Frontend errors
-            eventLog.Dispose();
+            tempLog.WriteEntry(message, EventLogEntryType.Error, 2);  // 2 is our id for Frontend errors
+            tempLog.Dispose();
         }
     }
 }

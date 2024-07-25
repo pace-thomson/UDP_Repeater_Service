@@ -12,11 +12,14 @@ namespace UDP_Test_GUI
     /// <summary>  </summary>
     public partial class Setup : Form
     {
-
             /// <summary> Tracks whether the user selection was valid </summary>
         public bool isValid;
             /// <summary>The main form's object.</summary>
         private gui_form theMainForm;
+            /// <summary> The uri string for the prometheus endpoint that this form will return. </summary>
+        public string prom;
+            /// <summary> The uri string for the prometheus endpoint that this form will return. </summary>
+        public string loki;
 
         /// <summary> The NIC_Picker form constructor </summary>
         public Setup(gui_form TheMainForm)
@@ -74,26 +77,29 @@ namespace UDP_Test_GUI
             {
                 isValid = true;
                 int selectedRowCount = dataGridView1.Rows.GetRowCount(DataGridViewElementStates.Selected);
+
+                this.prom = promEndpoint.Text.Trim();
+                this.loki = lokiEndpoint.Text.Trim();
+
                 if (selectedRowCount == 1)
                 {
-                    if (promEndpoint.Text != "" && lokiEndpoint.Text != "")
+                    if (prom != "" && loki != "")
                     {
-                        if (Uri.IsWellFormedUriString(promEndpoint.Text, UriKind.Absolute) &&
-                            Uri.IsWellFormedUriString(lokiEndpoint.Text, UriKind.Absolute))
+                        if (Uri.IsWellFormedUriString(prom, UriKind.Absolute) &&
+                            Uri.IsWellFormedUriString(loki, UriKind.Absolute))
                         {
                             DataGridViewRow row = dataGridView1.SelectedRows[0];
                             string nic = row.Cells["descriptionColumn"].Value.ToString();
-                            string prom = promEndpoint.Text;
-                            string loki = lokiEndpoint.Text;
+
 
                             using (UdpClient sendRequest = new UdpClient())
                             {
-                                byte[] bytes = Encoding.ASCII.GetBytes($"{prom},{loki},setup,{nic}");
+                                byte[] bytes = Encoding.ASCII.GetBytes($"{this.prom},{this.loki},setup,{nic}");
                                 sendRequest.Send(bytes, bytes.Length, "127.0.0.1", 50001);
 
-                                theMainForm.logger.UpdateMonitoringFields(prom, loki);
+                                theMainForm.logger.UpdateMonitoringFields(this.prom, this.loki);
                                 theMainForm.logger.LogNicChange(nic, row.Cells["macAddressColumn"].Value.ToString());
-                                theMainForm.logger.LogMonitoringChange(prom, loki);
+                                theMainForm.logger.LogMonitoringChange(this.prom, this.loki);
 
                                 sendRequest.Close();
                             }
@@ -121,6 +127,7 @@ namespace UDP_Test_GUI
             }
             catch (Exception ex) { theMainForm.logger.LogException(ex); }
         }
+
 
         /// <summary> Checks if isValid is true, and either cancels the form closing or 
         /// lets it close and disposes of the logger objects eventLog.</summary>

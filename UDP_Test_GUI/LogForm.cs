@@ -250,6 +250,7 @@ namespace UDP_Repeater_GUI
             loadingLabel.Visible = false;
             logDataGridView.Visible = true;
         }
+
         /// <summary> Disposes of both of the eventLog objects. </summary>
         private void LogForm_FormClosing(object sender, FormClosingEventArgs e)
         {

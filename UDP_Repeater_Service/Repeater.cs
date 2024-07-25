@@ -159,7 +159,7 @@ namespace Repeater
         ///  Description: Sends the processed package out <br/><br/>
         ///
         ///  Inputs:  <br/>
-        ///  byte[] <paramref name="messageBytes"/> - The byte array wholePacket of the received packet <br/><br/>
+        ///  byte[] <paramref name="messageBytes"/> - The byte array of the received packet <br/><br/>
         ///  
         ///  Returns:  None
         /// </summary>
@@ -213,7 +213,7 @@ namespace Repeater
         ///  Description: Sends packet information to the GUI <br/><br/>
         ///
         ///  Inputs:  <br/>
-        ///  byte[] <paramref name="messageBytes"/> - The byte array wholePacket of the received packet <br/><br/>
+        ///  int <paramref name="payloadLength"/> - The length of the received packet's payload.s <br/><br/>
         ///  
         ///  Returns:  None
         /// </summary>

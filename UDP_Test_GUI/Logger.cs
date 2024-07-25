@@ -17,19 +17,19 @@
 //---------------------------------------------------
 
 
+using Newtonsoft.Json.Linq;
+using OpenTelemetry;
+using OpenTelemetry.Exporter;
+using OpenTelemetry.Metrics;
+using Serilog;
+using Serilog.Formatting.Display;
+using Serilog.Sinks.Grafana.Loki;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.IO;
 using System.Linq;
-using System.Collections.Generic;
-using OpenTelemetry;
-using OpenTelemetry.Metrics;
-using OpenTelemetry.Exporter;
-using Serilog;
-using Serilog.Sinks.Grafana.Loki;
-using Serilog.Formatting.Display;
-using Newtonsoft.Json.Linq;
 
 
 
@@ -42,8 +42,8 @@ namespace UDP_Repeater_GUI
     {
             /// <summary> Our event log object. </summary>
         public EventLog eventLog;
-            /// <summary> The loki log that our logs get sent to, in addition to the windows log. </summary>
-        public ILogger lokiLogger { get; set; }
+        /// <summary> The loki log that our logs get sent to, in addition to the windows log. </summary>
+        public ILogger lokiLogger;
 
             /// <summary> Our Meter object (the base for all of the metric instrumentation) </summary>
         private Meter myMeter;
@@ -62,6 +62,12 @@ namespace UDP_Repeater_GUI
 
             try
             {
+                if (!Uri.IsWellFormedUriString(promURI, UriKind.Absolute) ||
+                    !Uri.IsWellFormedUriString(lokiURI, UriKind.Absolute))
+                {
+                    throw new UriFormatException();
+                }
+
                 const string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss} \t Frontend/Interface \t {Level} {NewLine}{Message}";
 
                 this.lokiLogger = new LoggerConfiguration()
@@ -110,48 +116,59 @@ namespace UDP_Repeater_GUI
         public static double GetProcessMemory()
         {
             long bytes = Process.GetCurrentProcess().PrivateMemorySize64;
-            return (bytes / 1024f) / 1024f;
+            return (bytes / 1024.0) / 1024.0;
         }
 
+        /// <summary> 
+        ///  Class Name: Logger  <br/> <br/>
+        ///
+        ///  Description: Updates the prometheus and loki related fields with new URI's. <br/><br/>
+        ///
+        ///  Inputs: <br/>
+        ///  string <paramref name="promURI"/> - The new prometheus URI to use. <br/>
+        ///  string <paramref name="lokiURI"/> - The new loki URI to use.t <br/><br/>
+        ///  
+        ///  Returns:  long - the process memory
+        /// </summary>
         public void UpdateMonitoringFields(string promURI, string lokiURI)
         {
             try
             {
-                if (this.lokiLogger == null)
+                if (!Uri.IsWellFormedUriString(promURI, UriKind.Absolute) ||
+                    !Uri.IsWellFormedUriString(lokiURI, UriKind.Absolute))
                 {
-                    const string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss} \t Frontend/Interface \t {Level} {NewLine}{Message}";
-
-                    this.lokiLogger = new LoggerConfiguration()
-                                .WriteTo.GrafanaLoki
-                                (
-                                    lokiURI,
-                                    labels: new List<LokiLabel>
-                                    {
-                                    new LokiLabel(){ Key = "RepeaterSide", Value = "Frontend/Interface" },
-                                    new LokiLabel(){ Key = "MachineName", Value = Environment.MachineName },
-                                    new LokiLabel(){ Key = "User", Value = Environment.UserName }
-                                    },
-                                    textFormatter: new MessageTemplateTextFormatter(outputTemplate, null)
-                                )
-                                .Enrich.FromLogContext()
-                                .CreateLogger();
+                    throw new UriFormatException();
                 }
                 
+                const string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss} \t Frontend/Interface \t {Level} {NewLine}{Message}";
 
-                if (this.lokiLogger == null)
-                {
-                    this.meterProvider = Sdk.CreateMeterProviderBuilder()
-                                    .AddMeter("JT4.Repeater.MyLibrary")
-                                    .AddOtlpExporter((exporterOptions, metricReaderOptions) =>
-                                    {
-                                        exporterOptions.Endpoint = new Uri(promURI);
-                                        exporterOptions.Protocol = OtlpExportProtocol.HttpProtobuf;
-                                        metricReaderOptions.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 5000;
-                                    })
-                                    .Build();
-                    this.myMeter = new Meter("JT4.Repeater.MyLibrary", "1.0");
-                    this.processMemory = myMeter.CreateObservableGauge("frontendMemory", () => GetProcessMemory());
-                }
+                this.lokiLogger = new LoggerConfiguration()
+                            .WriteTo.GrafanaLoki
+                            (
+                                lokiURI,
+                                labels: new List<LokiLabel>
+                                {
+                                new LokiLabel(){ Key = "RepeaterSide", Value = "Frontend/Interface" },
+                                new LokiLabel(){ Key = "MachineName", Value = Environment.MachineName },
+                                new LokiLabel(){ Key = "User", Value = Environment.UserName }
+                                },
+                                textFormatter: new MessageTemplateTextFormatter(outputTemplate, null)
+                            )
+                            .Enrich.FromLogContext()
+                            .CreateLogger();
+                
+
+                this.meterProvider = Sdk.CreateMeterProviderBuilder()
+                                .AddMeter("JT4.Repeater.MyLibrary")
+                                .AddOtlpExporter((exporterOptions, metricReaderOptions) =>
+                                {
+                                    exporterOptions.Endpoint = new Uri(promURI);
+                                    exporterOptions.Protocol = OtlpExportProtocol.HttpProtobuf;
+                                    metricReaderOptions.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 5000;
+                                })
+                                .Build();
+                this.myMeter = new Meter("JT4.Repeater.MyLibrary", "1.0");
+                this.processMemory = myMeter.CreateObservableGauge("frontendMemory", () => GetProcessMemory());
             }
             catch (UriFormatException ex)
             {
@@ -164,7 +181,7 @@ namespace UDP_Repeater_GUI
         ///
         ///  Description: Gets the montoring endpoints from the config.json file. <br/><br/>
         ///
-        ///  Inputs: None <br/>
+        ///  Inputs: <br/>
         ///  out string <paramref name="prom"/> - The out string for the prometheus endpoint <br/>
         ///  out string <paramref name="loki"/> - The out string for the loki endpoint <br/><br/>
         ///  
@@ -327,7 +344,11 @@ namespace UDP_Repeater_GUI
             }
 
             eventLog.WriteEntry(message, EventLogEntryType.Information, 5);     // 5 is id for frontend start/stop
-            lokiLogger.Information(message);
+
+            if (lokiLogger != null)
+            {
+                lokiLogger.Information(message);
+            }
         }
     }
 }
