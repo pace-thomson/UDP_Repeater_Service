@@ -19,11 +19,11 @@
 
 using System;
 using System.ComponentModel;
-using System.Windows.Forms;
-using System.Net.Sockets;
-using System.Text;
 using System.Diagnostics;
 using System.Drawing;
+using System.Net.Sockets;
+using System.Text;
+using System.Windows.Forms;
 
 
 
@@ -36,10 +36,10 @@ namespace UDP_Repeater_GUI
     /// </summary>
     public partial class LogForm : Form
     {
-            /// <summary>The main form's object.</summary>
-        private gui_form theMainForm;
+            /// <summary> The main form's object. </summary>
+        private MainForm theMainForm;
             /// <summary> Our own eventLog object to watch and read from. </summary>
-        public EventLog eventLog;
+        public EventLog eventLogForReading;
 
 
         /// <summary> 
@@ -48,16 +48,16 @@ namespace UDP_Repeater_GUI
         ///  Description: Constructs the form. <br/><br/>
         ///
         ///  Inputs:  <br/>
-        ///  gui_form <paramref name="mainForm"/> - The main form's object. Passed in so that 
+        ///  MainForm <paramref name="mainForm"/> - The main form's object. Passed in so that 
         ///  we can update it's "Current Configuration" section whenever a change is made.<br/><br/>
         ///  
         ///  Returns: A LogForm object.
         /// </summary>
-        public LogForm(gui_form mainForm)
+        public LogForm(MainForm mainForm)
         {
             InitializeComponent();
 
-            eventLog = SetCheckerForLogChanges();
+            eventLogForReading = SetCheckerForLogChanges();
 
             theMainForm = mainForm;
 
@@ -69,11 +69,10 @@ namespace UDP_Repeater_GUI
         }
 
         /// <summary> 
-        ///  Class Name: configDialog  <br/><br/>
+        ///  Class Name: LogForm  <br/><br/>
         ///
-        ///  Description: Reads from the Windows log "UDP Packet Repeater" (where the backend stores it's logs) and from  <br/>
-        ///  "Repeater_GUI_Log.txt" (where the GUI stores it's logs), and then puts that data into a table on this form. <br/>
-        ///  There is also a section with inputs for reconfiguring the inactivity frequency and interval. <br/><br/>
+        ///  Description: Reads from the Windows Event Log "UDP Packet Repeater" (where we store logs locally), and <br/>
+        ///               then populates the logDataGridView with all of the logs, sorted by newest first. <br/><br/>
         ///
         ///  Inputs:  None <br/><br/>
         ///  
@@ -83,12 +82,12 @@ namespace UDP_Repeater_GUI
         {
             try
             {
-                foreach (EventLogEntry entry in eventLog.Entries)
+                foreach (EventLogEntry entry in eventLogForReading.Entries)
                 {
                     AddNewRow(entry);
                 }
 
-                // sort by newest entry first
+                    // sort by newest entry first
                 logDataGridView.Sort(logDataGridView.Columns["timeStampColumn"], ListSortDirection.Descending);
             }
             catch (Exception e)
@@ -98,11 +97,11 @@ namespace UDP_Repeater_GUI
         }
 
         /// <summary> 
-        ///  Class Name: configDialog  <br/><br/>
+        ///  Class Name: LogForm  <br/><br/>
         ///
         ///  Description: Handles the Send button for the reconfigure inactivity section. It <br/>
-        ///  checks the input fields to see if their values are valid, and then sends them <br/>
-        ///  if they are. If not, it opens a messagebox telling the user to try again. <br/><br/>
+        ///               checks the input fields to see if their values are valid, and then sends them <br/>
+        ///               if they are. If not, it opens a messagebox telling the user to try again. <br/><br/>
         ///
         ///  Inputs:  <br/>
         ///  object <paramref name="sender"/> - Necessary for handling the button, but I don't use it. <br/>
@@ -123,13 +122,13 @@ namespace UDP_Repeater_GUI
                     try
                     {
                                 // we want interval to still have the first letter uppcase here
-                                // so that we can use it to display prettily? idk if that's a word
+                                // so that we can use it to display 
                         theMainForm.UpdateCurrentConfigGroup(frequency.ToString(), interval);
                         theMainForm.logger.LogInactivityChange(frequency, interval);
 
                         interval = interval.ToLower();
 
-                                // we don't want interval to be uppcase here
+                                // interval shoudn't be uppcase here because the backend wants it in lowercase
                         byte[] bytes = Encoding.ASCII.GetBytes(frequency + "," + interval + "," + "inactive");
                         sendRequest.Send(bytes, bytes.Length, "127.0.0.1", 50001);
                     }
@@ -141,7 +140,7 @@ namespace UDP_Repeater_GUI
                     }
                             // this section resets the inputs
                     inactivityInputBox.Value = 1;
-                    inactivityDropdown.SelectedIndex = -1;
+                    inactivityDropdown.SelectedIndex = -1;    // deselects in the drop down
                     sendRequest.Close();
                 }
             }
@@ -152,14 +151,13 @@ namespace UDP_Repeater_GUI
         }
 
         /// <summary> 
-        ///  Class Name: configDialog  <br/><br/>
+        ///  Class Name: LogForm  <br/><br/>
         ///
-        ///  Description: Sets up events for the backend/frontend logs changing. Updates table for both events. <br/><br/>
+        ///  Description: Sets up events for the event log getting new entries. <br/><br/>
         ///
         ///  Inputs: None <br/><br/>
-        ///  
-        ///  Returns: None
-        /// </summary>
+        ///  </summary>
+        ///  <returns> EventLog - This form's special eventLogForReading object for watching for log entries.</returns>
         public EventLog SetCheckerForLogChanges()
         {
             try
@@ -178,14 +176,35 @@ namespace UDP_Repeater_GUI
             }
         }
 
-        /// <summary> When an entry to the event log is written, repopulates table. </summary>
+        /// <summary> 
+        ///  Class Name: LogForm  <br/><br/>
+        ///
+        ///  Description: Gets called whenever a new entry is writen to the event log, which fires <br/>
+        ///  and calls this function to add the new entry to our data grid view <br/><br/>
+        ///
+        ///  Inputs:  <br/>
+        ///  object <paramref name="source"/> - Necessary for handling the button, but I don't use it. <br/>
+        ///  EntryWrittenEventArgs <paramref name="e"/> - Necessary for handling the button, but I don't use it. <br/><br/>
+        ///  </summary>
+        ///  
+        ///  <returns> None </returns> 
         public void OnEntryWritten(object source, EntryWrittenEventArgs e)
         {
             Invoke(new Action(() => AddNewRow(e.Entry)));
             Invoke(new Action(() => logDataGridView.Sort(logDataGridView.Columns["timeStampColumn"], ListSortDirection.Descending)));
         }
 
-        /// <summary> Adds a new row to the configLog data grid view.s </summary>
+        /// <summary> 
+        ///  Class Name: LogForm  <br/><br/>
+        ///
+        ///  Description: Gets called wherever we add new entries to the data grid view. <br/>
+        ///  Uses a switch case to see what kind of entry it is, according to our id scheme. <br/><br/>
+        ///
+        ///  Inputs:  <br/>
+        ///  EventLogEntry <paramref name="entry"/> - The log entry to add to our data grid view. <br/><br/>
+        ///  </summary>
+        ///  
+        ///  <returns> None </returns>
         public void AddNewRow(EventLogEntry entry)
         {
             int rowNum = logDataGridView.Rows.Add();
@@ -194,60 +213,71 @@ namespace UDP_Repeater_GUI
             switch (entry.EventID)
             {
                 case 1:
-                    row.Cells["entryType"].Value = "Error/Exception";
-                    row.Cells["entryType"].Style.BackColor = Color.Crimson;
-                    row.Cells["frontOrBack"].Value = "Service";
+                    row.Cells["entryTypeColumn"].Value = "Error/Exception";
+                    row.Cells["entryTypeColumn"].Style.BackColor = Color.Crimson;
+                    row.Cells["logOriginColumn"].Value = "Service";
                     break;
                 case 2:
-                    row.Cells["entryType"].Value = "Error/Exception";
-                    row.Cells["entryType"].Style.BackColor = Color.Crimson;
-                    row.Cells["frontOrBack"].Value = "Interface";
+                    row.Cells["entryTypeColumn"].Value = "Error/Exception";
+                    row.Cells["entryTypeColumn"].Style.BackColor = Color.Crimson;
+                    row.Cells["logOriginColumn"].Value = "Interface";
                     break;
                 case 3:
-                    row.Cells["entryType"].Value = "Inactive Period";
-                    row.Cells["frontOrBack"].Value = "General";
+                    row.Cells["entryTypeColumn"].Value = "Inactive Period";
+                    row.Cells["logOriginColumn"].Value = "General";
                     break;
                 case 4:
-                    row.Cells["entryType"].Value = "Start/Stop";
-                    row.Cells["frontOrBack"].Value = "Service";
+                    row.Cells["entryTypeColumn"].Value = "Start/Stop";
+                    row.Cells["logOriginColumn"].Value = "Service";
                     break;
                 case 5:
-                    row.Cells["entryType"].Value = "Start/Stop";
-                    row.Cells["frontOrBack"].Value = "Interface";
+                    row.Cells["entryTypeColumn"].Value = "Start/Stop";
+                    row.Cells["logOriginColumn"].Value = "Interface";
                     break;
                 case 6:
-                    row.Cells["entryType"].Value = "IP/Port Change";
-                    row.Cells["frontOrBack"].Value = "General";
+                    row.Cells["entryTypeColumn"].Value = "IP/Port Change";
+                    row.Cells["logOriginColumn"].Value = "General";
                     break;
                 case 7:
-                    row.Cells["entryType"].Value = "Inactivity Change";
-                    row.Cells["frontOrBack"].Value = "General";
+                    row.Cells["entryTypeColumn"].Value = "Inactivity Change";
+                    row.Cells["logOriginColumn"].Value = "General";
                     break;
                 case 8:
-                    row.Cells["entryType"].Value = "NIC Change";
-                    row.Cells["frontOrBack"].Value = "General";
+                    row.Cells["entryTypeColumn"].Value = "NIC Change";
+                    row.Cells["logOriginColumn"].Value = "General";
                     break;
                 case 9:
-                    row.Cells["entryType"].Value = "Warning";
-                    row.Cells["entryType"].Style.BackColor = Color.Yellow;
-                    row.Cells["frontOrBack"].Value = "Service";
+                    row.Cells["entryTypeColumn"].Value = "Warning";
+                    row.Cells["entryTypeColumn"].Style.BackColor = Color.Yellow;
+                    row.Cells["logOriginColumn"].Value = "Service";
                     break;
                 case 10:
-                    row.Cells["entryType"].Value = "Monitoring Change";
-                    row.Cells["frontOrBack"].Value = "General";
+                    row.Cells["entryTypeColumn"].Value = "Monitoring Change";
+                    row.Cells["logOriginColumn"].Value = "General";
                     break;
                 case 11:
-                    row.Cells["entryType"].Value = "Warning";
-                    row.Cells["entryType"].Style.BackColor = Color.Yellow;
-                    row.Cells["frontOrBack"].Value = "Interface";
+                    row.Cells["entryTypeColumn"].Value = "Warning";
+                    row.Cells["entryTypeColumn"].Style.BackColor = Color.Yellow;
+                    row.Cells["logOriginColumn"].Value = "Interface";
                     break;
             }
             row.Cells["messageColumn"].Value = entry.Message;
             row.Cells["timeStampColumn"].Value = entry.TimeWritten;
         }
 
-        /// <summary> Finishes the controls rendering and then populates the table while the 
-        /// loading label is shown. When done, it then hides the loading label and shows the table. </summary>
+
+        /// <summary> 
+        ///  Class Name: LogForm  <br/><br/>
+        ///
+        ///  Description: Finishes the controls rendering and then populates the table while the <br/>
+        ///  loading label is shown. When done, it then hides the loading label and shows the table. <br/><br/>
+        ///
+        ///  Inputs:  <br/>
+        ///  object <paramref name="sender"/> - Necessary for handling the button, but I don't use it. <br/>
+        ///  EventArgs <paramref name="e"/> - Necessary for handling the button, but I don't use it. <br/><br/>
+        ///  </summary>
+        ///  
+        ///  <returns> None </returns>
         private void LogForm_Shown(object sender, EventArgs e)
         {
             Application.DoEvents();
@@ -256,12 +286,22 @@ namespace UDP_Repeater_GUI
             logDataGridView.Visible = true;
         }
 
-        /// <summary> Disposes of both of the eventLog objects. </summary>
+        /// <summary> 
+        ///  Class Name: LogForm  <br/><br/>
+        ///
+        ///  Description: if eventLogForReading isn't null, disposes of it. <br/><br/>
+        ///
+        ///  Inputs:  <br/>
+        ///  object <paramref name="sender"/> - Necessary for handling the button, but I don't use it. <br/>
+        ///  EventArgs <paramref name="e"/> - Necessary for handling the button, but I don't use it. <br/><br/>
+        ///  </summary>
+        ///  
+        ///  <returns> None </returns>
         private void LogForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (eventLog != null)
+            if (eventLogForReading != null)
             {
-                eventLog.Dispose();
+                eventLogForReading.Dispose();
             }
         }
     }

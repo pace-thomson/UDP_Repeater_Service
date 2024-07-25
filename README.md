@@ -8,7 +8,11 @@ with a GUI frontend for user interaction and system monitoring. Included in this
 
 
 <p align="center">
-  <img src="./UDP Packet Repeater Flowchart.png" alt="Flowchart">
+  <img src="./UDP_Packet_Repeater_Flowchart.png" alt="Flowchart">
+</p>
+
+<p align="center">
+  <img src="./Dashboard_Screenshot.png" alt="Grafana Dashboard Screenshot">
 </p>
 
 ## Backend

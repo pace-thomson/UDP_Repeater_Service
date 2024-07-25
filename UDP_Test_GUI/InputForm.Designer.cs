@@ -1,6 +1,6 @@
 ﻿namespace UDP_Repeater_GUI
 {
-    partial class configDialog
+    partial class InputForm
     {
         /// <summary>
         /// Required designer variable.
@@ -30,14 +30,14 @@
         {
             this.dialogOkButton = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
-            this.profileDropDown = new System.Windows.Forms.ComboBox();
-            this.ip_field = new System.Windows.Forms.TextBox();
+            this.profileDropdown = new System.Windows.Forms.ComboBox();
+            this.ipTextbox = new System.Windows.Forms.TextBox();
             this.ip_label = new System.Windows.Forms.Label();
-            this.port_field = new System.Windows.Forms.TextBox();
+            this.portTextbox = new System.Windows.Forms.TextBox();
             this.port_label = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.defaultButton = new System.Windows.Forms.Button();
-            this.reconfigNicButton = new System.Windows.Forms.Button();
+            this.restoreToDefaultsButton = new System.Windows.Forms.Button();
+            this.reconfigSetupButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // dialogOkButton
@@ -61,25 +61,25 @@
             this.label3.TabIndex = 15;
             this.label3.Text = "Configuration";
             // 
-            // profileDropDown
+            // profileDropdown
             // 
-            this.profileDropDown.FormattingEnabled = true;
-            this.profileDropDown.Items.AddRange(new object[] {
+            this.profileDropdown.FormattingEnabled = true;
+            this.profileDropdown.Items.AddRange(new object[] {
             "Receiving From",
             "Sending To",
             "Default Receive",
             "Default Send"});
-            this.profileDropDown.Location = new System.Drawing.Point(323, 124);
-            this.profileDropDown.Name = "profileDropDown";
-            this.profileDropDown.Size = new System.Drawing.Size(123, 21);
-            this.profileDropDown.TabIndex = 17;
+            this.profileDropdown.Location = new System.Drawing.Point(323, 124);
+            this.profileDropdown.Name = "profileDropdown";
+            this.profileDropdown.Size = new System.Drawing.Size(123, 21);
+            this.profileDropdown.TabIndex = 17;
             // 
-            // ip_field
+            // ipTextbox
             // 
-            this.ip_field.Location = new System.Drawing.Point(45, 124);
-            this.ip_field.Name = "ip_field";
-            this.ip_field.Size = new System.Drawing.Size(100, 20);
-            this.ip_field.TabIndex = 18;
+            this.ipTextbox.Location = new System.Drawing.Point(45, 124);
+            this.ipTextbox.Name = "ipTextbox";
+            this.ipTextbox.Size = new System.Drawing.Size(100, 20);
+            this.ipTextbox.TabIndex = 18;
             // 
             // ip_label
             // 
@@ -90,12 +90,12 @@
             this.ip_label.TabIndex = 19;
             this.ip_label.Text = "IP Address";
             // 
-            // port_field
+            // portTextbox
             // 
-            this.port_field.Location = new System.Drawing.Point(186, 124);
-            this.port_field.Name = "port_field";
-            this.port_field.Size = new System.Drawing.Size(100, 20);
-            this.port_field.TabIndex = 20;
+            this.portTextbox.Location = new System.Drawing.Point(186, 124);
+            this.portTextbox.Name = "portTextbox";
+            this.portTextbox.Size = new System.Drawing.Size(100, 20);
+            this.portTextbox.TabIndex = 20;
             // 
             // port_label
             // 
@@ -115,48 +115,48 @@
             this.label4.TabIndex = 22;
             this.label4.Text = "Profile";
             // 
-            // defaultButton
+            // restoreToDefaultsButton
             // 
-            this.defaultButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.defaultButton.Location = new System.Drawing.Point(186, 202);
-            this.defaultButton.Name = "defaultButton";
-            this.defaultButton.Size = new System.Drawing.Size(100, 38);
-            this.defaultButton.TabIndex = 23;
-            this.defaultButton.Text = "Restore to Default Settings";
-            this.defaultButton.UseVisualStyleBackColor = true;
-            this.defaultButton.Click += new System.EventHandler(this.defaultButton_Click);
+            this.restoreToDefaultsButton.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.restoreToDefaultsButton.Location = new System.Drawing.Point(186, 202);
+            this.restoreToDefaultsButton.Name = "restoreToDefaultsButton";
+            this.restoreToDefaultsButton.Size = new System.Drawing.Size(100, 38);
+            this.restoreToDefaultsButton.TabIndex = 23;
+            this.restoreToDefaultsButton.Text = "Restore to Default Settings";
+            this.restoreToDefaultsButton.UseVisualStyleBackColor = true;
+            this.restoreToDefaultsButton.Click += new System.EventHandler(this.defaultButton_Click);
             // 
-            // reconfigNicButton
+            // reconfigSetupButton
             // 
-            this.reconfigNicButton.DialogResult = System.Windows.Forms.DialogResult.Abort;
-            this.reconfigNicButton.Location = new System.Drawing.Point(45, 202);
-            this.reconfigNicButton.Name = "reconfigNicButton";
-            this.reconfigNicButton.Size = new System.Drawing.Size(100, 38);
-            this.reconfigNicButton.TabIndex = 24;
-            this.reconfigNicButton.Text = "Reconfigure NIC \r\nor Monitoring ";
-            this.reconfigNicButton.UseVisualStyleBackColor = true;
-            this.reconfigNicButton.Click += new System.EventHandler(this.reconfigNicButton_Click);
+            this.reconfigSetupButton.DialogResult = System.Windows.Forms.DialogResult.Abort;
+            this.reconfigSetupButton.Location = new System.Drawing.Point(45, 202);
+            this.reconfigSetupButton.Name = "reconfigSetupButton";
+            this.reconfigSetupButton.Size = new System.Drawing.Size(100, 38);
+            this.reconfigSetupButton.TabIndex = 24;
+            this.reconfigSetupButton.Text = "Reconfigure NIC \r\nor Monitoring ";
+            this.reconfigSetupButton.UseVisualStyleBackColor = true;
+            this.reconfigSetupButton.Click += new System.EventHandler(this.reconfigNicButton_Click);
             // 
-            // configDialog
+            // InputForm
             // 
             this.AcceptButton = this.dialogOkButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.dialogOkButton;
             this.ClientSize = new System.Drawing.Size(477, 263);
-            this.Controls.Add(this.reconfigNicButton);
-            this.Controls.Add(this.defaultButton);
+            this.Controls.Add(this.reconfigSetupButton);
+            this.Controls.Add(this.restoreToDefaultsButton);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.port_label);
-            this.Controls.Add(this.port_field);
+            this.Controls.Add(this.portTextbox);
             this.Controls.Add(this.ip_label);
-            this.Controls.Add(this.ip_field);
-            this.Controls.Add(this.profileDropDown);
+            this.Controls.Add(this.ipTextbox);
+            this.Controls.Add(this.profileDropdown);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.dialogOkButton);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MinimizeBox = false;
-            this.Name = "configDialog";
+            this.Name = "InputForm";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
@@ -170,13 +170,13 @@
         #endregion
         private System.Windows.Forms.Button dialogOkButton;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.ComboBox profileDropDown;
-        private System.Windows.Forms.TextBox ip_field;
+        private System.Windows.Forms.ComboBox profileDropdown;
+        private System.Windows.Forms.TextBox ipTextbox;
         private System.Windows.Forms.Label ip_label;
-        private System.Windows.Forms.TextBox port_field;
+        private System.Windows.Forms.TextBox portTextbox;
         private System.Windows.Forms.Label port_label;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Button defaultButton;
-        private System.Windows.Forms.Button reconfigNicButton;
+        private System.Windows.Forms.Button restoreToDefaultsButton;
+        private System.Windows.Forms.Button reconfigSetupButton;
     }
 }

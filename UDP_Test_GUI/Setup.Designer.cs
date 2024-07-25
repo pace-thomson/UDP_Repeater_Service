@@ -42,13 +42,13 @@
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.nicTextbox = new System.Windows.Forms.TextBox();
+            this.lokiTextbox = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
+            this.promTextbox = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.cancelButton = new System.Windows.Forms.Button();
-            this.nicTextbox = new System.Windows.Forms.TextBox();
-            this.promTextbox = new System.Windows.Forms.TextBox();
-            this.lokiTextbox = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
@@ -187,6 +187,26 @@
             this.panel1.Size = new System.Drawing.Size(436, 71);
             this.panel1.TabIndex = 9;
             // 
+            // nicTextbox
+            // 
+            this.nicTextbox.BackColor = System.Drawing.SystemColors.Control;
+            this.nicTextbox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.nicTextbox.Location = new System.Drawing.Point(174, 11);
+            this.nicTextbox.Name = "nicTextbox";
+            this.nicTextbox.Size = new System.Drawing.Size(259, 13);
+            this.nicTextbox.TabIndex = 11;
+            this.nicTextbox.Text = "Intel(R) Ethernet Connection (17) I219-LM";
+            // 
+            // lokiTextbox
+            // 
+            this.lokiTextbox.BackColor = System.Drawing.SystemColors.Control;
+            this.lokiTextbox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.lokiTextbox.Location = new System.Drawing.Point(177, 49);
+            this.lokiTextbox.Name = "lokiTextbox";
+            this.lokiTextbox.Size = new System.Drawing.Size(256, 13);
+            this.lokiTextbox.TabIndex = 13;
+            this.lokiTextbox.Text = "http://172.18.46.211:3100";
+            // 
             // label8
             // 
             this.label8.AutoSize = true;
@@ -196,6 +216,16 @@
             this.label8.Size = new System.Drawing.Size(89, 13);
             this.label8.TabIndex = 2;
             this.label8.Text = "Loki Endpoint:";
+            // 
+            // promTextbox
+            // 
+            this.promTextbox.BackColor = System.Drawing.SystemColors.Control;
+            this.promTextbox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.promTextbox.Location = new System.Drawing.Point(162, 30);
+            this.promTextbox.Name = "promTextbox";
+            this.promTextbox.Size = new System.Drawing.Size(271, 13);
+            this.promTextbox.TabIndex = 12;
+            this.promTextbox.Text = "http://172.18.46.211:9090/api/v1/otlp/v1/metrics";
             // 
             // label7
             // 
@@ -228,36 +258,6 @@
             this.cancelButton.Text = "Cancel";
             this.cancelButton.UseVisualStyleBackColor = true;
             // 
-            // nicTextbox
-            // 
-            this.nicTextbox.BackColor = System.Drawing.SystemColors.Control;
-            this.nicTextbox.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.nicTextbox.Location = new System.Drawing.Point(174, 11);
-            this.nicTextbox.Name = "nicTextbox";
-            this.nicTextbox.Size = new System.Drawing.Size(259, 13);
-            this.nicTextbox.TabIndex = 11;
-            this.nicTextbox.Text = "Intel(R) Ethernet Connection (17) I219-LM";
-            // 
-            // promTextbox
-            // 
-            this.promTextbox.BackColor = System.Drawing.SystemColors.Control;
-            this.promTextbox.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.promTextbox.Location = new System.Drawing.Point(162, 30);
-            this.promTextbox.Name = "promTextbox";
-            this.promTextbox.Size = new System.Drawing.Size(271, 13);
-            this.promTextbox.TabIndex = 12;
-            this.promTextbox.Text = "http://172.18.46.211:9090/api/v1/otlp/v1/metrics";
-            // 
-            // lokiTextbox
-            // 
-            this.lokiTextbox.BackColor = System.Drawing.SystemColors.Control;
-            this.lokiTextbox.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.lokiTextbox.Location = new System.Drawing.Point(177, 49);
-            this.lokiTextbox.Name = "lokiTextbox";
-            this.lokiTextbox.Size = new System.Drawing.Size(256, 13);
-            this.lokiTextbox.TabIndex = 13;
-            this.lokiTextbox.Text = "http://172.18.46.211:3100";
-            // 
             // Setup
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -277,7 +277,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Setup";
             this.Text = "Packet Repeater Setup";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.NIC_Picker_FormClosing);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Setup_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();

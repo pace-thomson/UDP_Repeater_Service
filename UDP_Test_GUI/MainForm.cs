@@ -19,33 +19,33 @@
 //---------------------------------------------------
 
 
+using Newtonsoft.Json.Linq;
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Net.Sockets;
+using System.ServiceProcess;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.IO;
-using Newtonsoft.Json.Linq;
-using System.ServiceProcess;
 using UDP_Test_GUI;
-using System.Diagnostics;
 
 
 namespace UDP_Repeater_GUI
 {
-    public partial class gui_form : Form
+    public partial class MainForm : Form
     {
             /// <summary> The UDP object for receiving </summary>
         private UdpClient udpClient;
             /// <summary> How it stays listening and updating without recursion </summary>
-        private bool isListening = false;
+        private bool isListening;
             /// <summary> Tracks what number packet is being received </summary> 
-        private int index = 0;
+        private int totalPacketCounter;
             /// <summary> Puts the icon in the system tray </summary>
-        private NotifyIcon notifyIcon1;
-            /// <summary> Our Service </summary>
+        private NotifyIcon sysTrayIcon;
+            /// <summary> Our Backend/Service so we can see if it's running. </summary>
         private ServiceController ourService;
             /// <summary> Our object for logging. </summary>
         public Logger logger;
@@ -53,63 +53,121 @@ namespace UDP_Repeater_GUI
         private Timer timer;
 
         /// <summary> 
-        ///  Class Name: gui_form  <br/><br/>
+        ///  Class Name: MainForm  <br/><br/>
         ///
         ///  Description: Constructs the main form. <br/><br/>
         ///
         ///  Inputs: None <br/><br/>
         ///  
-        ///  Returns: A gui_form object.
+        ///  Returns: MainForm - A MainForm object.
         /// </summary>
-        public gui_form()
+        public MainForm()
         {
             InitializeComponent();
 
+                // double unhandled exception handling, just in case
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
             Application.ThreadException += new System.Threading.ThreadExceptionEventHandler(ThreadExceptionHandlerFunction);
 
 
             logger = new Logger();
-            timer = SetupTimerForServiceStatus();
-            logger.StartStopLogger("start");
+            try
+            {
+                timer = SetupTimerForServiceStatus();
+                logger.StartStopLogger("start");
+                totalPacketCounter = 0;
+                isListening = false;
+                try 
+                { 
+                    ourService = new ServiceController("UDP_Repeater_Service"); 
+                }
+                catch (ArgumentException) 
+                { 
+                    logger.WarningLogger("The Packet Repeater Service cannot be found."); 
+                    ourService = null;
+                }
+                
+                GetUserNicChoice();         // this happens in the constructor, so this form will appear first if it's needed
 
+                InitializeUDPListener();    // starts us continually listening
 
-            GetUserNicChoice();
+                HandleSysTrayIcon();        // sets up system tray icon 
 
-            InitializeUDPListener();
-
-            HandleSysTrayIcon();
-
-            UpdateCurrentConfigGroup();
-        }
-
-        /// <summary> Sets up the sys tray icon and it's stuff </summary>
-        private void HandleSysTrayIcon()
-        {
-            notifyIcon1 = new NotifyIcon();
-
-            // The Icon property sets the icon that will appear
-            // in the systray for this application.
-            notifyIcon1.Icon = new Icon("jt4_logo.ico");
-
-            // The Text property sets the text that will be displayed,
-            // in a tooltip, when the mouse hovers over the systray icon.
-            notifyIcon1.Text = "UDP Packet Repeater";
-            notifyIcon1.Visible = true;
-
-            // Handle the Click event to activate the form.
-            notifyIcon1.Click += new EventHandler(notifyIcon1_Click);
+                UpdateCurrentConfigGroup(); // populates the current config group with the settings in config.json
+            }
+            catch (Exception ex)
+            {
+                logger.LogException(ex);
+            }
+            
         }
 
         /// <summary> 
-        /// If this was just installed (UDP_Repeater_Config.json is less than 5 minutes old), 
-        /// this opens the nic picker window.
+        ///  Class Name: MainForm  <br/><br/>
+        ///
+        ///  Description: Sets up the sys tray icon and it's behavior. <br/><br/>
+        ///
+        ///  Inputs: None <br/><br/>
+        ///  
+        ///  Returns: None
+        /// </summary>
+        private void HandleSysTrayIcon()
+        {
+            sysTrayIcon = new NotifyIcon();
+
+            // The Icon property sets the icon that will appear
+            // in the systray for this application.
+            sysTrayIcon.Icon = new Icon("jt4_logo.ico");
+
+            // The Text property sets the text that will be displayed,
+            // in a tooltip, when the mouse hovers over the systray icon.
+            sysTrayIcon.Text = "UDP Packet Repeater";
+            sysTrayIcon.Visible = true;
+
+            // Handle the Click event to activate the form.
+            sysTrayIcon.Click += new EventHandler(notifyIcon1_Click);
+        }
+        /// <summary> 
+        ///  Class Name: MainForm  <br/><br/>
+        ///
+        ///  Description: Handles clicking of the system tray icon for the gui. <br/><br/>
+        ///
+        ///  Inputs:  <br/>
+        ///  object <paramref name="Sender"/> - Whoever sent this, I think? <br/>
+        ///  EventArgs <paramref name="e"/> - The icon click event arg. <br/><br/>
+        ///  
+        ///  Returns: None
+        /// </summary>
+        private void notifyIcon1_Click(object Sender, EventArgs e)
+        {
+            if (WindowState == FormWindowState.Minimized)
+            {
+                WindowState = FormWindowState.Normal;
+                this.BringToFront();
+                this.Focus();
+            }
+            else
+            {
+                WindowState = FormWindowState.Minimized;
+            }
+        }
+
+        /// <summary> 
+        ///  Class Name: MainForm  <br/><br/>
+        ///
+        ///  Description: Checks if UDP_Repeater_Config.json is less than 30 <br/>
+        ///  seconds old, and displays the setup form if it isn't. <br/><br/>
+        ///
+        ///  Inputs: None <br/><br/>
+        ///  
+        ///  Returns: None
         /// </summary>
         public void GetUserNicChoice()
         {
-            while (!File.Exists("C:\\Windows\\SysWOW64\\UDP_Repeater_Config.json"))
+            bool configJsonExists = logger.WaitForConfigJson();
+            if (!configJsonExists)
             {
-                System.Threading.Thread.Sleep(1000);
+                return;
             }
 
             double diff = (DateTime.Now - File.GetCreationTime("C:\\Windows\\SysWOW64\\UDP_Repeater_Config.json")).TotalSeconds;
@@ -118,9 +176,9 @@ namespace UDP_Repeater_GUI
                 return;
             }
 
-            using (Setup picker = new Setup(this))
+            using (Setup setupForm = new Setup(this))
             {
-                DialogResult result = picker.ShowDialog();
+                DialogResult result = setupForm.ShowDialog();
                 if (result == DialogResult.OK)
                 {
                     Application.Restart();
@@ -128,12 +186,13 @@ namespace UDP_Repeater_GUI
                 }
             }
         }
+        
 
         /// <summary> 
-        ///  Class Name: gui_form  <br/><br/>
+        ///  Class Name: MainForm  <br/><br/>
         ///
         ///  Description: Overloaded version 1/4. Updates the current configuration group. <br/>
-        ///  This one is used for the initial setting of the values in the group. <br/><br/>
+        ///  This one is called in the Mainform constructor. <br/><br/>
         ///
         ///  Inputs: None <br/><br/>
         ///  
@@ -155,14 +214,13 @@ namespace UDP_Repeater_GUI
                 currentInterval.Text += "s";
             }
         }
-
         /// <summary> 
-        ///  Class Name: gui_form  <br/><br/>
+        ///  Class Name: MainForm  <br/><br/>
         ///
         ///  Description: Overloaded version 2/4. Updates the current configuration group. <br/>
         ///  This one updates the ip/port values of the group. It's updated this way so <br/>
         ///  this doesn't have to wait for the backend to update "UDP_Repeater_Config.json". <br/>
-        ///  This function gets called right after the user inputs a new setting. <br/><br/>
+        ///  This function gets called right after the user inputs a new ip/port setting. <br/><br/>
         ///
         ///  Inputs:  <br/>
         ///  string <paramref name="mode"/> - What profile was changed. <br/>
@@ -184,14 +242,13 @@ namespace UDP_Repeater_GUI
                 currentSendPort.Text = port;
             }
         }
-
         /// <summary> 
-        ///  Class Name: gui_form  <br/><br/>
+        ///  Class Name: MainForm  <br/><br/>
         ///
         ///  Description: Overloaded version 3/4. Updates the current configuration group. <br/>
         ///  This one updates the frequency and interval values of the group. It's updated this <br/>
         ///  way so this doesn't have to wait for the backend to update "UDP_Repeater_Config.json". <br/>
-        ///  This function gets called right after the user inputs a new setting. <br/><br/>
+        ///  This function gets called right after the user inputs new inactivity settings. <br/><br/>
         ///
         ///  Inputs:  <br/>
         ///  string <paramref name="frequency"/> - The new frequency value. <br/>
@@ -208,9 +265,8 @@ namespace UDP_Repeater_GUI
             currentFrequency.Text = frequency;
             currentInterval.Text = interval;
         }
-
         /// <summary> 
-        ///  Class Name: gui_form  <br/><br/>
+        ///  Class Name: MainForm  <br/><br/>
         ///
         ///  Description: (Kind of) Overloaded version 4/4. Updates the current configuration group. <br/>
         ///  This one is for when the settings are returned to default. <br/><br/>
@@ -232,7 +288,7 @@ namespace UDP_Repeater_GUI
 
 
         /// <summary> 
-        ///  Class Name: gui_form  <br/><br/>
+        ///  Class Name: MainForm  <br/><br/>
         ///
         ///  Description: Intializes the UDP Client listening and holds the infinite listening loop. <br/><br/>
         ///
@@ -258,9 +314,10 @@ namespace UDP_Repeater_GUI
         }
 
         /// <summary> 
-        ///  Class Name: gui_form  <br/><br/>
+        ///  Class Name: MainForm  <br/><br/>
         ///
-        ///  Description: This listens until a packet is received. <br/><br/>
+        ///  Description: This listens until a packet is received, then calls ProcessReceivedData to
+        ///  to handle the new packet. <br/><br/>
         ///
         ///  Inputs: None <br/><br/>
         ///  
@@ -291,7 +348,7 @@ namespace UDP_Repeater_GUI
         }
 
         /// <summary> 
-        ///  Class Name: gui_form  <br/><br/>
+        ///  Class Name: MainForm  <br/><br/>
         ///
         ///  Description: This processes the packet sent from the backend and then <br/>
         ///  adds a new row in the data grid view with the proccessed data. <br/><br/>
@@ -305,55 +362,56 @@ namespace UDP_Repeater_GUI
         {
             try
             {
+                    // we always send out packets back and forth with comma seperated stringss
                 string receivedData = Encoding.ASCII.GetString(receivedBytes);
                 string[] dataParts = receivedData.Split(',');
 
-                // Updates GUI from a different thread
-                dataGridView1.Invoke((MethodInvoker)delegate
+                    // Updates data grid view from a different thread
+                packetsHandledDisplay.Invoke((MethodInvoker)delegate
                 {
+                    DataGridViewRow row;    // the new row to populate
 
-                    DataGridViewRow row;
-
-                    if (dataGridView1.Rows.Count >= 250)
+                        // this caps the table at most recent 250 packets
+                    if (packetsHandledDisplay.Rows.Count >= 250)
                     {
-                        // this caps the table at most recent 250 packets   
-                        dataGridView1.Rows.Add();
-                        dataGridView1.Rows.RemoveAt(250);
-                        row = dataGridView1.Rows[249];
+                        packetsHandledDisplay.Rows.Add();
+                        packetsHandledDisplay.Rows.RemoveAt(250);
+                        row = packetsHandledDisplay.Rows[249];
                     }
                     else
                     {
-                        int rowNum = dataGridView1.Rows.Add();
-                        row = dataGridView1.Rows[rowNum];
+                        int rowNum = packetsHandledDisplay.Rows.Add();
+                        row = packetsHandledDisplay.Rows[rowNum];
                     }
 
-                    // Updates DataGridView with received data
-                    row.Cells["indexColumn"].Value = (index + 1);
+                        // Updates DataGridView with received data
+                    row.Cells["indexColumn"].Value = (totalPacketCounter + 1);
                     row.Cells["ipColumn"].Value = dataParts[0];
                     row.Cells["portColumn"].Value = dataParts[1];
                     row.Cells["payloadColumn"].Value = dataParts[2];
                     row.Cells["timeColumn"].Value = DateTime.Now.ToString();
-                    index++;
+                    totalPacketCounter++;
 
-                    // changes sort direction to keep the most recent packet at the top.
-                    // MAKE SURE IT'S SORTING INTEGERS AND NOT STRINGS.
-                    dataGridView1.Sort(dataGridView1.Columns[0], ListSortDirection.Descending);
+                        // changes sort direction to keep the most recent packet at the top.
+                        // MAKE SURE IT'S SORTING INTEGERS AND NOT STRINGS.
+                    packetsHandledDisplay.Sort(packetsHandledDisplay.Columns[0], ListSortDirection.Descending);
                 });
 
-                // updates packet counter
-                packetCounter.Text = index.ToString();
+                    // updates packet counter
+                packetCounter.Text = totalPacketCounter.ToString();
             }
             catch (Exception e) { logger.LogException(e); }
         }
 
         /// <summary> 
-        ///  Class Name: gui_form  <br/><br/>
+        ///  Class Name: MainForm  <br/><br/>
         ///
-        ///  Description: Sets ups the timer that handles the service status thing <br/><br/>
+        ///  Description: Sets ups the timer that handles checking for the service running status. <br/>
+        ///  The object this returns isn't used but we keep it to dispose of when the GUI is exiting. <br/><br/>
         ///
         ///  Inputs: None <br/><br/>
         ///  
-        ///  Returns: None
+        ///  Returns: Timer - The timer object with the Event handler for checking service status.
         /// </summary>
         private Timer SetupTimerForServiceStatus()
         {
@@ -382,13 +440,13 @@ namespace UDP_Repeater_GUI
         }
 
         /// <summary> 
-        ///  Class Name: gui_form  <br/><br/>
+        ///  Class Name: MainForm  <br/><br/>
         ///
-        ///  Description: Checks if the service side is running and dipsplays the corresponding label <br/><br/>
+        ///  Description: Checks if the service side is running and displays the corresponding label <br/><br/>
         ///
         ///  Inputs:  <br/>
-        ///  object <paramref name="source"/> - Whoever sent this, I think? <br/>
-        ///  EventArgs <paramref name="e"/> - The form closing event arg. <br/><br/>
+        ///  object <paramref name="source"/> - Not used here. <br/>
+        ///  EventArgs <paramref name="e"/> - The event firing that called this. <br/><br/>
         ///  
         ///  Returns: None
         /// </summary>
@@ -396,8 +454,12 @@ namespace UDP_Repeater_GUI
         {
             try
             {
-                ourService = new ServiceController("UDP_Repeater_Service");
-                if (ourService.Status == ServiceControllerStatus.Running)
+                if (ourService == null)
+                {
+                    statusLabel.Text = "Service Not Found";
+                    statusLabel.ForeColor = Color.DarkRed;
+                }
+                else if (ourService.Status == ServiceControllerStatus.Running)
                 {
                     statusLabel.Text = "Running";
                     statusLabel.ForeColor = Color.Green;
@@ -408,45 +470,19 @@ namespace UDP_Repeater_GUI
                     statusLabel.ForeColor = Color.Red;
                 }
             }
-            catch (Exception notFound)
+            catch (Exception ex)
             {
-                statusLabel.Text = "Service Not Found";
-                statusLabel.ForeColor = Color.DarkRed;
-                logger.LogException(notFound);
+                logger.LogException(ex);
             }
         }
 
+        
 
         /// <summary> 
-        ///  Class Name: gui_form  <br/><br/>
+        ///  Class Name: MainForm  <br/><br/>
         ///
-        ///  Description: Handles clicking of the system tray icon. <br/><br/>
-        ///
-        ///  Inputs:  <br/>
-        ///  object <paramref name="Sender"/> - Whoever sent this, I think? <br/>
-        ///  EventArgs <paramref name="e"/> - The icon click event arg. <br/><br/>
-        ///  
-        ///  Returns: None
-        /// </summary>
-        private void notifyIcon1_Click(object Sender, EventArgs e)
-        {
-            if (WindowState == FormWindowState.Minimized)
-            {
-                WindowState = FormWindowState.Normal;
-                this.BringToFront();
-                this.Focus();
-            }
-            else
-            {
-                WindowState = FormWindowState.Minimized;
-            }
-        }
-
-        /// <summary> 
-        ///  Class Name: gui_form  <br/><br/>
-        ///
-        ///  Description: If the user presses the X, then it dones't close. <br/>
-        ///               Otherwise it logs stopping. <br/><br/>
+        ///  Description: If the user tries to close, this displays a message box to ask if they're sure. <br/>
+        ///               Otherwise it lets the form close and handles disposing. <br/><br/>
         ///
         ///  Inputs:  <br/>
         ///  object <paramref name="sender"/> - I don't use this, i'm not sure. <br/>
@@ -459,22 +495,13 @@ namespace UDP_Repeater_GUI
             if (e.CloseReason == CloseReason.UserClosing)
             {
                 DialogResult dialogResult = MessageBox.Show("Are you sure you want to close this Interface? \n" +
-                                                        "You will lose the information about packets gathered since the interface started.",
-                                                        "Closing Confirmation",
-                                                        MessageBoxButtons.YesNo);
+                                                            "You will lose the information about packets gathered since the interface started.",
+                                                            "Closing Confirmation",
+                                                            MessageBoxButtons.YesNo);
 
                 if (dialogResult == DialogResult.Yes)
                 {
-                    logger.StartStopLogger("stop");
-                    System.Threading.Thread.Sleep(1000);
-                    if (logger.eventLog != null)
-                    {
-                        logger.eventLog.Dispose();
-                    }
-                    if (logger.meterProvider != null)
-                    {
-                        logger.meterProvider.Dispose();
-                    }
+                    DisposeOfStuff();
                 }
                 else
                 {
@@ -482,13 +509,42 @@ namespace UDP_Repeater_GUI
                     WindowState = FormWindowState.Minimized;
                 }
             }
+            else
+            {
+                DisposeOfStuff();
+            }
+        }
+        /// <summary> 
+        ///  Class Name: MainForm  <br/><br/>
+        ///
+        ///  Description: Disposes of all of the disposable objects. Called when this form is closing. <br/><br/>
+        ///
+        ///  Inputs:  <br/><br/>
+        ///  
+        ///  Returns: None
+        /// </summary>
+        private void DisposeOfStuff()
+        {
+            logger.StartStopLogger("stop");
+            System.Threading.Thread.Sleep(1000);
+            if (logger.eventLog != null)
+            {
+                logger.eventLog.Dispose();
+            }
+            if (logger.meterProvider != null)
+            {
+                logger.meterProvider.Dispose();
+            }
+            timer.Dispose();
         }
 
 
         /// <summary> 
-        ///  Class Name: gui_form  <br/><br/>
+        ///  Class Name: MainForm  <br/><br/>
         ///
-        ///  Description: Opens the IP/Port reconfiguration form. <br/><br/>
+        ///  Description: Opens the IP/Port reconfiguration form. If the InputForm's
+        ///  "Reconfigure NIC or Monitoring" button is clicked, that form closes and 
+        ///  we open the Setup here. <br/><br/>
         ///
         ///  Inputs:  <br/>
         ///  object <paramref name="sender"/> - I don't use this, i'm not sure. <br/>
@@ -498,17 +554,22 @@ namespace UDP_Repeater_GUI
         /// </summary>
         private void showDialogbutton_Click(object sender, EventArgs e)
         {
-            using (configDialog messageDialog = new configDialog(this))
+            using (InputForm messageDialog = new InputForm(this))
             {
                 DialogResult response = messageDialog.ShowDialog();
-                if (response == DialogResult.Abort)
+                    // abort is the result of clicking the "Reconfigure NIC or Monitoring"
+                    // button, so we open that form
+                if (response == DialogResult.Abort)     
                 {
-                    using (Setup picker = new Setup(this))
+                    using (Setup setupForm = new Setup(this))
                     {
-                        DialogResult result = picker.ShowDialog();
+                        DialogResult result = setupForm.ShowDialog();
+                            // OK is the result of a successful "Submit" button press, so we restart the gui because 
+                            // the loki logging doesn't like being reconfigured when its already been assigned. 
                         if (result == DialogResult.OK)
                         {
-                            Application.Restart();
+                                // This does call the FormClosing event with CloseReason.ApplicationExitCall 
+                            Application.Restart();      
                             Environment.Exit(0);
                         }
                     }
@@ -517,9 +578,9 @@ namespace UDP_Repeater_GUI
         }
 
         /// <summary> 
-        ///  Class Name: gui_form  <br/><br/>
+        ///  Class Name: MainForm  <br/><br/>
         ///
-        ///  Description: Opens the Log form. <br/><br/>
+        ///  Description: Opens the Log form (not as a dialog). <br/><br/>
         ///
         ///  Inputs:  <br/>
         ///  object <paramref name="sender"/> - I don't use this, i'm not sure. <br/>
@@ -530,7 +591,7 @@ namespace UDP_Repeater_GUI
         private void logButton_Click(object sender, EventArgs e)
         {
             LogForm logForm = new LogForm(this);
-            logForm.ShowDialog();
+            logForm.Show();
         }
 
         /// <summary>
@@ -542,11 +603,21 @@ namespace UDP_Repeater_GUI
             return Char.ToUpper(str[0]) + str.Remove(0, 1);
         }
 
-
+        /// <summary> 
+        ///  Class Name: MainForm  <br/><br/>
+        ///
+        ///  Description: Catches and logs any unhandled exceptions. I saw that you need both of these <br/>
+        ///  functions with windows forms to really catch everything. They're identical inside. <br/><br/>
+        ///
+        ///  Inputs:  <br/>
+        ///  object <paramref name="sender"/> - I don't use this, i'm not sure. <br/>
+        ///  UnhandledExceptionEventArgs <paramref name="e"/> - The unhandled exception <br/><br/>
+        ///  
+        ///  Returns: None
+        /// </summary>
         public static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             Exception ex = (Exception)e.ExceptionObject;
-
             string message = String.Format($"Error Message: {ex.Message} \n" +
                                            $"Error location: Frontend/User Interface \n" +
                                            $"{ex.StackTrace}");
@@ -554,15 +625,24 @@ namespace UDP_Repeater_GUI
             using (EventLog tempLog = new EventLog("UDP Packet Repeater"))
             {
                 tempLog.Source = "UDP_Repeater_Frontend";
-
                 tempLog.WriteEntry(message, EventLogEntryType.Error, 2);  // 2 is our id for Frontend errors
             }
         }
-
+        /// <summary> 
+        ///  Class Name: MainForm  <br/><br/>
+        ///
+        ///  Description: Catches and logs any unhandled exceptions. I saw that you need both of these <br/>
+        ///  functions with windows forms to really catch everything. They're identical inside. <br/><br/>
+        ///
+        ///  Inputs:  <br/>
+        ///  object <paramref name="sender"/> - I don't use this, i'm not sure. <br/>
+        ///  UnhandledExceptionEventArgs <paramref name="e"/> - The unhandled exception <br/><br/>
+        ///  
+        ///  Returns: None
+        /// </summary>
         private static void ThreadExceptionHandlerFunction(object sender, System.Threading.ThreadExceptionEventArgs t)
         {
             Exception ex = t.Exception;
-
             string message = String.Format($"Error Message: {ex.Message} \n" +
                                            $"Error location: Frontend/User Interface \n" +
                                            $"{ex.StackTrace}");
@@ -570,7 +650,6 @@ namespace UDP_Repeater_GUI
             using (EventLog tempLog = new EventLog("UDP Packet Repeater"))
             {
                 tempLog.Source = "UDP_Repeater_Frontend";
-
                 tempLog.WriteEntry(message, EventLogEntryType.Error, 2);  // 2 is our id for Frontend errors
             }
         }

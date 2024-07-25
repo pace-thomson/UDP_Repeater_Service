@@ -1,6 +1,6 @@
 ﻿namespace UDP_Repeater_GUI
 {
-    partial class gui_form
+    partial class MainForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,8 +28,13 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(gui_form));
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
+            this.packetsHandledDisplay = new System.Windows.Forms.DataGridView();
+            this.indexColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ipColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.portColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.payloadColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.timeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.title_label = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
@@ -57,36 +62,63 @@
             this.label13 = new System.Windows.Forms.Label();
             this.statusLabel = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
-            this.indexColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ipColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.portColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.payloadColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.timeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.packetsHandledDisplay)).BeginInit();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
-            // dataGridView1
+            // packetsHandledDisplay
             // 
-            this.dataGridView1.AllowUserToAddRows = false;
-            this.dataGridView1.AllowUserToDeleteRows = false;
-            this.dataGridView1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            this.packetsHandledDisplay.AllowUserToAddRows = false;
+            this.packetsHandledDisplay.AllowUserToDeleteRows = false;
+            this.packetsHandledDisplay.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.packetsHandledDisplay.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.packetsHandledDisplay.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.indexColumn,
             this.ipColumn,
             this.portColumn,
             this.payloadColumn,
             this.timeColumn});
-            this.dataGridView1.Location = new System.Drawing.Point(17, 139);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.ReadOnly = true;
-            this.dataGridView1.RowHeadersVisible = false;
-            this.dataGridView1.RowHeadersWidth = 70;
-            this.dataGridView1.Size = new System.Drawing.Size(624, 251);
-            this.dataGridView1.TabIndex = 4;
+            this.packetsHandledDisplay.Location = new System.Drawing.Point(17, 139);
+            this.packetsHandledDisplay.Name = "packetsHandledDisplay";
+            this.packetsHandledDisplay.ReadOnly = true;
+            this.packetsHandledDisplay.RowHeadersVisible = false;
+            this.packetsHandledDisplay.RowHeadersWidth = 70;
+            this.packetsHandledDisplay.Size = new System.Drawing.Size(624, 251);
+            this.packetsHandledDisplay.TabIndex = 4;
+            // 
+            // indexColumn
+            // 
+            this.indexColumn.HeaderText = "Packet Number";
+            this.indexColumn.Name = "indexColumn";
+            this.indexColumn.ReadOnly = true;
+            // 
+            // ipColumn
+            // 
+            this.ipColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.ipColumn.HeaderText = "IP Address";
+            this.ipColumn.Name = "ipColumn";
+            this.ipColumn.ReadOnly = true;
+            // 
+            // portColumn
+            // 
+            this.portColumn.HeaderText = "Port";
+            this.portColumn.Name = "portColumn";
+            this.portColumn.ReadOnly = true;
+            // 
+            // payloadColumn
+            // 
+            this.payloadColumn.HeaderText = "Data Length (Bytes)";
+            this.payloadColumn.Name = "payloadColumn";
+            this.payloadColumn.ReadOnly = true;
+            // 
+            // timeColumn
+            // 
+            this.timeColumn.HeaderText = "Time Stamp";
+            this.timeColumn.Name = "timeColumn";
+            this.timeColumn.ReadOnly = true;
+            this.timeColumn.Width = 175;
             // 
             // title_label
             // 
@@ -359,39 +391,7 @@
             this.label14.TabIndex = 24;
             this.label14.Text = "*Inactivity Reconfiguration is Here";
             // 
-            // indexColumn
-            // 
-            this.indexColumn.HeaderText = "Packet Number";
-            this.indexColumn.Name = "indexColumn";
-            this.indexColumn.ReadOnly = true;
-            // 
-            // ipColumn
-            // 
-            this.ipColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.ipColumn.HeaderText = "IP Address";
-            this.ipColumn.Name = "ipColumn";
-            this.ipColumn.ReadOnly = true;
-            // 
-            // portColumn
-            // 
-            this.portColumn.HeaderText = "Port";
-            this.portColumn.Name = "portColumn";
-            this.portColumn.ReadOnly = true;
-            // 
-            // payloadColumn
-            // 
-            this.payloadColumn.HeaderText = "Data Length (Bytes)";
-            this.payloadColumn.Name = "payloadColumn";
-            this.payloadColumn.ReadOnly = true;
-            // 
-            // timeColumn
-            // 
-            this.timeColumn.HeaderText = "Time Stamp";
-            this.timeColumn.Name = "timeColumn";
-            this.timeColumn.ReadOnly = true;
-            this.timeColumn.Width = 175;
-            // 
-            // gui_form
+            // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -405,14 +405,14 @@
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.title_label);
-            this.Controls.Add(this.dataGridView1);
+            this.Controls.Add(this.packetsHandledDisplay);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "gui_form";
+            this.Name = "MainForm";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "UDP Packet Repeater";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.gui_form_FormClosing);
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.packetsHandledDisplay)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.panel2.ResumeLayout(false);
@@ -423,7 +423,7 @@
         }
 
         #endregion
-        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.DataGridView packetsHandledDisplay;
         private System.Windows.Forms.Label title_label;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Panel panel1;

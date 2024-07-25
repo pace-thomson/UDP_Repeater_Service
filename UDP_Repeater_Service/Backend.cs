@@ -421,6 +421,7 @@ namespace BackendClassNameSpace
                                   .CreateLogger();
 
                     temporaryLokiLogger.Error(message);
+                    System.Threading.Thread.Sleep(1500);
                     temporaryLokiLogger.Dispose();
                 }
                 catch (UriFormatException)

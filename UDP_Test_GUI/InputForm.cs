@@ -27,29 +27,30 @@ using System.Windows.Forms;
 namespace UDP_Repeater_GUI
 {
     /// <summary>
-    /// The class for the form with the inputs for reconfiguring the 
-    /// ip's and ports. Comes up when the "Reconfigure IP's/Ports" button 
+    /// The class for the form with the inputs for reconfiguring the system's 
+    /// ip's and ports. Is created when the "Reconfigure Settings" button 
     /// is clicked on the main form.
     /// </summary>
-    public partial class configDialog : Form
+    public partial class InputForm : Form
     {
             /// <summary>The main form's object.</summary>
-        private gui_form theMainForm;
-            /// <summary> Keeps track of if the user has provided valid ip/port/profile </summary>
+        private MainForm theMainForm;
+            /// <summary> Keeps track of if the user has provided valid ip/portString/profile </summary>
         private bool inputValid;
 
         /// <summary> 
-        ///  Class Name: configDialog  <br/><br/>
+        ///  Class Name: InputForm  <br/><br/>
         ///
         ///  Description: Constructs the form. <br/><br/>
         ///
         ///  Inputs:  <br/>
-        ///  gui_form <paramref name="mainForm"/> - The main form's object. Passed in so that 
-        ///  we can update it's "Current Configuration" section whenever a change is made.<br/><br/>
+        ///  MainForm <paramref name="mainForm"/> - The main form's object. Passed in so that <br/>
+        ///  we can update it's "Current Configuration" section whenever a change is made. <br/>
+        ///  Also we use it's logger object for all of our logging needs. <br/><br/>
         ///  
-        ///  Returns: A configDialog object.
+        ///  Returns: A InputForm form object.
         /// </summary>
-        public configDialog(gui_form mainForm)
+        public InputForm(MainForm mainForm)
         {
             InitializeComponent();
             theMainForm = mainForm;
@@ -57,11 +58,11 @@ namespace UDP_Repeater_GUI
         }
 
         /// <summary> 
-        ///  Class Name: configDialog  <br/><br/>
+        ///  Class Name: InputForm  <br/><br/>
         ///
         ///  Description: Handles the OK button on this form. It checks the input boxes to see <br/>
         ///  if their values are valid, and then sends them if they are. If not, opens a messagebox <br/>
-        ///  that, when closed, also closes this form. I'm not sure how to get it to not do that<br/><br/>
+        ///  that tells the user to try again. <br/><br/>
         ///
         ///  Inputs:  <br/>
         ///  object <paramref name="sender"/> - Necessary for handling the button, but I don't use it. <br/>
@@ -73,52 +74,49 @@ namespace UDP_Repeater_GUI
         {
             try
             {
-                string ip = ip_field.Text;
-                string port = port_field.Text;
-                string mode = profileDropDown.Text;
+                string ip = ipTextbox.Text;
+                string portString = portTextbox.Text;
+                string mode = profileDropdown.Text;
                 int portInt = 0;
                 try
                 {
-                    portInt = int.Parse(port_field.Text);
+                    portInt = int.Parse(portTextbox.Text);
                 }
-                catch (FormatException)
+                catch (FormatException)     // gets called if portTextbox is empty
                 {
                     MessageBox.Show("Please fill in all input fields.");
                     inputValid = false;
                     return;
                 }
 
-                IPAddress address;              // this validates if the ip address is legit
-                if (ip.Count(c => c == '.') == 3 && IPAddress.TryParse(ip, out address) &&
-                    portInt > 0 && portInt <= 65535)  // and for all valid ports
+                IPAddress address;              
+                if (ip.Count(c => c == '.') == 3 &&         // validates if the ip address is formatted correctly
+                    IPAddress.TryParse(ip, out address) &&  // validates if it can make a valid ip address, and makes one if possible
+                    portInt > 0 && portInt <= 65535)        // checks if the port number is in the valid range
                 {
                     using (UdpClient sendRequest = new UdpClient())
                     {
-
-                        if (mode != "")
-                        {
-                            if (mode == "Receiving From" || mode == "Sending To")
-                            {
-                                theMainForm.UpdateCurrentConfigGroup(mode, ip, port);
-                            }
-                        }
-                        else
+                        if (mode == "")
                         {
                             MessageBox.Show("No profile chosen, please try again.");
                             inputValid = false;
                             return;
                         }
+                        if (mode == "Receiving From" || mode == "Sending To")
+                        {
+                            theMainForm.UpdateCurrentConfigGroup(mode, ip, portString);
+                        }
 
                         // we communicate back and forth with the Service with comma seperated strings
-                        byte[] bytes = Encoding.ASCII.GetBytes(ip + "," + port + "," + mode);
+                        byte[] bytes = Encoding.ASCII.GetBytes(ip + "," + portString + "," + mode);
                         sendRequest.Send(bytes, bytes.Length, "127.0.0.1", 50001);
 
+
+                        theMainForm.logger.LogConfigChange(mode, ip, portString);
+
                         // this section resets the inputs
-
-                        theMainForm.logger.LogConfigChange(mode, ip, port);
-
-                        ip_field.Text = "";
-                        port_field.Text = "";
+                        ipTextbox.Text = "";
+                        portTextbox.Text = "";
 
                         sendRequest.Close();
                         inputValid = true;
@@ -131,11 +129,14 @@ namespace UDP_Repeater_GUI
                     return;
                 }
             }
-            catch (Exception ex) { theMainForm.logger.LogException(ex); }
+            catch (Exception ex) 
+            { 
+                theMainForm.logger.LogException(ex); 
+            }
         }
 
         /// <summary> 
-        ///  Class Name: configDialog  <br/><br/>
+        ///  Class Name: InputForm  <br/><br/>
         ///
         ///  Description: Handles the "Restore to Default Settings" button on this form. It just sends <br/>
         ///  a packet with throwaway values to tell the backend that reverting to default was <br/><br/>
@@ -165,15 +166,15 @@ namespace UDP_Repeater_GUI
                     theMainForm.logger.LogException(exception);
                     return;
                 }
-                ip_field.Text = "";
-                port_field.Text = "";
+                ipTextbox.Text = "";
+                portTextbox.Text = "";
                 sendRequest.Close();
                 inputValid = true;
             }
         }
 
         /// <summary> 
-        ///  Class Name: configDialog  <br/><br/>
+        ///  Class Name: InputForm  <br/><br/>
         ///
         ///  Description: If inputs are not valid, then it doesn't close the window. <br/><br/>
         ///
@@ -188,11 +189,24 @@ namespace UDP_Repeater_GUI
             if (!inputValid)
             {
                 e.Cancel = true;
+                    // inputValid needs to be reset because we have already cancelled the form closing
+                    // otherwise, pressing the "X" after this wounldn't close the form
+                inputValid = true;  
                 return;
             }
         }
 
-        /// <summary> Lets the form close because we are opening the nic picker form. </summary>
+        /// <summary> 
+        ///  Class Name: InputForm  <br/><br/>
+        ///
+        ///  Description: Lets this form close because we are opening the setup form. <br/><br/>
+        ///
+        ///  Inputs:  <br/>
+        ///  object <paramref name="sender"/> - Necessary for handling the button, but I don't use it. <br/>
+        ///  EventArgs <paramref name="e"/> - Necessary for handling the button, but I don't use it. <br/><br/>
+        ///  
+        ///  Returns: None
+        /// </summary>
         private void reconfigNicButton_Click(object sender, EventArgs e)
         {
             inputValid = true;

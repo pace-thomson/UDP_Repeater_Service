@@ -36,17 +36,17 @@ namespace UDP_Test_GUI
     /// <summary>  </summary>
     public partial class Setup : Form
     {
-            /// <summary> Tracks whether the user selection was valid </summary>
+        /// <summary> Tracks whether the user selection was valid </summary>
         public bool isValid;
-            /// <summary>The main form's object.</summary>
-        private gui_form theMainForm;
-            /// <summary> The uri string for the prometheus endpoint that this form will return. </summary>
+        /// <summary>The main form's object.</summary>
+        private MainForm theMainForm;
+        /// <summary> The uri string for the prometheus endpoint that this form will return. </summary>
         public string prom;
-            /// <summary> The uri string for the prometheus endpoint that this form will return. </summary>
+        /// <summary> The uri string for the prometheus endpoint that this form will return. </summary>
         public string loki;
 
-        /// <summary> The NIC_Picker form constructor </summary>
-        public Setup(gui_form TheMainForm)
+        /// <summary> The Setup form constructor </summary>
+        public Setup(MainForm TheMainForm)
         {
             InitializeComponent();
 
@@ -62,7 +62,7 @@ namespace UDP_Test_GUI
         }
 
         /// <summary> 
-        ///  Class Name: configDialog  <br/><br/>
+        ///  Class Name: InputForm  <br/><br/>
         ///
         ///  Description: Fills out the data grid view with all the NIC's on the system so the user can select one. <br/><br/>
         ///
@@ -93,7 +93,7 @@ namespace UDP_Test_GUI
         }
 
         /// <summary> 
-        ///  Class Name: configDialog  <br/><br/>
+        ///  Class Name: InputForm  <br/><br/>
         ///
         ///  Description: Polulates the current configuration section with the system's current setup. <br/><br/>
         ///
@@ -107,11 +107,11 @@ namespace UDP_Test_GUI
 
             promTextbox.Text = (string)jsonObject["monitoring"]["prom"];
             lokiTextbox.Text = (string)jsonObject["monitoring"]["loki"];
-            nicTextbox.Text  = (string)jsonObject["descriptionOfNIC"];
+            nicTextbox.Text = (string)jsonObject["descriptionOfNIC"];
         }
 
         /// <summary> 
-        ///  Class Name: configDialog  <br/><br/>
+        ///  Class Name: InputForm  <br/><br/>
         ///
         ///  Description: Handles the "done" button click. Validates input and then sends to the Backend. <br/><br/>
         ///
@@ -176,16 +176,15 @@ namespace UDP_Test_GUI
             catch (Exception ex) { theMainForm.logger.LogException(ex); }
         }
 
-
         /// <summary> 
-        ///  Class Name: configDialog  <br/><br/>
+        ///  Class Name: InputForm  <br/><br/>
         ///
         ///  Description: Checks if isValid is true, and either cancels the form closing or lets it close. <br/><br/>
         ///
         ///  Inputs:  None 
         ///  </summary> 
         ///  <returns> void </returns>
-        private void NIC_Picker_FormClosing(object sender, FormClosingEventArgs e)
+        private void Setup_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (!isValid)
             {

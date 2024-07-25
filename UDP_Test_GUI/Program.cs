@@ -14,7 +14,7 @@ namespace UDP_Repeater_GUI
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new gui_form());
+            Application.Run(new MainForm());
         }
     }
 }

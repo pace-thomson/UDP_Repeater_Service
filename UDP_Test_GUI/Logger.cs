@@ -133,6 +133,33 @@ namespace UDP_Repeater_GUI
         /// </summary>
         public void GetEndpoints(out string prom, out string loki)
         {
+            bool configJsonExists = WaitForConfigJson();
+            if (!configJsonExists)
+            {
+                prom = "Couldn't read from config.json";
+                loki = "Couldn't read from config.json";
+                return;
+            }
+
+            string jsonString = File.ReadAllText("C:\\Windows\\SysWOW64\\UDP_Repeater_Config.json");
+            JObject jsonObject = JObject.Parse(jsonString);
+
+            prom = (string)jsonObject["monitoring"]["prom"];
+            loki = (string)jsonObject["monitoring"]["loki"];
+        }
+
+        /// <summary> 
+        ///  Class Name: Logger  <br/> <br/>
+        ///
+        ///  Description: Gets the montoring endpoints from the config.json file. <br/><br/>
+        ///
+        ///  Inputs: None <br/><br/>
+        ///  
+        ///  Returns:  Bool - False if this function tried 15 times with 1 second in between and it <br/>
+        ///  still didn't exist. True if it does exist.
+        /// </summary>
+        public bool WaitForConfigJson()
+        {
             int attemptCount = 0;
             while (!File.Exists("C:\\Windows\\SysWOW64\\UDP_Repeater_Config.json"))
             {
@@ -142,19 +169,13 @@ namespace UDP_Repeater_GUI
                     string message = "Cannot read from configuration json file. Tried 15 times without success.";
                     WarningLogger(message);
 
-                    prom = "Couldn't read from config.json";
-                    loki = "Couldn't read from config.json";
-                    return;
+                    return false;
                 }
                 System.Threading.Thread.Sleep(1000);
             }
-
-            string jsonString = File.ReadAllText("C:\\Windows\\SysWOW64\\UDP_Repeater_Config.json");
-            JObject jsonObject = JObject.Parse(jsonString);
-
-            prom = (string)jsonObject["monitoring"]["prom"];
-            loki = (string)jsonObject["monitoring"]["loki"];
+            return true;
         }
+
 
         /// <summary> 
         ///  Class Name: Logger  <br/> <br/>

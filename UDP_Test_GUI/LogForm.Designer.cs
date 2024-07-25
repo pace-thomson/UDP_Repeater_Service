@@ -32,8 +32,8 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LogForm));
             this.logDataGridView = new System.Windows.Forms.DataGridView();
-            this.entryType = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.frontOrBack = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.entryTypeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.logOriginColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.messageColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.timeStampColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.label2 = new System.Windows.Forms.Label();
@@ -58,33 +58,33 @@
             this.logDataGridView.ColumnHeadersHeight = 34;
             this.logDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.logDataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.entryType,
-            this.frontOrBack,
+            this.entryTypeColumn,
+            this.logOriginColumn,
             this.messageColumn,
             this.timeStampColumn});
-            this.logDataGridView.Location = new System.Drawing.Point(20, 103);
+            this.logDataGridView.Location = new System.Drawing.Point(17, 103);
             this.logDataGridView.Name = "logDataGridView";
             this.logDataGridView.ReadOnly = true;
             this.logDataGridView.RowHeadersVisible = false;
             dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.logDataGridView.RowsDefaultCellStyle = dataGridViewCellStyle2;
             this.logDataGridView.RowTemplate.DefaultCellStyle.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.logDataGridView.Size = new System.Drawing.Size(833, 342);
+            this.logDataGridView.Size = new System.Drawing.Size(808, 342);
             this.logDataGridView.TabIndex = 1;
             // 
-            // entryType
+            // entryTypeColumn
             // 
-            this.entryType.HeaderText = "Entry Type";
-            this.entryType.Name = "entryType";
-            this.entryType.ReadOnly = true;
-            this.entryType.Width = 90;
+            this.entryTypeColumn.HeaderText = "Entry Type";
+            this.entryTypeColumn.Name = "entryTypeColumn";
+            this.entryTypeColumn.ReadOnly = true;
+            this.entryTypeColumn.Width = 90;
             // 
-            // frontOrBack
+            // logOriginColumn
             // 
-            this.frontOrBack.HeaderText = "Location";
-            this.frontOrBack.Name = "frontOrBack";
-            this.frontOrBack.ReadOnly = true;
-            this.frontOrBack.Width = 80;
+            this.logOriginColumn.HeaderText = "Origin";
+            this.logOriginColumn.Name = "logOriginColumn";
+            this.logOriginColumn.ReadOnly = true;
+            this.logOriginColumn.Width = 80;
             // 
             // messageColumn
             // 
@@ -116,7 +116,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(536, 18);
+            this.label3.Location = new System.Drawing.Point(503, 18);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(188, 16);
             this.label3.TabIndex = 6;
@@ -125,7 +125,7 @@
             // inactivityButton
             // 
             this.inactivityButton.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.inactivityButton.Location = new System.Drawing.Point(707, 64);
+            this.inactivityButton.Location = new System.Drawing.Point(674, 64);
             this.inactivityButton.Name = "inactivityButton";
             this.inactivityButton.Size = new System.Drawing.Size(76, 23);
             this.inactivityButton.TabIndex = 7;
@@ -142,7 +142,7 @@
             "Minute(s)",
             "Hour(s)",
             "Day(s)"});
-            this.inactivityDropdown.Location = new System.Drawing.Point(577, 66);
+            this.inactivityDropdown.Location = new System.Drawing.Point(544, 66);
             this.inactivityDropdown.Name = "inactivityDropdown";
             this.inactivityDropdown.Size = new System.Drawing.Size(121, 21);
             this.inactivityDropdown.TabIndex = 8;
@@ -151,7 +151,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.label1.Location = new System.Drawing.Point(500, 51);
+            this.label1.Location = new System.Drawing.Point(467, 51);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(57, 13);
             this.label1.TabIndex = 9;
@@ -160,7 +160,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(612, 51);
+            this.label4.Location = new System.Drawing.Point(579, 51);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(42, 13);
             this.label4.TabIndex = 10;
@@ -169,7 +169,7 @@
             // inactivityInputBox
             // 
             this.inactivityInputBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.inactivityInputBox.Location = new System.Drawing.Point(498, 67);
+            this.inactivityInputBox.Location = new System.Drawing.Point(465, 67);
             this.inactivityInputBox.Minimum = new decimal(new int[] {
             1,
             0,
@@ -200,7 +200,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(865, 457);
+            this.ClientSize = new System.Drawing.Size(840, 457);
             this.Controls.Add(this.loadingLabel);
             this.Controls.Add(this.inactivityInputBox);
             this.Controls.Add(this.label4);
@@ -233,10 +233,10 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.NumericUpDown inactivityInputBox;
-        private System.Windows.Forms.DataGridViewTextBoxColumn entryType;
-        private System.Windows.Forms.DataGridViewTextBoxColumn frontOrBack;
+        private System.Windows.Forms.Label loadingLabel;
+        private System.Windows.Forms.DataGridViewTextBoxColumn entryTypeColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn logOriginColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn messageColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn timeStampColumn;
-        private System.Windows.Forms.Label loadingLabel;
     }
 }
