@@ -1,4 +1,28 @@
-﻿using System;
+﻿//----------------------------------------------------
+// File Name: Setup.cs
+// 
+// Description: This file handles the form for selecting
+//              a NIC to listen on and what monitoring  
+//              endpoints the user wants to use. This form
+//              is opened automatically on GUI startup if 
+//              config.json was created in the last 30sec.
+//              It can also be opened via a button on the 
+//              input form.
+//
+//
+// Language:         Visual C#
+// Target:           Windows PC
+// Operating System: Windows 11 Enterprise
+// Compiler:         Visual Studio .Net 2022
+//
+// Change History:
+//
+// Version   Date          Author            Description
+//   1.0    7/25/24    Jade Pace Thomson   Initial Release
+//---------------------------------------------------
+
+
+using System;
 using SharpPcap;
 using System.IO;
 using System.Net.Sockets;
@@ -37,7 +61,15 @@ namespace UDP_Test_GUI
             dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
         }
 
-        /// <summary> Fills out the data grid view with all the NIC's on the system </summary>
+        /// <summary> 
+        ///  Class Name: configDialog  <br/><br/>
+        ///
+        ///  Description: Fills out the data grid view with all the NIC's on the system so the user can select one. <br/><br/>
+        ///
+        ///  Inputs:  None <br/><br/>
+        ///  
+        ///  Returns: None
+        /// </summary>
         private void PopulateNICs()
         {
             try
@@ -60,17 +92,32 @@ namespace UDP_Test_GUI
             catch (Exception ex) { theMainForm.logger.LogException(ex); }
         }
 
+        /// <summary> 
+        ///  Class Name: configDialog  <br/><br/>
+        ///
+        ///  Description: Polulates the current configuration section with the system's current setup. <br/><br/>
+        ///
+        ///  Inputs:  None 
+        ///  </summary> 
+        ///  <returns> void </returns>
         private void PopulateCurrentConfig()
         {
             string jsonString = File.ReadAllText("C:\\Windows\\SysWOW64\\UDP_Repeater_Config.json");
             JObject jsonObject = JObject.Parse(jsonString);
 
-            promLabel.Text = (string)jsonObject["monitoring"]["prom"];
-            lokiLabel.Text = (string)jsonObject["monitoring"]["loki"];
-            nicLabel.Text  = (string)jsonObject["descriptionOfNIC"];
+            promTextbox.Text = (string)jsonObject["monitoring"]["prom"];
+            lokiTextbox.Text = (string)jsonObject["monitoring"]["loki"];
+            nicTextbox.Text  = (string)jsonObject["descriptionOfNIC"];
         }
 
-        /// <summary> Handles the done button click. Validates input and then sends to the Backend. </summary>
+        /// <summary> 
+        ///  Class Name: configDialog  <br/><br/>
+        ///
+        ///  Description: Handles the "done" button click. Validates input and then sends to the Backend. <br/><br/>
+        ///
+        ///  Inputs:  None 
+        ///  </summary> 
+        ///  <returns> void </returns>
         private void doneButton_Click(object sender, EventArgs e)
         {
             try
@@ -98,7 +145,7 @@ namespace UDP_Test_GUI
                                 byte[] bytes = Encoding.ASCII.GetBytes($"{this.prom},{this.loki},setup,{nic}");
                                 sendRequest.Send(bytes, bytes.Length, "127.0.0.1", 50001);
 
-                                theMainForm.logger.UpdateMonitoringFields(this.prom, this.loki);
+                                theMainForm.logger.WarningLogger("Restarting Interface due to NIC/Endpoint reconfiguration.");
                                 theMainForm.logger.LogNicChange(nic, mac);
                                 theMainForm.logger.LogMonitoringChange(this.prom, this.loki);
 
@@ -130,8 +177,14 @@ namespace UDP_Test_GUI
         }
 
 
-        /// <summary> Checks if isValid is true, and either cancels the form closing or 
-        /// lets it close. </summary>
+        /// <summary> 
+        ///  Class Name: configDialog  <br/><br/>
+        ///
+        ///  Description: Checks if isValid is true, and either cancels the form closing or lets it close. <br/><br/>
+        ///
+        ///  Inputs:  None 
+        ///  </summary> 
+        ///  <returns> void </returns>
         private void NIC_Picker_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (!isValid)

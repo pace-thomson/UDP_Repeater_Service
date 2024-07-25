@@ -12,8 +12,8 @@
 //
 // Change History:
 //
-// Version   Date         Author            Description
-//   1.0    7/3/24    Jade Pace Thomson   Initial Release
+// Version   Date          Author            Description
+//   1.0    7/25/24    Jade Pace Thomson   Initial Release
 //---------------------------------------------------
 
 
@@ -119,62 +119,6 @@ namespace UDP_Repeater_GUI
             return (bytes / 1024.0) / 1024.0;
         }
 
-        /// <summary> 
-        ///  Class Name: Logger  <br/> <br/>
-        ///
-        ///  Description: Updates the prometheus and loki related fields with new URI's. <br/><br/>
-        ///
-        ///  Inputs: <br/>
-        ///  string <paramref name="promURI"/> - The new prometheus URI to use. <br/>
-        ///  string <paramref name="lokiURI"/> - The new loki URI to use.t <br/><br/>
-        ///  
-        ///  Returns:  long - the process memory
-        /// </summary>
-        public void UpdateMonitoringFields(string promURI, string lokiURI)
-        {
-            try
-            {
-                if (!Uri.IsWellFormedUriString(promURI, UriKind.Absolute) ||
-                    !Uri.IsWellFormedUriString(lokiURI, UriKind.Absolute))
-                {
-                    throw new UriFormatException();
-                }
-                
-                const string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss} \t Frontend/Interface \t {Level} {NewLine}{Message}";
-
-                this.lokiLogger = new LoggerConfiguration()
-                            .WriteTo.GrafanaLoki
-                            (
-                                lokiURI,
-                                labels: new List<LokiLabel>
-                                {
-                                new LokiLabel(){ Key = "RepeaterSide", Value = "Frontend/Interface" },
-                                new LokiLabel(){ Key = "MachineName", Value = Environment.MachineName },
-                                new LokiLabel(){ Key = "User", Value = Environment.UserName }
-                                },
-                                textFormatter: new MessageTemplateTextFormatter(outputTemplate, null)
-                            )
-                            .Enrich.FromLogContext()
-                            .CreateLogger();
-                
-
-                this.meterProvider = Sdk.CreateMeterProviderBuilder()
-                                .AddMeter("JT4.Repeater.MyLibrary")
-                                .AddOtlpExporter((exporterOptions, metricReaderOptions) =>
-                                {
-                                    exporterOptions.Endpoint = new Uri(promURI);
-                                    exporterOptions.Protocol = OtlpExportProtocol.HttpProtobuf;
-                                    metricReaderOptions.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 5000;
-                                })
-                                .Build();
-                this.myMeter = new Meter("JT4.Repeater.MyLibrary", "1.0");
-                this.processMemory = myMeter.CreateObservableGauge("frontendMemory", () => GetProcessMemory());
-            }
-            catch (UriFormatException)
-            {
-                eventLog.WriteEntry("Invalid endpoint configured, no monitoring currently.", EventLogEntryType.Warning, 9);
-            }
-        }
 
         /// <summary> 
         ///  Class Name: Logger  <br/> <br/>
@@ -187,10 +131,21 @@ namespace UDP_Repeater_GUI
         ///  
         ///  Returns:  None
         /// </summary>
-        public static void GetEndpoints(out string prom, out string loki)
+        public void GetEndpoints(out string prom, out string loki)
         {
+            int attemptCount = 0;
             while (!File.Exists("C:\\Windows\\SysWOW64\\UDP_Repeater_Config.json"))
             {
+                attemptCount++;
+                if (attemptCount > 15)
+                {
+                    string message = "Cannot read from configuration json file. Tried 15 times without success.";
+                    WarningLogger(message);
+
+                    prom = "Couldn't read from config.json";
+                    loki = "Couldn't read from config.json";
+                    return;
+                }
                 System.Threading.Thread.Sleep(1000);
             }
 
@@ -215,9 +170,8 @@ namespace UDP_Repeater_GUI
         {
             string[] formattedStackString = e.StackTrace.Split('\n');
 
-            string message = String.Format($"Error Message: {e.Message} \n" +
-                                           $"Error location: Frontend/User Interface \n" + 
-                                           $"{formattedStackString.Last().TrimStart()}");
+            string message = String.Format($"Message: {e.Message} \n" +
+                                           $"Stack trace: {formattedStackString.Last().TrimStart()}");
 
             // Write an entry to the event log.
             eventLog.WriteEntry(message, EventLogEntryType.Error, 2);       // 2 is id for frontend errors
@@ -246,9 +200,9 @@ namespace UDP_Repeater_GUI
             }
             else
             {
-                message = String.Format("The \"{0}\" settings were changed. \n" +
-                                                "IP Address: {1} \n" +
-                                                "Port: {2}", editType, ip, port);
+                message = $"The {editType} settings were changed. \n" +
+                          $"IP Address: {ip} \n" +
+                          $"Port: {port}";
             }
 
             eventLog.WriteEntry(message, EventLogEntryType.Information, 6);  // 6 is id for ip/port config change
@@ -269,7 +223,7 @@ namespace UDP_Repeater_GUI
         /// </summary>
         public void LogInactivityChange(int frequency, string interval)
         {
-            string message = String.Format("The \"Inactivity\" settings were changed. \n" +
+            string message = String.Format("The Inactivity settings were changed. \n" +
                                            "Frequency: {0} \n" +
                                            "Interval: {1}", frequency, interval);
 
@@ -352,6 +306,28 @@ namespace UDP_Repeater_GUI
             if (lokiLogger != null)
             {
                 lokiLogger.Information(lokiLogMessage);
+            }
+        }
+
+        /// <summary> 
+        ///  Class Name: Logger  <br/><br/>
+        ///
+        ///  Description: Logs general warnings. <br/><br/>
+        ///
+        ///  Inputs:  <br/>
+        ///  string <paramref name="message"/> - The warning eventLogMessage to log. <br/><br/>
+        ///  
+        ///  Returns:  None
+        /// </summary>
+        public void WarningLogger(string message)
+        {
+            string actual = $"Message: {message}";
+
+            eventLog.WriteEntry(message, EventLogEntryType.Warning, 11);     // 11 is id for backend general warnings
+
+            if (lokiLogger != null)
+            {
+                lokiLogger.Warning(message);
             }
         }
     }

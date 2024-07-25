@@ -12,21 +12,21 @@
 //
 //          Change History:
 //
-// Version   Date         Author            Description
-//   1.0    7/3/24    Jade Pace Thomson   Initial Release
+// Version   Date          Author            Description
+//   1.0    7/25/24    Jade Pace Thomson   Initial Release
 //---------------------------------------------------
 
-using System;
-using System.ServiceProcess;
-using System.Threading.Tasks;
+using BackendClassNameSpace;
+using GUIreceiver;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Repeater;
-using GUIreceiver;
-using BackendClassNameSpace;
-using Newtonsoft.Json;
-using System.Threading;
-using System.IO;
+using System;
 using System.Diagnostics;
+using System.IO;
+using System.ServiceProcess;
+using System.Threading;
+using System.Threading.Tasks;
 
 
 
@@ -38,13 +38,15 @@ namespace UDP_Repeater_Service
     /// </summary>
     public partial class UDP_Service : ServiceBase
     {
+            // Our backend ojbect that lives up here and is used for start/stop logging.
         private Backend outerBackendObject;
 
         /// <summary> 
         ///  Class Name: UDP_Service  <br/><br/> 
         ///  Parent Class: ServiceBase  <br/><br/> 
         ///
-        ///  Description: Creates the service side of things. This was auto-generated as part of this template. <br/><br/>
+        ///  Description: Creates the service side of things. This was auto-generated as part of this template. <br/> 
+        ///               Checks for and/or creates the event log sources, as well as an outer backend ojbect. <br/><br/>
         ///
         ///  Inputs: None <br/><br/>
         ///  
@@ -101,8 +103,6 @@ namespace UDP_Repeater_Service
 /// </summary>
 class TheMainProgram
 {
-    
-
     /// <summary> 
     ///  Class Name: TheMainProgram  <br/><br/> 
     ///
@@ -166,29 +166,29 @@ class TheMainProgram
             switch (newbackendObject.change)
             {
                 case Backend.changeType.receivingFrom:
-                    jsonObject["currentConfig"]["receiveFrom"]["ip"] = newbackendObject.receiveIp;
+                    jsonObject["currentConfig"]["receiveFrom"]["ip"]   = newbackendObject.receiveIp;
                     jsonObject["currentConfig"]["receiveFrom"]["port"] = newbackendObject.receivePort.ToString();
                     break;
                 case Backend.changeType.sendingTo:
-                    jsonObject["currentConfig"]["sendTo"]["ip"] = newbackendObject.sendIp;
+                    jsonObject["currentConfig"]["sendTo"]["ip"]   = newbackendObject.sendIp;
                     jsonObject["currentConfig"]["sendTo"]["port"] = newbackendObject.sendPort.ToString();
                     break;
                 case Backend.changeType.defaultSend:
-                    jsonObject["defaultSettings"]["sendTo"]["ip"] = newbackendObject.sendIp;
+                    jsonObject["defaultSettings"]["sendTo"]["ip"]   = newbackendObject.sendIp;
                     jsonObject["defaultSettings"]["sendTo"]["port"] = newbackendObject.sendPort.ToString();
                     break;
                 case Backend.changeType.defaultRecieve:
-                    jsonObject["defaultSettings"]["receiveFrom"]["ip"] = newbackendObject.receiveIp;
+                    jsonObject["defaultSettings"]["receiveFrom"]["ip"]   = newbackendObject.receiveIp;
                     jsonObject["defaultSettings"]["receiveFrom"]["port"] = newbackendObject.receivePort.ToString();
                     break;
                 case Backend.changeType.inactive:
                     jsonObject["inactivitySettings"]["frequency"] = newbackendObject.frequency.ToString();
-                    jsonObject["inactivitySettings"]["interval"] = newbackendObject.interval;
+                    jsonObject["inactivitySettings"]["interval"]  = newbackendObject.interval;
                     break;
                 case Backend.changeType.setup:
                     jsonObject["monitoring"]["prom"] = newbackendObject.promEndpoint;
                     jsonObject["monitoring"]["loki"] = newbackendObject.lokiEndpoint;
-                    jsonObject["descriptionOfNIC"] = newbackendObject.descriptionOfNIC;
+                    jsonObject["descriptionOfNIC"]   = newbackendObject.descriptionOfNIC;
                     break;
                 case Backend.changeType.restoreToDefaults:
                     jsonObject["currentConfig"]["receiveFrom"]["ip"]    =   (string)jsonObject["defaultSettings"]["receiveFrom"]["ip"];
@@ -209,7 +209,6 @@ class TheMainProgram
 
     public static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
     {
-
         Exception ex = (Exception)e.ExceptionObject;
 
         string message = String.Format($"Error Message: {ex.Message} \n" +

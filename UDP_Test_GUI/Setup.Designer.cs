@@ -42,13 +42,13 @@
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.lokiLabel = new System.Windows.Forms.Label();
-            this.promLabel = new System.Windows.Forms.Label();
-            this.nicLabel = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.cancelButton = new System.Windows.Forms.Button();
+            this.nicTextbox = new System.Windows.Forms.TextBox();
+            this.promTextbox = new System.Windows.Forms.TextBox();
+            this.lokiTextbox = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
@@ -93,7 +93,7 @@
             // 
             this.sumbitButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.sumbitButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.sumbitButton.Location = new System.Drawing.Point(371, 392);
+            this.sumbitButton.Location = new System.Drawing.Point(371, 386);
             this.sumbitButton.Name = "sumbitButton";
             this.sumbitButton.Size = new System.Drawing.Size(112, 38);
             this.sumbitButton.TabIndex = 1;
@@ -110,8 +110,8 @@
             this.label1.Size = new System.Drawing.Size(483, 48);
             this.label1.TabIndex = 2;
             this.label1.Text = "Please select a Network Interface Card to use for listening on this system. Pleas" +
-    "e\r\nalso input the Prometheus and Loki endpoints you wish to send to. \r\nThese set" +
-    "tings can be changed later if needed.";
+    "e\r\nalso input the Prometheus and Loki endpoints you wish to use. \r\nThese setting" +
+    "s can be changed later if needed.";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // label2
@@ -129,7 +129,7 @@
             this.promEndpoint.AllowDrop = true;
             this.promEndpoint.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.promEndpoint.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.promEndpoint.Location = new System.Drawing.Point(32, 408);
+            this.promEndpoint.Location = new System.Drawing.Point(32, 402);
             this.promEndpoint.Name = "promEndpoint";
             this.promEndpoint.Size = new System.Drawing.Size(140, 20);
             this.promEndpoint.TabIndex = 4;
@@ -139,7 +139,7 @@
             this.lokiEndpoint.AllowDrop = true;
             this.lokiEndpoint.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.lokiEndpoint.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.lokiEndpoint.Location = new System.Drawing.Point(197, 408);
+            this.lokiEndpoint.Location = new System.Drawing.Point(197, 402);
             this.lokiEndpoint.Name = "lokiEndpoint";
             this.lokiEndpoint.Size = new System.Drawing.Size(149, 20);
             this.lokiEndpoint.TabIndex = 5;
@@ -148,7 +148,7 @@
             // 
             this.label3.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(46, 388);
+            this.label3.Location = new System.Drawing.Point(46, 382);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(111, 13);
             this.label3.TabIndex = 6;
@@ -158,7 +158,7 @@
             // 
             this.label4.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(234, 389);
+            this.label4.Location = new System.Drawing.Point(234, 383);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(75, 13);
             this.label4.TabIndex = 7;
@@ -176,43 +176,16 @@
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.lokiLabel);
-            this.panel1.Controls.Add(this.promLabel);
-            this.panel1.Controls.Add(this.nicLabel);
+            this.panel1.Controls.Add(this.nicTextbox);
+            this.panel1.Controls.Add(this.lokiTextbox);
             this.panel1.Controls.Add(this.label8);
+            this.panel1.Controls.Add(this.promTextbox);
             this.panel1.Controls.Add(this.label7);
             this.panel1.Controls.Add(this.label6);
             this.panel1.Location = new System.Drawing.Point(194, 98);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(436, 71);
             this.panel1.TabIndex = 9;
-            // 
-            // lokiLabel
-            // 
-            this.lokiLabel.AutoSize = true;
-            this.lokiLabel.Location = new System.Drawing.Point(174, 51);
-            this.lokiLabel.Name = "lokiLabel";
-            this.lokiLabel.Size = new System.Drawing.Size(134, 13);
-            this.lokiLabel.TabIndex = 5;
-            this.lokiLabel.Text = "http://172.18.46.211:3100";
-            // 
-            // promLabel
-            // 
-            this.promLabel.AutoSize = true;
-            this.promLabel.Location = new System.Drawing.Point(144, 30);
-            this.promLabel.Name = "promLabel";
-            this.promLabel.Size = new System.Drawing.Size(247, 13);
-            this.promLabel.TabIndex = 4;
-            this.promLabel.Text = "http://172.18.46.211:9090/api/v1/otlp/v1/metrics";
-            // 
-            // nicLabel
-            // 
-            this.nicLabel.AutoSize = true;
-            this.nicLabel.Location = new System.Drawing.Point(174, 9);
-            this.nicLabel.Name = "nicLabel";
-            this.nicLabel.Size = new System.Drawing.Size(204, 13);
-            this.nicLabel.TabIndex = 3;
-            this.nicLabel.Text = "Intel(R) Ethernet Connection (17) I219-LM";
             // 
             // label8
             // 
@@ -248,18 +221,48 @@
             // 
             this.cancelButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.cancelButton.Location = new System.Drawing.Point(496, 392);
+            this.cancelButton.Location = new System.Drawing.Point(496, 386);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(112, 38);
             this.cancelButton.TabIndex = 10;
             this.cancelButton.Text = "Cancel";
             this.cancelButton.UseVisualStyleBackColor = true;
             // 
+            // nicTextbox
+            // 
+            this.nicTextbox.BackColor = System.Drawing.SystemColors.Control;
+            this.nicTextbox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.nicTextbox.Location = new System.Drawing.Point(174, 11);
+            this.nicTextbox.Name = "nicTextbox";
+            this.nicTextbox.Size = new System.Drawing.Size(259, 13);
+            this.nicTextbox.TabIndex = 11;
+            this.nicTextbox.Text = "Intel(R) Ethernet Connection (17) I219-LM";
+            // 
+            // promTextbox
+            // 
+            this.promTextbox.BackColor = System.Drawing.SystemColors.Control;
+            this.promTextbox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.promTextbox.Location = new System.Drawing.Point(162, 30);
+            this.promTextbox.Name = "promTextbox";
+            this.promTextbox.Size = new System.Drawing.Size(271, 13);
+            this.promTextbox.TabIndex = 12;
+            this.promTextbox.Text = "http://172.18.46.211:9090/api/v1/otlp/v1/metrics";
+            // 
+            // lokiTextbox
+            // 
+            this.lokiTextbox.BackColor = System.Drawing.SystemColors.Control;
+            this.lokiTextbox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.lokiTextbox.Location = new System.Drawing.Point(177, 49);
+            this.lokiTextbox.Name = "lokiTextbox";
+            this.lokiTextbox.Size = new System.Drawing.Size(256, 13);
+            this.lokiTextbox.TabIndex = 13;
+            this.lokiTextbox.Text = "http://172.18.46.211:3100";
+            // 
             // Setup
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(630, 448);
+            this.ClientSize = new System.Drawing.Size(630, 442);
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.label5);
@@ -301,9 +304,9 @@
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Label lokiLabel;
-        private System.Windows.Forms.Label promLabel;
-        private System.Windows.Forms.Label nicLabel;
         private System.Windows.Forms.Button cancelButton;
+        private System.Windows.Forms.TextBox nicTextbox;
+        private System.Windows.Forms.TextBox lokiTextbox;
+        private System.Windows.Forms.TextBox promTextbox;
     }
 }

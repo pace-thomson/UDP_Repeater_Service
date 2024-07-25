@@ -13,8 +13,8 @@
 //
 //          Change History:
 //
-// Version   Date         Author            Description
-//   1.0    7/3/24    Jade Pace Thomson   Initial Release
+// Version   Date          Author            Description
+//   1.0    7/25/24    Jade Pace Thomson   Initial Release
 //---------------------------------------------------
 
 
@@ -23,7 +23,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using BackendClassNameSpace;
-using static TheMainProgram;
+
 
 namespace GUIreceiver
 {
@@ -139,7 +139,7 @@ namespace GUIreceiver
                         newbackendObject.lokiEndpoint = dataParts[1];
                         newbackendObject.descriptionOfNIC = dataParts[3];
                         newbackendObject.change = Backend.changeType.setup;
-                        backendObject.WarningLogger("Restarting due to NIC/Endpoint reconfiguration.");
+                        backendObject.WarningLogger("Restarting service due to NIC/Endpoint reconfiguration.");
                         break;
                     default:
                         newbackendObject.change = Backend.changeType.restoreToDefaults;

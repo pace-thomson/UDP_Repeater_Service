@@ -12,8 +12,8 @@
 //
 // Change History:
 //
-// Version   Date         Author            Description
-//   1.0    7/3/24    Jade Pace Thomson   Initial Release
+// Version   Date          Author            Description
+//   1.0    7/25/24    Jade Pace Thomson   Initial Release
 //---------------------------------------------------
 
 
@@ -235,6 +235,11 @@ namespace UDP_Repeater_GUI
                 case 10:
                     row.Cells["entryType"].Value = "Monitoring Change";
                     row.Cells["frontOrBack"].Value = "General";
+                    break;
+                case 11:
+                    row.Cells["entryType"].Value = "Warning";
+                    row.Cells["entryType"].Style.BackColor = Color.Yellow;
+                    row.Cells["frontOrBack"].Value = "Interface";
                     break;
             }
             row.Cells["messageColumn"].Value = entry.Message;

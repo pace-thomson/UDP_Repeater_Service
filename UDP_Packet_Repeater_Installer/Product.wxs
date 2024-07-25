@@ -1,4 +1,24 @@
-﻿
+﻿<!--=========================================================
+ File Name: Product.wxs
+
+ Description: This file houses the wix toolset installer 
+              for the Packet Repeater Service. It does all 
+			  of the work for installing it. It packages up
+			  all of the different files we depend on, creates
+			  our event log sources, registers the service side, 
+			  and sets the GUI to run on startup. 
+              
+ Language:         XML/wix toolset specific stuff
+ Target:           Windows PC
+ Operating System: Windows 11 Enterprise
+ Compiler:         Visual Studio .Net 2022
+
+ Change History:
+
+ Version   Date 		 Author            Description
+   1.0    7/25/24    Jade Pace Thomson   Initial Release
+=========================================================-->
+
 
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
 	 xmlns:util="http://wixtoolset.org/schemas/v4/wxs/util">
@@ -133,6 +153,38 @@
 			</Component>
 		</ComponentGroup>
 	</Fragment>
+
+
+	<!--CONFIG/DEBUGGING/ICON FILES-->
+	<Fragment>
+		<ComponentGroup Id="Repeater_ConfigFiles" Directory="INSTALLFOLDER">
+			<Component Guid="17C70FC2-4AF5-4381-9FBE-B9C4D062E74A">
+				<File Id="UDP_Repeater_Service.exe.config"
+					  Source="$(var.UDP_Repeater_Service.TargetDir)UDP_Repeater_Service.exe.config"
+					  KeyPath="yes" />
+			</Component>
+			<Component Guid="6903a699-0f2c-4274-9b17-e1ccd6232aa3">
+				<File Id="___var.UDP_Repeater_GUI.TargetDir_UDP_Repeater_GUI.exe.config"
+					  Source="C:\Users\pthomson01.ctr\source\repos\pace-thomson\UDP_Repeater_Service\UDP_Test_GUI\bin\Debug\UDP_Repeater_GUI.exe.config"
+					  KeyPath="yes" />
+			</Component>
+			<Component Guid="ffae1a37-eb14-43be-b85c-de2d5a89e11d">
+				<File Id="___var.UDP_Repeater_GUI.TargetDir_jt4_logo.ico"
+					  Source="C:\Users\pthomson01.ctr\source\repos\pace-thomson\UDP_Repeater_Service\UDP_Test_GUI\bin\Debug\jt4_logo.ico"
+					  KeyPath="yes" />
+			</Component>
+			<Component Guid="fbf32a72-c668-489e-a4a7-3d0f7b13208c">
+				<File Id="UDP_Repeater_GUI.pdb"
+					  Source="C:\Users\pthomson01.ctr\source\repos\pace-thomson\UDP_Repeater_Service\UDP_Test_GUI\bin\Debug\UDP_Repeater_GUI.pdb"
+					  KeyPath="yes" />
+			</Component>
+			<Component Guid="5e8efe1b-aa13-4b46-bcaa-5d72aad4dfd1">
+				<File Id="UDP_Repeater_Service.pdb"
+					  Source="$(var.UDP_Repeater_Service.TargetDir)UDP_Repeater_Service.pdb"
+					  KeyPath="yes" />
+			</Component>
+		</ComponentGroup>
+	</Fragment>
 	
 
 	<!--DEPENDENCY FILES-->
@@ -263,37 +315,6 @@
 			</Component>
 			<Component Guid="f530d8ba-5ced-4c1c-a6d7-92ab63f74e36">
 				<File Id="grpc_csharp_ext.x86.dll" Source="$(var.UDP_Repeater_Service.TargetDir)grpc_csharp_ext.x86.dll" KeyPath="yes" />
-			</Component>
-		</ComponentGroup>
-	</Fragment>
-
-	<!--CONFIG/DEBUGGING/ICON FILES-->
-	<Fragment>
-		<ComponentGroup Id="Repeater_ConfigFiles" Directory="INSTALLFOLDER">
-			<Component Guid="17C70FC2-4AF5-4381-9FBE-B9C4D062E74A">
-				<File Id="UDP_Repeater_Service.exe.config"
-					  Source="$(var.UDP_Repeater_Service.TargetDir)UDP_Repeater_Service.exe.config"
-					  KeyPath="yes" />
-			</Component>
-			<Component Guid="6903a699-0f2c-4274-9b17-e1ccd6232aa3">
-				<File Id="___var.UDP_Repeater_GUI.TargetDir_UDP_Repeater_GUI.exe.config"
-					  Source="C:\Users\pthomson01.ctr\source\repos\pace-thomson\UDP_Repeater_Service\UDP_Test_GUI\bin\Debug\UDP_Repeater_GUI.exe.config"
-					  KeyPath="yes" />
-			</Component>
-			<Component Guid="ffae1a37-eb14-43be-b85c-de2d5a89e11d">
-				<File Id="___var.UDP_Repeater_GUI.TargetDir_jt4_logo.ico"
-					  Source="C:\Users\pthomson01.ctr\source\repos\pace-thomson\UDP_Repeater_Service\UDP_Test_GUI\bin\Debug\jt4_logo.ico"
-					  KeyPath="yes" />
-			</Component>
-			<Component Guid="fbf32a72-c668-489e-a4a7-3d0f7b13208c">
-				<File Id="UDP_Repeater_GUI.pdb"
-					  Source="C:\Users\pthomson01.ctr\source\repos\pace-thomson\UDP_Repeater_Service\UDP_Test_GUI\bin\Debug\UDP_Repeater_GUI.pdb"
-					  KeyPath="yes" />
-			</Component>
-			<Component Guid="5e8efe1b-aa13-4b46-bcaa-5d72aad4dfd1">
-				<File Id="UDP_Repeater_Service.pdb"
-					  Source="$(var.UDP_Repeater_Service.TargetDir)UDP_Repeater_Service.pdb"
-					  KeyPath="yes" />
 			</Component>
 		</ComponentGroup>
 	</Fragment>

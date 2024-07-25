@@ -13,8 +13,8 @@
 //
 // Change History:
 //
-// Version   Date         Author            Description
-//   1.0    7/3/24    Jade Pace Thomson   Initial Release
+// Version   Date          Author            Description
+//   1.0    7/25/24    Jade Pace Thomson   Initial Release
 //---------------------------------------------------
 
 using Newtonsoft.Json.Linq;
@@ -75,18 +75,17 @@ namespace BackendClassNameSpace
             restoreToDefaults
         }
 
-
             /// <summary> Our machine-local windows event log. </summary>
         public EventLog eventLog;
             /// <summary> The loki log that our logs get sent to, in addition to the windows log.
-            /// Endpoints for testing -      local: http://localhost:3100       
-            ///                              sandbox: http://172.18.46.211:3100
+            ///           local: http://localhost:3100       
+            ///           sandbox: http://172.18.46.211:3100
             /// </summary>
         public ILogger lokiLogger; // 
 
             /// <summary> The main meter provider for all of the prometheus metrics. 
-            /// Endpoints for testing -  local: http://localhost:9090/api/v1/otlp/v1/metrics  
-            ///                          sandbox: http://172.18.46.211:9090/api/v1/otlp/v1/metrics
+            ///           local: http://localhost:9090/api/v1/otlp/v1/metrics  
+            ///           sandbox: http://172.18.46.211:9090/api/v1/otlp/v1/metrics
             /// </summary>
         public MeterProvider meterProvider;
             /// <summary> Our Meter object (the base for all of the metric instrumentation) </summary>
@@ -141,7 +140,7 @@ namespace BackendClassNameSpace
                     throw new UriFormatException();
                 }
 
-                // Loki event logger set up fields
+                    // Loki event logger set up fields
                 const string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss} \t Backend/Service \t {Level} \n{Message}";
                 this.lokiLogger = new LoggerConfiguration()
                                   .WriteTo.GrafanaLoki
@@ -158,7 +157,7 @@ namespace BackendClassNameSpace
                                   .Enrich.FromLogContext()
                                   .CreateLogger();
 
-                // Prometheus set up fields
+                    // Prometheus set up fields
                 this.meterProvider = Sdk.CreateMeterProviderBuilder()
                                     .AddMeter("JT4.Repeater.MyLibrary")
                                     .AddOtlpExporter((exporterOptions, metricReaderOptions) =>

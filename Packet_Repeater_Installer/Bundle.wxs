@@ -1,4 +1,26 @@
-﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" 
+﻿<!--=========================================================
+ File Name: Bundle.wxs
+
+ Description: This file houses the wix toolset installer 
+              bootstrapper that combines the other installer
+              and chains them together with a .net framework
+			  4.7.2 installer and a NpCap installer. It also 
+			  has the UI that the installer uses to house all 
+			  of them.
+              
+ Language:         XML/wix toolset specific stuff
+ Target:           Windows PC
+ Operating System: Windows 11 Enterprise
+ Compiler:         Visual Studio .Net 2022
+
+ Change History:
+
+ Version   Date 		 Author            Description
+   1.0    7/25/24    Jade Pace Thomson   Initial Release
+=========================================================-->
+
+
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" 
 	 xmlns:bal="http://wixtoolset.org/schemas/v4/wxs/bal">
 	
 	
@@ -29,6 +51,7 @@
 			
             <!-- FRONTEND AND BACKEND INSTALLER -->
 			<PackageGroupRef Id="Repeater_Installer"/>
+			
         </Chain>
     </Bundle>
 

@@ -14,8 +14,8 @@
 //
 // Change History:
 //
-// Version   Date         Author            Description
-//   1.0    7/3/24    Jade Pace Thomson   Initial Release
+// Version   Date          Author            Description
+//   1.0    7/25/24    Jade Pace Thomson   Initial Release
 //---------------------------------------------------
 
 
@@ -118,12 +118,14 @@ namespace UDP_Repeater_GUI
                 return;
             }
 
-            Setup picker = new Setup(this);
-            DialogResult result = picker.ShowDialog();
-            if (result == DialogResult.OK)
+            using (Setup picker = new Setup(this))
             {
-                Application.Restart();
-                Environment.Exit(0);
+                DialogResult result = picker.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    Application.Restart();
+                    Environment.Exit(0);
+                }
             }
         }
 
