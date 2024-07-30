@@ -46,17 +46,18 @@ namespace Repeater
         public static double timeoutThreshold;
                 /// <summary> This can either be the mose recent packet, or most recent log event </summary>
         public static DateTime mostRecentTimestamp;
-                /// <summary> A Backend object that we use to get the inactivity settings. </summary>
+                /// <summary> A Backend object that we use to get the inactivity settings and logging. </summary>
         private static Backend backendObject;
 
 
         /// <summary> 
         ///  Class Name: TimerClass  <br/><br/> 
         ///
-        ///  Description: The TimerClass Constructor <br/><br/>
+        ///  Description: The TimerClass object Constructor <br/><br/>
         ///
         ///  Inputs:  <br/>
-        ///  Backend <paramref name="BackendObject"/> - The Backend object that we use to get the inactivity settings. <br/><br/> 
+        ///  Backend <paramref name="BackendObject"/> - The Backend object that we use to get 
+        ///                                             the inactivity settings and logging. <br/><br/> 
         ///  
         /// Returns: A Timer Object
         /// </summary>
@@ -97,7 +98,7 @@ namespace Repeater
         /// <summary> 
         ///  Class Name: TimerClass  <br/><br/> 
         ///
-        ///  Description: What we want to happen every time we hit a period of inactivity. <br/><br/>
+        ///  Description: Checks if we are in a period of inactivity, and then logs or not. <br/><br/>
         ///
         ///  Inputs:  <br/>
         ///  Object <paramref name="source"/> - These are just here for the elapsed event thing. I don't use them. <br/> 
@@ -154,12 +155,13 @@ namespace Repeater
 
 
         /// <summary> 
-        ///  Class Name: RepeaterClass  <br/> <br/>
+        ///  Class Name: RepeaterClass  <br/><br/>
         ///
-        ///  Description: Sends the processed package out <br/><br/>
+        ///  Description: Decides if we are sending unicast/broadcast or multicast and sends 
+        ///  the packet payload out to the configured sending IP endpoint. <br/><br/>
         ///
         ///  Inputs:  <br/>
-        ///  byte[] <paramref name="messageBytes"/> - The byte array of the received packet <br/><br/>
+        ///  byte[] <paramref name="messageBytes"/> - The payload of the received packet <br/><br/>
         ///  
         ///  Returns:  None
         /// </summary>
@@ -210,7 +212,7 @@ namespace Repeater
         /// <summary> 
         ///  Class Name: RepeaterClass  <br/> <br/>
         ///
-        ///  Description: Sends packet information to the GUI <br/><br/>
+        ///  Description: Sends packet information to the GUI. <br/><br/>
         ///
         ///  Inputs:  <br/>
         ///  int <paramref name="payloadLength"/> - The length of the received packet's payload.s <br/><br/>
@@ -245,8 +247,8 @@ namespace Repeater
         /// <summary> 
         ///  Class Name: RepeaterClass  <br/><br/>
         ///
-        ///  Description: Continually listens for packets in promiscuous mode. Whenver a packet is received, <br/>
-        ///  a packet is sent out to the target machine, and another one is sent to the GUI. <br/><br/>
+        ///  Description: Continually listens for packets in promiscuous mode. Sets up the event handler for <br/>
+        ///  packet arrival. It then starts listening and waits for the cancellation token to stop the listening. <br/><br/>
         ///
         ///  Inputs:  <br/>
         ///  CancellationToken <paramref name="token"/> - A token that signal a configuration change was made, so this task need to restart. <br/><br/>
@@ -292,9 +294,10 @@ namespace Repeater
                     // filters for out listening port
                 device.Filter = $"udp port {backendObject.receivePort}";
 
-
+                    // start listening
                 device.StartCapture();
 
+                    // wait for the cancellation token to pop
                 await tcs.Task;
 
                 device.StopCapture();
@@ -311,8 +314,9 @@ namespace Repeater
         /// <summary> 
         ///  Class Name: RepeaterClass  <br/><br/>
         ///
-        ///  Description: Continually listens for packets in promiscuous mode. Whenver a packet is received, <br/>
-        ///  a packet is sent out to the target machine, and another one is sent to the GUI. <br/><br/>
+        ///  Description: Gets the packet and sends it to the target ip endpoint and it's information
+        ///  to the GUI. This also times the packet handling time and reports it, increments total packets <br/>
+        ///  handled, and updates the last received packet time.  <br/><br/>
         ///
         ///  Inputs:  <br/>
         ///  object <paramref name="sender"/> - The sender oject, I don't us it. <br/>
@@ -330,7 +334,7 @@ namespace Repeater
                 RawCapture rawPacket = e.GetPacket();
                 byte[] wholePacket = rawPacket.Data;
 
-                    // get the actual data section of the packet
+                    // get the actual data section of the packet. The header is always 42 bytes long
                 byte[] dataSection = new byte[wholePacket.Length - 42];
                 Array.Copy(wholePacket, 42, dataSection, 0, dataSection.Length);
 
@@ -362,7 +366,7 @@ namespace Repeater
         /// <summary> 
         ///  Class Name: RepeaterClass  <br/><br/>
         ///
-        ///  Description: Checks if supplied ip is multicast or not. <br/><br/>
+        ///  Description: Checks if supplied ip string is multicast or not. <br/><br/>
         ///
         ///  Inputs:  <br/>
         ///  string <paramref name="ip"/> - The ip to check. <br/><br/>
@@ -398,7 +402,7 @@ namespace Repeater
         ///  in it's own task. Also initializes the backendOjbect and timer fields. <br/><br/>
         ///
         ///  Inputs:  <br/>
-        ///  Backend <paramref name="BackendObject"/> - The Backend object to supply confiiguraiton information <br/>
+        ///  Backend <paramref name="BackendObject"/> - The Backend object to supply configuraiton information <br/>
         ///  CancellationToken <paramref name="token"/> - A token that signals a configuration change was made, so this task needs to restart. <br/><br/>
         ///  
         ///  Returns:  None

@@ -38,7 +38,7 @@ namespace BackendClassNameSpace
     /// <summary>
     /// An oject that contains all of the configuration settings to be passed between 
     /// the functions that need it. It is updated as settings change. This class
-    /// also houses the functions for logging. 
+    /// also houses the functions for logging and monitoring. 
     /// </summary>
     public class Backend
     {
@@ -77,15 +77,17 @@ namespace BackendClassNameSpace
 
             /// <summary> Our machine-local windows event log. </summary>
         public EventLog eventLog;
-            /// <summary> The loki log that our logs get sent to, in addition to the windows log.
-            ///           local: http://localhost:3100       
-            ///           sandbox: http://172.18.46.211:3100
+            /// <summary> 
+            /// The loki log that our logs get sent to, in addition to the windows log. 
+            ///         local: http://localhost:3100       
+            ///         sandbox: http://172.18.46.211:3100
             /// </summary>
-        public ILogger lokiLogger; // 
+        public ILogger lokiLogger; 
 
-            /// <summary> The main meter provider for all of the prometheus metrics. 
-            ///           local: http://localhost:9090/api/v1/otlp/v1/metrics  
-            ///           sandbox: http://172.18.46.211:9090/api/v1/otlp/v1/metrics
+            /// <summary> 
+            /// The main meter provider for all of the prometheus metrics. 
+            ///         local: http://localhost:9090/api/v1/otlp/v1/metrics  
+            ///         sandbox: http://172.18.46.211:9090/api/v1/otlp/v1/metrics
             /// </summary>
         public MeterProvider meterProvider;
             /// <summary> Our Meter object (the base for all of the metric instrumentation) </summary>
@@ -110,6 +112,8 @@ namespace BackendClassNameSpace
         ///  string <paramref name="SendPort"/>     -    The Port being sent to. <br/>
         ///  int    <paramref name="newFrequency"/> -    The Frequency (number) at which the service reports inactivity <br/>
         ///  string <paramref name="newInterval"/>  -    The Interval (minute, day, hour) at which the service reports inactivity <br/>
+        ///  string <paramref name="PromEndpoint"/> -    The endpoint of the prometheus server we are sending metrics to. <br/>
+        ///  string <paramref name="LokiEndpoint"/> -    The endpoint of the loki server we are sending logs to. <br/>
         ///  string <paramref name="NameOfNIC"/>    -    The name of the NIC we're listening on <br/><br/> 
         ///  
         /// Returns: A Backend Object
@@ -207,7 +211,7 @@ namespace BackendClassNameSpace
         ///  Class Name: Backend  <br/><br/> 
         ///
         ///  Description: Overload 3/3. The Backend Constructor for the start stop logging, so this <br/>
-        ///               only initializes the two logging memebers. <br/><br/>
+        ///               only initializes the two logging memebers. Used to create "outerBackendObject". <br/><br/>
         ///
         ///  Inputs: None <br/><br/> 
         ///  
@@ -274,7 +278,7 @@ namespace BackendClassNameSpace
                     throw new UriFormatException();
                 }
 
-                // Loki event logger set up
+                    // Loki event logger set up
                 const string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss} \t Backend/Service \t {Level} \n{Message}";
                 this.lokiLogger = new LoggerConfiguration()
                                   .WriteTo.GrafanaLoki
@@ -300,10 +304,11 @@ namespace BackendClassNameSpace
         /// <summary> 
         ///  Class Name: Backend  <br/><br/> 
         ///
-        ///  Description: Updates the main backendObject with updated settings. <br/><br/>
+        ///  Description: Updates the main backendObject with updated settings from <paramref name="newBackendObject"/>. <br/>
+        ///  This doesn't include the nic or monitoring endpoint fields because we restart when those are reconfiguredd. <br/><br/>
         ///
         ///  Inputs:  <br/>
-        ///  Backend <paramref name="newBackendObject"/> - The other Backend object to compare with <br/><br/>
+        ///  Backend <paramref name="newBackendObject"/> - The new Backend object to copy values from. <br/><br/>
         ///  
         ///  Returns: None
         /// </summary>
@@ -318,13 +323,29 @@ namespace BackendClassNameSpace
         }
 
 
-        /// <summary> Calculates and returns the current process memroy in bytes. </summary>
+        /// <summary> 
+        ///  Class Name: Backend  <br/><br/> 
+        ///
+        ///  Description: Calculates and returns the current process memory usage in megabytes. <br/><br/>
+        ///
+        ///  Inputs: None <br/><br/>
+        ///  
+        ///  Returns: double - The current process memory usage in megabytes.
+        /// </summary>
         public static double GetProcessMemory()
         {
             long bytes = Process.GetCurrentProcess().PrivateMemorySize64;
             return (bytes / 1024.0) / 1024.0;
         }
-        /// <summary> Increments total packets handled for our prometheus metrics. </summary>
+        /// <summary> 
+        ///  Class Name: Backend  <br/><br/> 
+        ///
+        ///  Description: Increments total packets handled for our prometheus metrics. <br/><br/>
+        ///
+        ///  Inputs: None <br/><br/>
+        ///  
+        ///  Returns: void
+        /// </summary>
         public void IncrementTotalPacketsHandled()
         {
             if (TotalPacketsHandled == null)
@@ -333,7 +354,16 @@ namespace BackendClassNameSpace
             }
             TotalPacketsHandled.Add(1);
         }
-        /// <summary> Inputs the metric for our packet ingress/egress calculation. </summary>
+        /// <summary> 
+        ///  Class Name: Backend  <br/><br/> 
+        ///
+        ///  Description: Inputs a new time metric for our packet ingress/egress calculation. <br/><br/>
+        ///
+        ///  Inputs: None <br/>
+        ///  double <paramref name="stopWatchTime"/> - The time (in milliseconds) for a packet ingress/egress time. <br/><br/>
+        ///  
+        ///  Returns: void
+        /// </summary>
         public void AddNewPacketTimeHandled(double stopWatchTime)
         {
             if (packetHandling == null)
@@ -351,7 +381,7 @@ namespace BackendClassNameSpace
         /// <summary> 
         ///  Class Name: Backend  <br/> <br/>
         ///
-        ///  Description: Logs Exceptions into the "UDP Packet Repeater" Windows Event Log <br/><br/>
+        ///  Description: Logs Errors/Exceptions into the "UDP Packet Repeater" Windows Event Log <br/><br/>
         ///
         ///  Inputs:  <br/>
         ///  Exception <paramref name="e"/> - An Exception to be logged <br/><br/>
@@ -375,7 +405,7 @@ namespace BackendClassNameSpace
         /// <summary> 
         ///  Class Name: Backend  <br/> <br/>
         ///
-        ///  Description: Logs Exceptions into the "UDP Packet Repeater" Windows Event Log without an object instance. <br/><br/>
+        ///  Description: Logs Exceptions into the "UDP Packet Repeater" Windows Event Log without an Backend object instance. <br/><br/>
         ///
         ///  Inputs:  <br/>
         ///  Exception <paramref name="e"/> - An Exception to be logged <br/><br/>
@@ -397,7 +427,7 @@ namespace BackendClassNameSpace
 
                 // Write an entry to the event log.
                 logg.WriteEntry(message, EventLogEntryType.Error, 1);  // 1 is our id for backend errors
-
+            
 
                 string jsonString = File.ReadAllText("UDP_Repeater_Config.json");
                 JObject jsonObject = JObject.Parse(jsonString);
@@ -446,7 +476,7 @@ namespace BackendClassNameSpace
         /// </summary>
         public void InactivityLogger(int consecutiveEvents, int frequency, string interval)
         {
-                // this whole fields is just to find if the interval word in the log eventLogMessage should have an 's' or not 
+                // this whole section is just to find if the interval word in the log eventLogMessage should have an 's' or not 
                 // this has to be so much more complicated than it should be
             int totalTime = consecutiveEvents * frequency;
             string message;
@@ -469,12 +499,12 @@ namespace BackendClassNameSpace
                 message = String.Format("It has been {0} {1} since last packet was received. ", totalTime, interval);
                 message += String.Format("The Service is currently configured to log inactivity every {0} {1}.", frequency, interval);
             }
-
-            // Write an entry to the event log.
+                // Write an entry to the event log.
             eventLog.WriteEntry(message, EventLogEntryType.Warning, 3);     // 3 is the id for backend inactivity
 
             if (lokiLogger != null)
             {
+                    // Write the inactive warning to the loki log. 
                 lokiLogger.Warning(message);
             }
         }
@@ -482,7 +512,7 @@ namespace BackendClassNameSpace
         /// <summary> 
         ///  Class Name: Backend  <br/><br/>
         ///
-        ///  Description: Logs whever the service backend starts or stops. <br/><br/>
+        ///  Description: Logs that the service backend has started or stopped. <br/><br/>
         ///
         ///  Inputs:  <br/>
         ///  string <paramref name="mode"/> - If it's a start or stop being logged, mode can only be "start"
@@ -498,14 +528,13 @@ namespace BackendClassNameSpace
             if (mode == "start")
             {
                 eventLogMessage = "Repeater Service started.";
-                lokiLogMessage = "Repeater Service \u001b[32mstarted\u001b[0m.";
+                lokiLogMessage = "Repeater Service \u001b[32mstarted\u001b[0m.";    // adds green ANSII color code
             }
             else if (mode == "stop")
             {
                 eventLogMessage = "Repeater Service stopped.";
-                lokiLogMessage = "Repeater Service \u001B[31mstopped\u001B[0m.";
+                lokiLogMessage = "Repeater Service \u001B[31mstopped\u001B[0m.";    // adds red ANSII color code
             }
-
             eventLog.WriteEntry(eventLogMessage, EventLogEntryType.Information, 4);     // 4 is id for backend start/stop
 
             if (lokiLogger != null)

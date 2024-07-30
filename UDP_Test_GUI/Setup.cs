@@ -145,7 +145,7 @@ namespace UDP_Test_GUI
                                 byte[] bytes = Encoding.ASCII.GetBytes($"{this.prom},{this.loki},setup,{nic}");
                                 sendRequest.Send(bytes, bytes.Length, "127.0.0.1", 50001);
 
-                                theMainForm.logger.WarningLogger("Restarting Interface due to NIC/Endpoint reconfiguration.");
+                                theMainForm.logger.WarningLogger("Restarting Interface due to NIC/Monitoring reconfiguration.");
                                 theMainForm.logger.LogNicChange(nic, mac);
                                 theMainForm.logger.LogMonitoringChange(this.prom, this.loki);
 

@@ -36,12 +36,13 @@ namespace GUIreceiver
         /// <summary> 
         ///  Class Name: ReceiveFromGUI  <br/> <br/>
         ///
-        ///  Description: Continually listens for communication from the GUI, until some is received. <br/>
-        ///  Then, the payload of that communicaiton is processed and broken into it's parts. <br/><br/>
+        ///  Description: Continually listens for communication from the GUI, until a packet is received. <br/>
+        ///  Then, the payload of that packet is processed and broken into it's parts for reconfiguration. <br/><br/>
         ///
-        ///  Inputs:  None <br/><br/>
+        ///  Inputs:  None <br/>
+        ///  Backend <paramref name="backendObject"/> - The Backend object for logging. <br/><br/>
         ///  
-        ///  Returns: string[] - An array of strings containing the new confiuration information
+        ///  Returns: string[] - An string array containing the new configuration information
         /// </summary>
         public static string[] ReceivingFromGUI(Backend backendObject)
         {
@@ -62,6 +63,10 @@ namespace GUIreceiver
                         socketCantConnectCount++;
                         backendObject.WarningLogger("Receiving from GUI port 50001 not open, trying to connect" +
                                                     $" again in 1 second. \n Attempt number: {socketCantConnectCount}");
+                        if (socketCantConnectCount > 15)
+                        {
+                            break;
+                        }
                         System.Threading.Thread.Sleep(1000); 
                     }
                 }
@@ -88,12 +93,12 @@ namespace GUIreceiver
         ///  Class Name: ReceiveFromGUI  <br/><br/> 
         ///
         ///  Description: The main function of the ReceiveFromGUI class. Listens for information, and then updates <br/>
-        ///  backendObject based on the request fromthe GUI.<br/><br/>
+        ///  backendObject based on the request from the GUI.<br/><br/>
         ///
         ///  Inputs:  <br/>
-        ///  Backend <paramref name="backendObject"/> - The Backend object to supply configuraiton information <br/><br/>
+        ///  Backend <paramref name="backendObject"/> - The Backend object to supply configuration information <br/><br/>
         ///  
-        ///  Returns:  Backend newbackendObject - The new and updated Backend object.
+        ///  Returns:  Backend newbackendObject - A backendObject with updated values. 
         /// </summary>
         public static Backend main(Backend backendObject)
         {
@@ -102,11 +107,10 @@ namespace GUIreceiver
                         // a new backendObject gets made to compare to the old one when this function returns
                 Backend newbackendObject = new Backend(backendObject);
 
-                        // This resets the send or receive data if those options are selected
-                        // and does nothing if defaults is selected, which is handled where this is called
+                        // waits for input from the GUI
                 string[] dataParts = ReceivingFromGUI(backendObject);
 
-                        // dataParts[2] is the mode 
+                        // dataParts[2] is the change mode 
                 switch (dataParts[2])
                 {
                     case "Receiving From":
@@ -139,7 +143,7 @@ namespace GUIreceiver
                         newbackendObject.lokiEndpoint = dataParts[1];
                         newbackendObject.descriptionOfNIC = dataParts[3];
                         newbackendObject.change = Backend.changeType.setup;
-                        backendObject.WarningLogger("Restarting service due to NIC/Endpoint reconfiguration.");
+                        backendObject.WarningLogger("Restarting service due to NIC/Monitoring reconfiguration.");
                         break;
                     default:
                         newbackendObject.change = Backend.changeType.restoreToDefaults;

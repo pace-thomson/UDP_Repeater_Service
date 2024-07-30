@@ -42,7 +42,7 @@ namespace UDP_Repeater_GUI
     {
             /// <summary> Our event log object. </summary>
         public EventLog eventLog;
-        /// <summary> The loki log that our logs get sent to, in addition to the windows log. </summary>
+            /// <summary> The loki log that our logs get sent to, in addition to the windows log. </summary>
         public ILogger lokiLogger;
 
             /// <summary> Our Meter object (the base for all of the metric instrumentation) </summary>
@@ -196,7 +196,10 @@ namespace UDP_Repeater_GUI
 
             // Write an entry to the event log.
             eventLog.WriteEntry(message, EventLogEntryType.Error, 2);       // 2 is id for frontend errors
-            lokiLogger.Error(message);
+            if (lokiLogger != null)
+            {
+                lokiLogger.Error(message);
+            }
         }
 
 
@@ -227,7 +230,10 @@ namespace UDP_Repeater_GUI
             }
 
             eventLog.WriteEntry(message, EventLogEntryType.Information, 6);  // 6 is id for ip/port config change
-            lokiLogger.Information(message);
+            if (lokiLogger != null)
+            {
+                lokiLogger.Information(message);
+            }
         }
 
 
@@ -249,7 +255,10 @@ namespace UDP_Repeater_GUI
                                            "Interval: {1}", frequency, interval);
 
             eventLog.WriteEntry(message, EventLogEntryType.Information, 7);  // 7 is an inactivity config change
-            lokiLogger.Information(message);
+            if (lokiLogger != null)
+            {
+                lokiLogger.Information(message);
+            }
         }
 
         /// <summary> 
@@ -270,7 +279,10 @@ namespace UDP_Repeater_GUI
                                            "Mac Address: {1}", description, macAddress);
 
             eventLog.WriteEntry(message, EventLogEntryType.Information, 8);  // 8 is a NIC config change
-            lokiLogger.Information(message);
+            if (lokiLogger != null)
+            {
+                lokiLogger.Information(message);
+            }
         }
 
         /// <summary> 
@@ -291,7 +303,11 @@ namespace UDP_Repeater_GUI
                              $"Loki: {lokiEndpoint}";
 
             eventLog.WriteEntry(message, EventLogEntryType.Information, 10);  // 10 is a NIC config change
-            lokiLogger.Information(message);
+
+            if (lokiLogger != null)
+            {
+                lokiLogger.Information(message);
+            }
         }
 
 

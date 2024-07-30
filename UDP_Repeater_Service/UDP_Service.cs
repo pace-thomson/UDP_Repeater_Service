@@ -38,7 +38,7 @@ namespace UDP_Repeater_Service
     /// </summary>
     public partial class UDP_Service : ServiceBase
     {
-            // Our backend ojbect that lives up here and is used for start/stop logging.
+            // Our backend object for start/stop logging.
         private Backend outerBackendObject;
 
         /// <summary> 
@@ -66,20 +66,15 @@ namespace UDP_Repeater_Service
             outerBackendObject = new Backend();
         }
 
-        public void DebuggerProcess()
-        {
-            outerBackendObject.StartStopLogger("start");
-            TheMainProgram.main();
-        }
-
         /// <summary> 
         ///  Class Name: UDP_Service  <br/><br/> 
         ///  Parent Class: ServiceBase  <br/><br/> 
         ///
-        ///  Description: When windows starts this service, it runs the backend program. Through this<br/>
-        ///  This also logs the service starting. This was auto-generated as part of this template. <br/><br/>
+        ///  Description: When windows starts this service, the service manager calls this method. <br/>
+        ///  This logs the service starting and then calls the main method for the service. <br/><br/>
         ///
-        ///  Inputs: None <br/><br/>
+        ///  Inputs: <br/>
+        ///  string[] <paramref name="args"/> - The arguements for starting the service. <br/><br/>
         ///  
         ///  Returns:  None
         /// </summary>
@@ -88,7 +83,17 @@ namespace UDP_Repeater_Service
             outerBackendObject.StartStopLogger("start");
             TheMainProgram.main();
         }
-        /// <summary> Logs that the service is stopping </summary>
+        /// <summary> 
+        ///  Class Name: UDP_Service  <br/><br/> 
+        ///  Parent Class: ServiceBase  <br/><br/> 
+        ///
+        ///  Description: When windows stops this service, the service manager calls this method. <br/>
+        ///  This logs that the service is stopping and waits two seconds to make sure it has time. <br/><br/>
+        ///
+        ///  Inputs: None <br/><br/>
+        ///  
+        ///  Returns:  None
+        /// </summary>
         protected override void OnStop()
         {
             outerBackendObject.StartStopLogger("stop");
@@ -99,19 +104,22 @@ namespace UDP_Repeater_Service
 
 
 /// <summary>
-/// Houses all of the functionality that sets up and runs the program Repeater Service
+/// Houses all of the functionality that sets up and runs the Packet Repeater Service
 /// </summary>
 class TheMainProgram
 {
+        // The main Backend object 
+    private Backend backendObject;
+
     /// <summary> 
     ///  Class Name: TheMainProgram  <br/><br/> 
     ///
-    ///  Description: Creates "UDP_Repeater_Config.json" if it doesn't already exist. Then it creates a Backend object and <br/>
-    ///  updates it's values to match those found under currentConfig within "UDP_Repeater_Config.json".<br/><br/>
+    ///  Description: Reads from "UDP_Repeater_Config.json" and creates a Backend Object with the values <br/>
+    ///  read from the file. <br/><br/>
     ///
     ///  Inputs: None <br/><br/>
     ///  
-    ///  Returns:  Backend newbackendObject - A new Backend object.
+    ///  Returns:  Backend newbackendObject - The main Backend objects.
     /// </summary>
     public static Backend SetConfig()
     {
@@ -147,11 +155,11 @@ class TheMainProgram
     /// <summary> 
     ///  Class Name: TheMainProgram  <br/><br/> 
     ///
-    ///  Description: Restores the values in "UDP_Repeater_Config.json" to match those found in the <paramref name="newbackendObject"/>, 
-    ///               or it restores them to defaults. <br/><br/>
+    ///  Description: Updates the values in "UDP_Repeater_Config.json" to match those found in <paramref name="newbackendObject"/>. 
+    ///               If not, it updates the currentConfig values with the dafault settings. <br/><br/>
     ///
     ///  Inputs:  <br/>
-    ///  Backend <paramref name="newbackendObject"/> - The Backend object to update with the new settings. <br/>
+    ///  Backend <paramref name="newbackendObject"/> - The Backend object with the new settings tp update config.json. <br/>
     ///  Backend <paramref name="oldBackendObject"/> - The Backend object just for error logging. <br/><br/>
     ///  
     ///  Returns:  None
@@ -207,20 +215,22 @@ class TheMainProgram
         }
     }
 
+    /// <summary> 
+    ///  Class Name: TheMainProgram  <br/><br/> 
+    ///
+    ///  Description: Catches any unhandled exeptions for the service and logs them. <br/><br/>
+    ///
+    ///  Inputs:  <br/>
+    ///  object <paramref name="sender"/> - Not used here. <br/>
+    ///  UnhandledExceptionEventArgs <paramref name="e"/> - The unhandled exception. <br/><br/>
+    ///  
+    ///  Returns:  None
+    /// </summary>
     public static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
     {
         Exception ex = (Exception)e.ExceptionObject;
 
-        string message = String.Format($"Error Message: {ex.Message} \n" +
-                                       $"Error location: Backend/Service \n" +
-                                       $"{ex.StackTrace}");
-
-        using (EventLog tempLog = new EventLog("UDP Packet Repeater"))
-        {
-            tempLog.Source = "UDP_Repeater_Backend";
-
-            tempLog.WriteEntry(message, EventLogEntryType.Error, 1);  // 1 is our id for backend errors
-        }
+        Backend.ExceptionLoggerStatic(ex);
     }
 
 
@@ -228,10 +238,10 @@ class TheMainProgram
     /// <summary> 
     ///  Class Name: TheMainProgram  <br/><br/> 
     ///
-    ///  Description: Runs the main part of the whole repeater service. Turns on the repeater thread <br/>
-    ///  and then continutes listening until a new configuraton is received from the GUI. At which point, <br/>
+    ///  Description: Runs the main part of the whole repeater service. Turns on the repeater thread asynchronously <br/>
+    ///  and then continuely listens until a new configuraton is received from the GUI. At which point, <br/>
     ///  the "UDP_Repeater_Config.json and the Backend Object is updated. It then restarts the repeater <br/>
-    ///  thread with the updated settings. <br/><br/>
+    ///  thread with the updated settings, or restarts the whole service if the "setup" was reconfigured. <br/><br/>
     ///
     ///  Inputs: None <br/><br/>
     ///  
@@ -264,7 +274,7 @@ class TheMainProgram
                 UpdateConfigJson(newbackendObject, backendObject);              // updates config.json
                 if (newbackendObject.change == Backend.changeType.setup)
                 {
-                    Environment.Exit(1); // forces restart because the loki/prom change is weird and this service is set to restart on failure
+                    Environment.Exit(1); // forces restart because loki/prom change is weird and this service is set to restart on failure
                 }
                 backendObject.UpdateWithNewBackendObject(newbackendObject);     // updates the original backendObject with the new values
             }

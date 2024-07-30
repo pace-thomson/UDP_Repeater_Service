@@ -454,20 +454,27 @@ namespace UDP_Repeater_GUI
         {
             try
             {
-                if (ourService == null)
+                try
+                {
+                    using (ServiceController thePacketRepeaterServiceourService = new ServiceController("UDP_Repeater_Service"))
+                    {
+                        if (thePacketRepeaterServiceourService.Status == ServiceControllerStatus.Running)
+                        {
+                            statusLabel.Text = "Running";
+                            statusLabel.ForeColor = Color.Green;
+                        }
+                        else if (thePacketRepeaterServiceourService.Status == ServiceControllerStatus.Stopped)
+                        {
+                            statusLabel.Text = "Not Running";
+                            statusLabel.ForeColor = Color.Red;
+                        }
+                    }
+                }
+                catch (InvalidOperationException notFound)
                 {
                     statusLabel.Text = "Service Not Found";
                     statusLabel.ForeColor = Color.DarkRed;
-                }
-                else if (ourService.Status == ServiceControllerStatus.Running)
-                {
-                    statusLabel.Text = "Running";
-                    statusLabel.ForeColor = Color.Green;
-                }
-                else
-                {
-                    statusLabel.Text = "Not Running";
-                    statusLabel.ForeColor = Color.Red;
+                    logger.LogException(notFound);
                 }
             }
             catch (Exception ex)

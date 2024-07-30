@@ -71,7 +71,8 @@
             // 
             this.packetsHandledDisplay.AllowUserToAddRows = false;
             this.packetsHandledDisplay.AllowUserToDeleteRows = false;
-            this.packetsHandledDisplay.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            this.packetsHandledDisplay.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.packetsHandledDisplay.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.packetsHandledDisplay.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
@@ -80,12 +81,12 @@
             this.portColumn,
             this.payloadColumn,
             this.timeColumn});
-            this.packetsHandledDisplay.Location = new System.Drawing.Point(17, 139);
+            this.packetsHandledDisplay.Location = new System.Drawing.Point(12, 139);
             this.packetsHandledDisplay.Name = "packetsHandledDisplay";
             this.packetsHandledDisplay.ReadOnly = true;
             this.packetsHandledDisplay.RowHeadersVisible = false;
             this.packetsHandledDisplay.RowHeadersWidth = 70;
-            this.packetsHandledDisplay.Size = new System.Drawing.Size(624, 251);
+            this.packetsHandledDisplay.Size = new System.Drawing.Size(630, 251);
             this.packetsHandledDisplay.TabIndex = 4;
             // 
             // indexColumn
@@ -143,11 +144,13 @@
             // 
             // panel1
             // 
+            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.panel1.Controls.Add(this.packetCounter);
             this.panel1.Controls.Add(this.label1);
-            this.panel1.Location = new System.Drawing.Point(252, 413);
+            this.panel1.Location = new System.Drawing.Point(249, 413);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(161, 26);
+            this.panel1.Size = new System.Drawing.Size(162, 26);
             this.panel1.TabIndex = 15;
             // 
             // packetCounter
@@ -171,6 +174,7 @@
             // 
             // reconfigureSettings
             // 
+            this.reconfigureSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.reconfigureSettings.FlatAppearance.BorderSize = 2;
             this.reconfigureSettings.Location = new System.Drawing.Point(459, 413);
             this.reconfigureSettings.Name = "reconfigureSettings";
@@ -182,6 +186,7 @@
             // 
             // logButton
             // 
+            this.logButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.logButton.Location = new System.Drawing.Point(66, 413);
             this.logButton.Name = "logButton";
             this.logButton.Size = new System.Drawing.Size(114, 26);
@@ -384,6 +389,8 @@
             // 
             // label14
             // 
+            this.label14.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.label14.AutoSize = true;
             this.label14.Location = new System.Drawing.Point(44, 396);
             this.label14.Name = "label14";
@@ -395,7 +402,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(653, 453);
+            this.ClientSize = new System.Drawing.Size(654, 453);
             this.Controls.Add(this.label14);
             this.Controls.Add(this.statusLabel);
             this.Controls.Add(this.label13);

@@ -280,8 +280,13 @@ namespace UDP_Repeater_GUI
         ///  <returns> None </returns>
         private void LogForm_Shown(object sender, EventArgs e)
         {
+                // Finishes the form loading it's elements
             Application.DoEvents();
+
+                // Then populates the log data grid view with it's log entries
             PopulateTable();
+
+                // Hides the loading label and shows the log data grid view
             loadingLabel.Visible = false;
             logDataGridView.Visible = true;
         }

@@ -23,7 +23,8 @@
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
 	 xmlns:util="http://wixtoolset.org/schemas/v4/wxs/util">
 	
-	<Package Name="UDP Repeater Service" Language="1033" Version="1.0.0.0" Manufacturer="JT4 LLC" UpgradeCode="07b96bd4-d109-4c22-a924-70f8326a1be9" InstallerVersion="200">
+	<Package Name="UDP Repeater Service" Language="1033" Version="1.0.0.0" Manufacturer="JT4 LLC" 
+			 UpgradeCode="07b96bd4-d109-4c22-a924-70f8326a1be9" InstallerVersion="200">
 		
 
 		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
