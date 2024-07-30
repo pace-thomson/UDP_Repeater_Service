@@ -136,11 +136,12 @@
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(14, 85);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(310, 39);
+            this.label2.Size = new System.Drawing.Size(307, 39);
             this.label2.TabIndex = 8;
-            this.label2.Text = "This interface only begins running when the current user logs in.\r\nThe Packet Rep" +
-    "eater runs whenever this computer is on, so this\r\n is not a complete record of a" +
-    "ll packets handled by the service.";
+            this.label2.Text = "This interface only begins running when the current user logs in.\r\nThe Repeater S" +
+    "ervice starts on system bootup, so this is not \r\na complete record of all packet" +
+    "s handled by the service.";
+            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // panel1
             // 
@@ -281,7 +282,7 @@
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(123, 42);
+            this.label5.Location = new System.Drawing.Point(130, 42);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(60, 15);
             this.label5.TabIndex = 2;

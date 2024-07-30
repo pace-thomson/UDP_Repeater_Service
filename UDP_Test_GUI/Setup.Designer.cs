@@ -93,7 +93,7 @@
             // 
             this.sumbitButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.sumbitButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.sumbitButton.Location = new System.Drawing.Point(371, 386);
+            this.sumbitButton.Location = new System.Drawing.Point(371, 381);
             this.sumbitButton.Name = "sumbitButton";
             this.sumbitButton.Size = new System.Drawing.Size(112, 38);
             this.sumbitButton.TabIndex = 1;
@@ -129,7 +129,7 @@
             this.promEndpoint.AllowDrop = true;
             this.promEndpoint.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.promEndpoint.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.promEndpoint.Location = new System.Drawing.Point(32, 402);
+            this.promEndpoint.Location = new System.Drawing.Point(32, 397);
             this.promEndpoint.Name = "promEndpoint";
             this.promEndpoint.Size = new System.Drawing.Size(140, 20);
             this.promEndpoint.TabIndex = 4;
@@ -139,7 +139,7 @@
             this.lokiEndpoint.AllowDrop = true;
             this.lokiEndpoint.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.lokiEndpoint.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.lokiEndpoint.Location = new System.Drawing.Point(197, 402);
+            this.lokiEndpoint.Location = new System.Drawing.Point(197, 397);
             this.lokiEndpoint.Name = "lokiEndpoint";
             this.lokiEndpoint.Size = new System.Drawing.Size(149, 20);
             this.lokiEndpoint.TabIndex = 5;
@@ -148,7 +148,7 @@
             // 
             this.label3.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(46, 382);
+            this.label3.Location = new System.Drawing.Point(46, 377);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(111, 13);
             this.label3.TabIndex = 6;
@@ -158,7 +158,7 @@
             // 
             this.label4.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(234, 383);
+            this.label4.Location = new System.Drawing.Point(234, 378);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(75, 13);
             this.label4.TabIndex = 7;
@@ -251,7 +251,7 @@
             // 
             this.cancelButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.cancelButton.Location = new System.Drawing.Point(496, 386);
+            this.cancelButton.Location = new System.Drawing.Point(496, 381);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(112, 38);
             this.cancelButton.TabIndex = 10;
@@ -262,7 +262,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(630, 442);
+            this.ClientSize = new System.Drawing.Size(630, 437);
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.label5);

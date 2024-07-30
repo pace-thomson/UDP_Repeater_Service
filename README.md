@@ -2,9 +2,9 @@
 ## Overview
 
 This application was developed to solve a problem where multiple machines need to get the same UDP packets. It functions by listening for 
-packets on a host machine, and then sending the payload of that packet out to a taget machine(s) using UDP Unicast, Multicast, or Broadcast. 
-It was built as a Windows Service backend that interacts with a GUI frontend for user interaction and system monitoring. Included in this 
-repo is the installer for the application. 
+packets on a host machine in promiscous mode to not disturb the packet's intended destination from receiving. It then sends the payload of 
+that packet out to a taget machine(s) using UDP Unicast, Multicast, or Broadcast. It was built as a Windows Service backend that interacts 
+with a GUI frontend for user interaction and system monitoring. Included in this repo is the installer for the application. 
 
 <p align="center">
   <img src="./Images_For_README/UDP_Packet_Repeater_Flowchart.png" alt="Flowchart">

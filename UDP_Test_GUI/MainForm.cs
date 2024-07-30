@@ -45,8 +45,6 @@ namespace UDP_Repeater_GUI
         private int totalPacketCounter;
             /// <summary> Puts the icon in the system tray </summary>
         private NotifyIcon sysTrayIcon;
-            /// <summary> Our Backend/Service so we can see if it's running. </summary>
-        private ServiceController ourService;
             /// <summary> Our object for logging. </summary>
         public Logger logger;
             /// <summary> Our timer object so we can release it when the form closes. </summary>
@@ -69,7 +67,6 @@ namespace UDP_Repeater_GUI
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
             Application.ThreadException += new System.Threading.ThreadExceptionEventHandler(ThreadExceptionHandlerFunction);
 
-
             logger = new Logger();
             try
             {
@@ -77,23 +74,14 @@ namespace UDP_Repeater_GUI
                 logger.StartStopLogger("start");
                 totalPacketCounter = 0;
                 isListening = false;
-                try 
-                { 
-                    ourService = new ServiceController("UDP_Repeater_Service"); 
-                }
-                catch (ArgumentException) 
-                { 
-                    logger.WarningLogger("The Packet Repeater Service cannot be found."); 
-                    ourService = null;
-                }
                 
-                GetUserNicChoice();         // this happens in the constructor, so this form will appear first if it's needed
+                GetUserSetupChoices();          // this happens in the constructor, so this form will appear first if it's needed
 
-                InitializeUDPListener();    // starts us continually listening
+                InitializeUDPListener();        // starts us continually listening
 
-                HandleSysTrayIcon();        // sets up system tray icon 
+                HandleSysTrayIcon();            // sets up system tray icon 
 
-                UpdateCurrentConfigGroup(); // populates the current config group with the settings in config.json
+                UpdateCurrentConfigGroup();     // populates the current config group with the settings in config.json
             }
             catch (Exception ex)
             {
@@ -115,16 +103,16 @@ namespace UDP_Repeater_GUI
         {
             sysTrayIcon = new NotifyIcon();
 
-            // The Icon property sets the icon that will appear
-            // in the systray for this application.
+                // The Icon property sets the icon that will appear
+                // in the systray for this application.
             sysTrayIcon.Icon = new Icon("jt4_logo.ico");
 
-            // The Text property sets the text that will be displayed,
-            // in a tooltip, when the mouse hovers over the systray icon.
+                // The Text property sets the text that will be displayed,
+                // in a tooltip, when the mouse hovers over the systray icon.
             sysTrayIcon.Text = "UDP Packet Repeater";
             sysTrayIcon.Visible = true;
 
-            // Handle the Click event to activate the form.
+                // Handle the Click event to activate the form.
             sysTrayIcon.Click += new EventHandler(notifyIcon1_Click);
         }
         /// <summary> 
@@ -162,7 +150,7 @@ namespace UDP_Repeater_GUI
         ///  
         ///  Returns: None
         /// </summary>
-        public void GetUserNicChoice()
+        public void GetUserSetupChoices()
         {
             bool configJsonExists = logger.WaitForConfigJson();
             if (!configJsonExists)
@@ -170,10 +158,14 @@ namespace UDP_Repeater_GUI
                 return;
             }
 
-            double diff = (DateTime.Now - File.GetCreationTime("C:\\Windows\\SysWOW64\\UDP_Repeater_Config.json")).TotalSeconds;
-            if (diff > 30)
+            double creationDiff = (DateTime.Now - File.GetCreationTime("C:\\Windows\\SysWOW64\\UDP_Repeater_Config.json")).TotalSeconds;
+            if (creationDiff > 30)
             {
-                return;
+                double modifiedDiff = (DateTime.Now - File.GetLastWriteTime("C:\\Windows\\SysWOW64\\UDP_Repeater_Config.json")).TotalSeconds;
+                if (modifiedDiff > 5)
+                {
+                    return;
+                }
             }
 
             using (Setup setupForm = new Setup(this))

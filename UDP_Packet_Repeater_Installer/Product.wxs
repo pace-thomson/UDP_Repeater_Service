@@ -140,7 +140,7 @@
 								<util:ServiceConfig FirstFailureActionType='restart'
 													SecondFailureActionType='restart'
 													ThirdFailureActionType='restart'
-													RestartServiceDelayInSeconds='30'
+													RestartServiceDelayInSeconds='10'
 													ResetPeriodInDays='1'/>
 				</ServiceInstall>
 				
@@ -149,7 +149,7 @@
 								Stop="both"
 								Remove="uninstall"
 								Name="UDP_Repeater_Service"
-								Wait="yes" />
+								Wait="no" />
 				
 			</Component>
 		</ComponentGroup>

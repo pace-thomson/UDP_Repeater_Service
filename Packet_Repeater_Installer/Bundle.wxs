@@ -3,7 +3,7 @@
 
  Description: This file houses the wix toolset installer 
               bootstrapper that combines the other installer
-              and chains them together with a .net framework
+              and chains them together with a .NET framework
 			  4.7.2 installer and a NpCap installer. It also 
 			  has the UI that the installer uses to house all 
 			  of them.
@@ -41,12 +41,14 @@
 
 	        <!-- .NET INSTALLER -->
 			<ExePackage DetectCondition="false"
-						UninstallArguments="/uninstall /quiet /norestart"
+						UninstallArguments="/uninstall /quiet /norestart" 
+						Vital="no"
 						SourceFile="C:\Users\pthomson01.ctr\Documents\ndp472-kb4054531-web.exe"/>
 			
             <!-- NPCAP INSTALLER -->
 			<ExePackage DetectCondition="false"
 						UninstallArguments="/uninstall /quiet /norestart"
+						Vital="no"
 						SourceFile="C:\Users\pthomson01.ctr\source\repos\pace-thomson\UDP_Repeater_Service\UDP_Packet_Repeater_Installer\bin\x86\Debug\npcap-1.79.exe"/>
 			
             <!-- FRONTEND AND BACKEND INSTALLER -->

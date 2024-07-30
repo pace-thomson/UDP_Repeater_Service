@@ -33,26 +33,37 @@ using Newtonsoft.Json.Linq;
 
 namespace UDP_Test_GUI
 {
-    /// <summary>  </summary>
+    /// <summary> The form for configuring settings for the system's monitoring endpoints and selecting what NIC to
+    /// listen on. This is opened if UDP_Repeater_Config.json is new or if the user opens it off of the input form. </summary>
     public partial class Setup : Form
     {
-        /// <summary> Tracks whether the user selection was valid </summary>
+            /// <summary> Tracks whether the user selection was valid </summary>
         public bool isValid;
-        /// <summary>The main form's object.</summary>
+            /// <summary>The main form's object.</summary>
         private MainForm theMainForm;
-        /// <summary> The uri string for the prometheus endpoint that this form will return. </summary>
+            /// <summary> The uri string for the prometheus endpoint that this form will return. </summary>
         public string prom;
-        /// <summary> The uri string for the prometheus endpoint that this form will return. </summary>
+            /// <summary> The uri string for the prometheus endpoint that this form will return. </summary>
         public string loki;
 
-        /// <summary> The Setup form constructor </summary>
+        /// /// <summary> 
+        ///  Class Name: Setup  <br/><br/>
+        ///
+        ///  Description: The Setup form constructor. <br/><br/>
+        ///
+        ///  Inputs:  <br/>
+        ///  MainForm <paramref name="TheMainForm"/> - The main form's object. Passed in so that 
+        ///  we can have logging. <br/><br/>
+        ///  
+        ///  Returns: A Setup object.
+        /// </summary>
         public Setup(MainForm TheMainForm)
         {
             InitializeComponent();
 
-            PopulateNICs();
-
             PopulateCurrentConfig();
+
+            PopulateNICs();
 
             this.theMainForm = TheMainForm;
 
@@ -62,7 +73,7 @@ namespace UDP_Test_GUI
         }
 
         /// <summary> 
-        ///  Class Name: InputForm  <br/><br/>
+        ///  Class Name: Setup  <br/><br/>
         ///
         ///  Description: Fills out the data grid view with all the NIC's on the system so the user can select one. <br/><br/>
         ///
@@ -93,9 +104,9 @@ namespace UDP_Test_GUI
         }
 
         /// <summary> 
-        ///  Class Name: InputForm  <br/><br/>
+        ///  Class Name: Setup <br/><br/>
         ///
-        ///  Description: Polulates the current configuration section with the system's current setup. <br/><br/>
+        ///  Description: Polulates this form's current configuration section with the system's NIC and endpoints. <br/><br/>
         ///
         ///  Inputs:  None 
         ///  </summary> 
@@ -107,13 +118,14 @@ namespace UDP_Test_GUI
 
             promTextbox.Text = (string)jsonObject["monitoring"]["prom"];
             lokiTextbox.Text = (string)jsonObject["monitoring"]["loki"];
-            nicTextbox.Text = (string)jsonObject["descriptionOfNIC"];
+            nicTextbox.Text  = (string)jsonObject["descriptionOfNIC"];
         }
 
         /// <summary> 
-        ///  Class Name: InputForm  <br/><br/>
+        ///  Class Name: Setup <br/><br/>
         ///
-        ///  Description: Handles the "done" button click. Validates input and then sends to the Backend. <br/><br/>
+        ///  Description: Handles the "done" button click. Validates input and then sends to the Backend. <br/>
+        ///  If input isn't valid, displays a specific messageBox.<br/><br/>
         ///
         ///  Inputs:  None 
         ///  </summary> 
@@ -145,7 +157,6 @@ namespace UDP_Test_GUI
                                 byte[] bytes = Encoding.ASCII.GetBytes($"{this.prom},{this.loki},setup,{nic}");
                                 sendRequest.Send(bytes, bytes.Length, "127.0.0.1", 50001);
 
-                                theMainForm.logger.WarningLogger("Restarting Interface due to NIC/Monitoring reconfiguration.");
                                 theMainForm.logger.LogNicChange(nic, mac);
                                 theMainForm.logger.LogMonitoringChange(this.prom, this.loki);
 
@@ -177,7 +188,7 @@ namespace UDP_Test_GUI
         }
 
         /// <summary> 
-        ///  Class Name: InputForm  <br/><br/>
+        ///  Class Name: Setup <br/><br/>
         ///
         ///  Description: Checks if isValid is true, and either cancels the form closing or lets it close. <br/><br/>
         ///

@@ -108,9 +108,6 @@ namespace UDP_Repeater_Service
 /// </summary>
 class TheMainProgram
 {
-        // The main Backend object 
-    private Backend backendObject;
-
     /// <summary> 
     ///  Class Name: TheMainProgram  <br/><br/> 
     ///
@@ -160,11 +157,11 @@ class TheMainProgram
     ///
     ///  Inputs:  <br/>
     ///  Backend <paramref name="newbackendObject"/> - The Backend object with the new settings tp update config.json. <br/>
-    ///  Backend <paramref name="oldBackendObject"/> - The Backend object just for error logging. <br/><br/>
+    ///  Backend <paramref name="originalBackendObject"/> - The Backend object just for error logging. <br/><br/>
     ///  
     ///  Returns:  None
     /// </summary>
-    public static void UpdateConfigJson(Backend newbackendObject, Backend oldBackendObject)
+    public static void UpdateConfigJson(Backend newbackendObject, Backend originalBackendObject)
     {
         try
         {
@@ -211,7 +208,7 @@ class TheMainProgram
         }
         catch (Exception e)
         {
-            oldBackendObject.ExceptionLogger(e);
+            originalBackendObject.ExceptionLogger(e);
         }
     }
 
@@ -262,7 +259,7 @@ class TheMainProgram
                 repeaterThread.Start();
 
 
-                    // Use Task<Backend> to call the method asynchronously and get the backend object it returns
+                    // Use Task<Backend> to call the ReceiveFromGUI.main() method asynchronously and get the backend object it returns
                 Task<Backend> receiveFromGUITask = Task.Run(() => ReceiveFromGUI.main(backendObject));
                 Backend newbackendObject = await receiveFromGUITask;
 

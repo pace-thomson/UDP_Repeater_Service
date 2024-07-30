@@ -133,19 +133,28 @@ namespace UDP_Repeater_GUI
         /// </summary>
         public void GetEndpoints(out string prom, out string loki)
         {
-            bool configJsonExists = WaitForConfigJson();
-            if (!configJsonExists)
+            try
             {
-                prom = "Couldn't read from config.json";
-                loki = "Couldn't read from config.json";
-                return;
+                bool configJsonExists = WaitForConfigJson();
+                if (!configJsonExists)
+                {
+                    prom = "Couldn't read from config.json";
+                    loki = "Couldn't read from config.json";
+                    return;
+                }
+
+                string jsonString = File.ReadAllText("C:\\Windows\\SysWOW64\\UDP_Repeater_Config.json");
+                JObject jsonObject = JObject.Parse(jsonString);
+
+                prom = (string)jsonObject["monitoring"]["prom"];
+                loki = (string)jsonObject["monitoring"]["loki"];
             }
-
-            string jsonString = File.ReadAllText("C:\\Windows\\SysWOW64\\UDP_Repeater_Config.json");
-            JObject jsonObject = JObject.Parse(jsonString);
-
-            prom = (string)jsonObject["monitoring"]["prom"];
-            loki = (string)jsonObject["monitoring"]["loki"];
+            catch (Exception ex)
+            {
+                prom = "An error occured getting endpoints.";
+                loki = "An error occured getting endpoints.";
+                this.LogException(ex);
+            }
         }
 
         /// <summary> 
@@ -160,20 +169,28 @@ namespace UDP_Repeater_GUI
         /// </summary>
         public bool WaitForConfigJson()
         {
-            int attemptCount = 0;
-            while (!File.Exists("C:\\Windows\\SysWOW64\\UDP_Repeater_Config.json"))
+            try
             {
-                attemptCount++;
-                if (attemptCount > 15)
+                int attemptCount = 0;
+                while (!File.Exists("C:\\Windows\\SysWOW64\\UDP_Repeater_Config.json"))
                 {
-                    string message = "Cannot read from configuration json file. Tried 15 times without success.";
-                    WarningLogger(message);
+                    attemptCount++;
+                    if (attemptCount > 15)
+                    {
+                        string message = "Cannot read from configuration json file. Tried 15 times without success.";
+                        WarningLogger(message);
 
-                    return false;
+                        return false;
+                    }
+                    System.Threading.Thread.Sleep(1000);
                 }
-                System.Threading.Thread.Sleep(1000);
+                return true;
             }
-            return true;
+            catch (Exception ex)
+            {
+                this.LogException(ex);
+                return false;
+            }
         }
 
 
@@ -194,7 +211,6 @@ namespace UDP_Repeater_GUI
             string message = String.Format($"Message: {e.Message} \n" +
                                            $"Stack trace: {formattedStackString.Last().TrimStart()}");
 
-            // Write an entry to the event log.
             eventLog.WriteEntry(message, EventLogEntryType.Error, 2);       // 2 is id for frontend errors
             if (lokiLogger != null)
             {
