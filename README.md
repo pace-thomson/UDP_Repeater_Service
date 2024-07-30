@@ -7,7 +7,7 @@ It was built as a Windows Service backend that interacts with a GUI frontend for
 repo is the installer for the application. 
 
 <p align="center">
-  <img src="./UDP_Packet_Repeater_Flowchart.png" alt="Flowchart">
+  <img src="./Images_For_README/UDP_Packet_Repeater_Flowchart.png" alt="Flowchart">
 </p>
 
 
@@ -34,5 +34,5 @@ This system implements a Prometheus/Loki/Grafana monitoring stack for simple and
 Loki logging are user configurable through the GUI. This data is visualized using a grafana dashboard. Dashboard setup information is incluced in this repo
 in the Dashboard_Config.json file. Below is a screenshot of the dashboard when running alongside this system. 
 <p align="center">
-  <img src="./Dashboard_Screenshot.png" alt="Grafana Dashboard Screenshot">
+  <img src="./Images_For_README/Dashboard_Screenshot.png" alt="Grafana Dashboard Screenshot">
 </p>
