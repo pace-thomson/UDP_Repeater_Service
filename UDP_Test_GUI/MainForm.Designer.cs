@@ -82,6 +82,7 @@
             this.payloadColumn,
             this.timeColumn});
             this.packetsHandledDisplay.Location = new System.Drawing.Point(12, 139);
+            this.packetsHandledDisplay.MultiSelect = false;
             this.packetsHandledDisplay.Name = "packetsHandledDisplay";
             this.packetsHandledDisplay.ReadOnly = true;
             this.packetsHandledDisplay.RowHeadersVisible = false;

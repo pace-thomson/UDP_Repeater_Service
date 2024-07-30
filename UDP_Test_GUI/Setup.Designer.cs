@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Setup));
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.listOfNICs = new System.Windows.Forms.DataGridView();
             this.nameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.descriptionColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.macAddressColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -49,25 +49,26 @@
             this.label7 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.cancelButton = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.listOfNICs)).BeginInit();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
-            // dataGridView1
+            // listOfNICs
             // 
-            this.dataGridView1.AllowUserToAddRows = false;
-            this.dataGridView1.AllowUserToDeleteRows = false;
-            this.dataGridView1.ColumnHeadersHeight = 28;
-            this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.listOfNICs.AllowUserToAddRows = false;
+            this.listOfNICs.AllowUserToDeleteRows = false;
+            this.listOfNICs.ColumnHeadersHeight = 28;
+            this.listOfNICs.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.nameColumn,
             this.descriptionColumn,
             this.macAddressColumn});
-            this.dataGridView1.Location = new System.Drawing.Point(27, 175);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.ReadOnly = true;
-            this.dataGridView1.RowHeadersVisible = false;
-            this.dataGridView1.Size = new System.Drawing.Size(581, 189);
-            this.dataGridView1.TabIndex = 0;
+            this.listOfNICs.Location = new System.Drawing.Point(27, 175);
+            this.listOfNICs.MultiSelect = false;
+            this.listOfNICs.Name = "listOfNICs";
+            this.listOfNICs.ReadOnly = true;
+            this.listOfNICs.RowHeadersVisible = false;
+            this.listOfNICs.Size = new System.Drawing.Size(581, 189);
+            this.listOfNICs.TabIndex = 0;
             // 
             // nameColumn
             // 
@@ -273,12 +274,12 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.sumbitButton);
-            this.Controls.Add(this.dataGridView1);
+            this.Controls.Add(this.listOfNICs);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Setup";
             this.Text = "Packet Repeater Setup";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Setup_FormClosing);
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.listOfNICs)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.ResumeLayout(false);
@@ -288,7 +289,7 @@
 
         #endregion
 
-        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.DataGridView listOfNICs;
         private System.Windows.Forms.Button sumbitButton;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;

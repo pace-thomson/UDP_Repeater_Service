@@ -289,6 +289,9 @@ namespace UDP_Repeater_GUI
                 // Hides the loading label and shows the log data grid view
             loadingLabel.Visible = false;
             logDataGridView.Visible = true;
+
+                // This actually is to deselect the automatically selected row
+            logDataGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
         }
 
         /// <summary> 

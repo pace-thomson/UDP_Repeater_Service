@@ -55,6 +55,7 @@
             this.logDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.logDataGridView.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.EnableWithoutHeaderText;
             this.logDataGridView.ColumnHeadersHeight = 34;
             this.logDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.logDataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
@@ -63,6 +64,7 @@
             this.messageColumn,
             this.timeStampColumn});
             this.logDataGridView.Location = new System.Drawing.Point(17, 103);
+            this.logDataGridView.MultiSelect = false;
             this.logDataGridView.Name = "logDataGridView";
             this.logDataGridView.ReadOnly = true;
             this.logDataGridView.RowHeadersVisible = false;

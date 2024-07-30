@@ -371,10 +371,6 @@ namespace BackendClassNameSpace
                 return;
             }
             packetHandling.Record(stopWatchTime);
-            if (stopWatchTime >= 4)
-            {
-                WarningLogger($"Packet handling time of {stopWatchTime}ms was greater than or equal to 4 milliseconds.");
-            }
         }
 
 

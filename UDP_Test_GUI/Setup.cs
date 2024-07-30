@@ -37,9 +37,9 @@ namespace UDP_Test_GUI
     /// listen on. This is opened if UDP_Repeater_Config.json is new or if the user opens it off of the input form. </summary>
     public partial class Setup : Form
     {
-            /// <summary> Tracks whether the user selection was valid </summary>
+            /// <summary> Tracks whether the user's selection/inputs were valid </summary>
         public bool isValid;
-            /// <summary>The main form's object.</summary>
+            /// <summary> The main form's object. </summary>
         private MainForm theMainForm;
             /// <summary> The uri string for the prometheus endpoint that this form will return. </summary>
         public string prom;
@@ -69,7 +69,7 @@ namespace UDP_Test_GUI
 
             this.isValid = true;
 
-            dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            listOfNICs.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
         }
 
         /// <summary> 
@@ -88,8 +88,8 @@ namespace UDP_Test_GUI
                 var devices = CaptureDeviceList.Instance;
                 foreach (ICaptureDevice dev in devices)
                 {
-                    int rowNum = dataGridView1.Rows.Add();
-                    DataGridViewRow row = dataGridView1.Rows[rowNum];
+                    int rowNum = listOfNICs.Rows.Add();
+                    DataGridViewRow row = listOfNICs.Rows[rowNum];
 
                     row.Cells["nameColumn"].Value = dev.Name;
                     row.Cells["descriptionColumn"].Value = dev.Description;
@@ -135,7 +135,7 @@ namespace UDP_Test_GUI
             try
             {
                 isValid = true;
-                int selectedRowCount = dataGridView1.Rows.GetRowCount(DataGridViewElementStates.Selected);
+                int selectedRowCount = listOfNICs.Rows.GetRowCount(DataGridViewElementStates.Selected);
 
                 this.prom = promEndpoint.Text.Trim();
                 this.loki = lokiEndpoint.Text.Trim();
@@ -147,7 +147,7 @@ namespace UDP_Test_GUI
                         if (Uri.IsWellFormedUriString(prom, UriKind.Absolute) &&
                             Uri.IsWellFormedUriString(loki, UriKind.Absolute))
                         {
-                            DataGridViewRow row = dataGridView1.SelectedRows[0];
+                            DataGridViewRow row = listOfNICs.SelectedRows[0];
                             string nic = row.Cells["descriptionColumn"].Value.ToString();
                             string mac = row.Cells["macAddressColumn"].Value.ToString();
 
