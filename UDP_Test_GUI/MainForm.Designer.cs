@@ -189,7 +189,7 @@
             // logButton
             // 
             this.logButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.logButton.Location = new System.Drawing.Point(66, 413);
+            this.logButton.Location = new System.Drawing.Point(73, 413);
             this.logButton.Name = "logButton";
             this.logButton.Size = new System.Drawing.Size(114, 26);
             this.logButton.TabIndex = 19;
@@ -394,7 +394,7 @@
             this.label14.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(44, 396);
+            this.label14.Location = new System.Drawing.Point(51, 396);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(167, 13);
             this.label14.TabIndex = 24;

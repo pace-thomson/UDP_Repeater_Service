@@ -61,10 +61,11 @@ namespace GUIreceiver
                     catch (SocketException) 
                     {
                         socketCantConnectCount++;
-                        backendObject.WarningLogger("Receiving from GUI port 50001 not open, trying to connect" +
-                                                    $" again in 1 second. \n Attempt number: {socketCantConnectCount}");
+                        
                         if (socketCantConnectCount > 15)
                         {
+                            backendObject.WarningLogger("Receiving from GUI port 50001 not open. " +
+                                                        "Tried 15 times to connect without success");
                             break;
                         }
                         System.Threading.Thread.Sleep(1000); 
@@ -72,7 +73,6 @@ namespace GUIreceiver
                 }
                 
                 IPEndPoint senderEndPoint = new IPEndPoint(IPAddress.Any, 0);
-
 
                 byte[] messageBytes = listener.Receive(ref senderEndPoint);
 
