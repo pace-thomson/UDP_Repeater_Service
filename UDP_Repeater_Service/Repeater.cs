@@ -292,7 +292,7 @@ namespace Repeater
                 device.Open(DeviceModes.Promiscuous, readTimeoutMilliseconds);
 
                     // filters for out listening port
-                device.Filter = $"udp port {backendObject.receivePort}";
+                device.Filter = $"udp port {backendObject.receivePort} and host {backendObject.receiveIp}";
 
                     // start listening
                 device.StartCapture();

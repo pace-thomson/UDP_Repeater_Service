@@ -227,7 +227,7 @@ namespace BackendClassNameSpace
                 {
                     ""currentConfig"": {
                         ""receiveFrom"": {
-                            ""ip"": ""172.18.46.213"",
+                            ""ip"": ""172.30.240.1"",
                             ""port"": ""763""
                         },
                         ""sendTo"": {
