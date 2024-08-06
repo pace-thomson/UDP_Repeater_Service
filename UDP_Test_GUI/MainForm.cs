@@ -162,7 +162,7 @@ namespace UDP_Repeater_GUI
             if (creationDiff > 30)
             {
                 double modifiedDiff = (DateTime.Now - File.GetLastWriteTime("C:\\Windows\\SysWOW64\\UDP_Repeater_Config.json")).TotalSeconds;
-                if (modifiedDiff > 5)
+                if (modifiedDiff < 5)
                 {
                     return;
                 }
@@ -199,11 +199,11 @@ namespace UDP_Repeater_GUI
             currentReceivePort.Text  =  (string)jsonObject["currentConfig"]["receiveFrom"]["port"];
             currentSendIp.Text       =  (string)jsonObject["currentConfig"]["sendTo"]["ip"];
             currentSendPort.Text     =  (string)jsonObject["currentConfig"]["sendTo"]["port"];
-            currentFrequency.Text    =  (string)jsonObject["inactivitySettings"]["frequency"];
-            currentInterval.Text     =  FirstLetterCapital((string)jsonObject["inactivitySettings"]["interval"]);
-            if (currentFrequency.Text != "1")
+            currentInterval.Text    =  (string)jsonObject["inactivitySettings"]["interval"];
+            currentTimeUnit.Text     =  FirstLetterCapital((string)jsonObject["inactivitySettings"]["interval"]);
+            if (currentInterval.Text != "1")
             {
-                currentInterval.Text += "s";
+                currentTimeUnit.Text += "s";
             }
         }
         /// <summary> 
@@ -238,24 +238,24 @@ namespace UDP_Repeater_GUI
         ///  Class Name: MainForm  <br/><br/>
         ///
         ///  Description: Overloaded version 3/4. Updates the current configuration group. <br/>
-        ///  This one updates the frequency and interval values of the group. It's updated this <br/>
+        ///  This one updates the interval and interval values of the group. It's updated this <br/>
         ///  way so this doesn't have to wait for the backend to update "UDP_Repeater_Config.json". <br/>
         ///  This function gets called right after the user inputs new inactivity settings. <br/><br/>
         ///
         ///  Inputs:  <br/>
-        ///  string <paramref name="frequency"/> - The new frequency value. <br/>
+        ///  string <paramref name="interval"/> - The new interval value. <br/>
         ///  string <paramref name="interval"/> - The new interval value. <br/><br/>
         ///  
         ///  Returns: None
         /// </summary>
-        public void UpdateCurrentConfigGroup(string frequency, string interval)
+        public void UpdateCurrentConfigGroup(string interval, string unit)
         {
-            if (frequency != "1") 
+            if (interval != "1") 
             {
-                interval += "s";
+                unit += "s";
             }
-            currentFrequency.Text = frequency;
             currentInterval.Text = interval;
+            currentTimeUnit.Text = unit;
         }
         /// <summary> 
         ///  Class Name: MainForm  <br/><br/>

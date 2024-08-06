@@ -75,17 +75,17 @@ namespace Repeater
 
                 mostRecentTimestamp = DateTime.Now;
 
-                double frequencyDouble = Convert.ToDouble(backendObject.frequency);
-                switch (backendObject.interval)
+                double intervalDouble = Convert.ToDouble(backendObject.inactivityInterval);
+                switch (backendObject.inactivityUnit)
                 {
                     case "minute":
-                        timeoutThreshold = TimeSpan.FromMinutes(frequencyDouble).TotalSeconds;
+                        timeoutThreshold = TimeSpan.FromMinutes(intervalDouble).TotalSeconds;
                         break;
                     case "hour":
-                        timeoutThreshold = TimeSpan.FromHours(frequencyDouble).TotalSeconds;
+                        timeoutThreshold = TimeSpan.FromHours(intervalDouble).TotalSeconds;
                         break;
                     case "day":
-                        timeoutThreshold = TimeSpan.FromDays(frequencyDouble).TotalSeconds;
+                        timeoutThreshold = TimeSpan.FromDays(intervalDouble).TotalSeconds;
                         break;
                 }
             }
@@ -110,12 +110,12 @@ namespace Repeater
         {
             if ((DateTime.Now - mostRecentTimestamp).TotalSeconds > timeoutThreshold)
             {
-                // Logs the event with the number of events fired multiplied by the frequency
+                // Logs the event with the number of events fired multiplied by the inactivityInterval
                 // for example, with 5 minutes as the setting, the 3rd consecutive event would log 15 minutes
                 consecutiveEventsFired++;
                 mostRecentTimestamp = DateTime.Now;
 
-                backendObject.InactivityLogger(consecutiveEventsFired, backendObject.frequency, backendObject.interval);
+                backendObject.InactivityLogger(consecutiveEventsFired, backendObject.inactivityInterval, backendObject.inactivityUnit);
             }
         }
 

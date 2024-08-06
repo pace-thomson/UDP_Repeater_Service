@@ -111,25 +111,25 @@ namespace UDP_Repeater_GUI
         /// </summary>
         private void inactivityButton_Click(object sender, EventArgs e)
         {
-            int frequency = (int)inactivityInputBox.Value;
+            int interval = (int)inactivityInputBox.Value;
                     // trims the "(s)" off the end of the string
-            string interval = inactivityDropdown.Text.TrimEnd('(', 's', ')'); 
+            string unit = inactivityDropdown.Text.TrimEnd('(', 's', ')'); 
             
-            if (frequency > 0 && interval != "")
+            if (interval > 0 && unit != "")
             {
                 using (UdpClient sendRequest = new UdpClient())
                 {
                     try
                     {
-                                // we want interval to still have the first letter uppcase here
+                                // we want unit to still have the first letter uppcase here
                                 // so that we can use it to display 
-                        theMainForm.UpdateCurrentConfigGroup(frequency.ToString(), interval);
-                        theMainForm.logger.LogInactivityChange(frequency, interval);
+                        theMainForm.UpdateCurrentConfigGroup(interval.ToString(), unit);
+                        theMainForm.logger.LogInactivityChange(interval, unit);
 
-                        interval = interval.ToLower();
+                        unit = unit.ToLower();
 
-                                // interval shoudn't be uppcase here because the backend wants it in lowercase
-                        byte[] bytes = Encoding.ASCII.GetBytes(frequency + "," + interval + "," + "inactive");
+                                // unit shoudn't be uppcase here because the backend wants it in lowercase
+                        byte[] bytes = Encoding.ASCII.GetBytes(interval + "," + unit + "," + "inactive");
                         sendRequest.Send(bytes, bytes.Length, "127.0.0.1", 50001);
                     }
                     catch (Exception exception)

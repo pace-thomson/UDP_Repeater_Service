@@ -259,16 +259,16 @@ namespace UDP_Repeater_GUI
         ///  Description: Logs Inactivity settings changes into the event log. <br/><br/>
         ///
         ///  Inputs:  <br/>
-        ///  int <paramref name="frequency"/> - The new frequency value. <br/>
-        ///  string <paramref name="interval"/> - The new interval value. <br/><br/>
+        ///  int <paramref name="interval"/> - The new interval value. <br/>
+        ///  string <paramref name="unit"/> - The new unit value. <br/><br/>
         ///  
         ///  Returns:  None
         /// </summary>
-        public void LogInactivityChange(int frequency, string interval)
+        public void LogInactivityChange(int interval, string unit)
         {
             string message = String.Format("The Inactivity settings were changed. \n" +
-                                           "Frequency: {0} \n" +
-                                           "Interval: {1}", frequency, interval);
+                                           "Interval: {0} \n" +
+                                           "Unit: {1}", interval, unit);
 
             eventLog.WriteEntry(message, EventLogEntryType.Information, 7);  // 7 is an inactivity config change
             if (lokiLogger != null)

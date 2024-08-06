@@ -50,10 +50,10 @@ namespace BackendClassNameSpace
         public string sendIp;
             /// <summary> The Port being sent to</summary>
         public int sendPort;
-            /// <summary> The Frequency (number) at which the service reports inactivity</summary>
-        public int frequency;
-            /// <summary> The Interval (minute, day, hour) at which the service reports inactivity</summary>
-        public string interval;
+            /// <summary> The unit (number) at which the service reports inactivity</summary>
+        public int inactivityInterval;
+            /// <summary> The unit (minute, day, hour) at which the service reports inactivity</summary>
+        public string inactivityUnit;
             /// <summary> The uri string for the endpoint that our prometheus metrics will be sent to. </summary>
         public string promEndpoint;
             /// <summary> The uri string for the endpoint that our loki logs will be sent to. </summary>
@@ -110,15 +110,15 @@ namespace BackendClassNameSpace
         ///  string <paramref name="ReceivePort"/>  -    The Port being listened to. <br/>
         ///  string <paramref name="SendIp"/>       -    The IP being sent to. <br/>
         ///  string <paramref name="SendPort"/>     -    The Port being sent to. <br/>
-        ///  int    <paramref name="newFrequency"/> -    The Frequency (number) at which the service reports inactivity <br/>
-        ///  string <paramref name="newInterval"/>  -    The Interval (minute, day, hour) at which the service reports inactivity <br/>
+        ///  int    <paramref name="newInterval"/>  -    The interval (number) at which the service reports inactivity <br/>
+        ///  string <paramref name="newUnit"/>      -    The unit (minute, day, hour) at which the service reports inactivity <br/>
         ///  string <paramref name="PromEndpoint"/> -    The endpoint of the prometheus server we are sending metrics to. <br/>
         ///  string <paramref name="LokiEndpoint"/> -    The endpoint of the loki server we are sending logs to. <br/>
         ///  string <paramref name="NameOfNIC"/>    -    The name of the NIC we're listening on <br/><br/> 
         ///  
         /// Returns: A Backend Object
         /// </summary>
-        public Backend(string ReceiveIp, string ReceivePort, string SendIp, string SendPort, int newFrequency, string newInterval, 
+        public Backend(string ReceiveIp, string ReceivePort, string SendIp, string SendPort, int newInterval, string newUnit, 
                         string PromEndpoint, string LokiEndpoint, string NameOfNIC)
         {
                 // system configuration set up fields
@@ -126,8 +126,8 @@ namespace BackendClassNameSpace
             this.receivePort = Convert.ToInt32(ReceivePort);
             this.sendIp = SendIp;
             this.sendPort = Convert.ToInt32(SendPort);
-            this.frequency = newFrequency;
-            this.interval = newInterval;
+            this.inactivityInterval = newInterval;
+            this.inactivityUnit = newUnit;
             this.promEndpoint = PromEndpoint;
             this.lokiEndpoint = LokiEndpoint;
             this.descriptionOfNIC = NameOfNIC;
@@ -200,8 +200,8 @@ namespace BackendClassNameSpace
             this.receivePort        =   originalBackendObject.receivePort;
             this.sendIp             =   originalBackendObject.sendIp;
             this.sendPort           =   originalBackendObject.sendPort;
-            this.frequency          =   originalBackendObject.frequency;
-            this.interval           =   originalBackendObject.interval;
+            this.inactivityInterval =   originalBackendObject.inactivityInterval;
+            this.inactivityUnit     =   originalBackendObject.inactivityUnit;
             this.promEndpoint       =   originalBackendObject.promEndpoint;
             this.lokiEndpoint       =   originalBackendObject.lokiEndpoint;
             this.descriptionOfNIC   =   originalBackendObject.descriptionOfNIC;
@@ -248,8 +248,8 @@ namespace BackendClassNameSpace
                     },
 
                     ""inactivitySettings"": {
-                        ""frequency"": ""5"",
-                        ""interval"": ""minute""
+                        ""inactivityInterval"": ""5"",
+                        ""inactivityUnit"": ""minute""
                     },
                     ""monitoring"": {
                         ""prom"": ""Not Configured Yet"",
@@ -318,8 +318,8 @@ namespace BackendClassNameSpace
             this.receivePort = newBackendObject.receivePort;
             this.sendIp = newBackendObject.sendIp;
             this.sendPort = newBackendObject.sendPort;
-            this.frequency = newBackendObject.frequency;
-            this.interval = newBackendObject.interval;
+            this.inactivityInterval = newBackendObject.inactivityInterval;
+            this.inactivityUnit = newBackendObject.inactivityUnit;
         }
 
 
@@ -465,35 +465,35 @@ namespace BackendClassNameSpace
         ///
         ///  Inputs:  <br/>
         ///  int <paramref name="consecutiveEvents"/> - How many consecutive event have fired. <br/>
-        ///  int <paramref name="frequency"/> - The Backend object's frequency field <br/>
-        ///  string <paramref name="interval"/> - The Backend object's interval field <br/><br/>
+        ///  int <paramref name="interval"/> - The Backend object's inactivityInterval field <br/>
+        ///  string <paramref name="unit"/> - The Backend object's inactivityUnit field <br/><br/>
         ///  
         ///  Returns:  None
         /// </summary>
-        public void InactivityLogger(int consecutiveEvents, int frequency, string interval)
+        public void InactivityLogger(int consecutiveEvents, int interval, string unit)
         {
-                // this whole section is just to find if the interval word in the log eventLogMessage should have an 's' or not 
+                // this whole section is just to find if the inactivityUnit word in the log eventLogMessage should have an 's' or not 
                 // this has to be so much more complicated than it should be
-            int totalTime = consecutiveEvents * frequency;
+            int totalTime = consecutiveEvents * interval;
             string message;
-            interval += "s";
+            unit += "s";
 
-            if (totalTime > 1 && frequency > 1)
+            if (totalTime > 1 && interval > 1)
             {
-                message = String.Format("It has been {0} {1} since last packet was received. ", totalTime, interval);
-                message += String.Format("The Service is currently configured to log inactivity every {0} {1}.", frequency, interval);
+                message = String.Format("It has been {0} {1} since last packet was received. ", totalTime, unit);
+                message += String.Format("The Service is currently configured to log inactivity every {0} {1}.", interval, unit);
             }
-            else if (totalTime > 1 && frequency == 1)
+            else if (totalTime > 1 && interval == 1)
             {
-                message = String.Format("It has been {0} {1} since last packet was received. ", totalTime, interval);
-                interval = interval.Remove(interval.Length - 1);
-                message += String.Format("The Service is currently configured to log inactivity every {0} {1}.", frequency, interval);
+                message = String.Format("It has been {0} {1} since last packet was received. ", totalTime, unit);
+                unit = unit.Remove(unit.Length - 1);
+                message += String.Format("The Service is currently configured to log inactivity every {0} {1}.", interval, unit);
             }
             else
             {
-                interval = interval.Remove(interval.Length - 1);
-                message = String.Format("It has been {0} {1} since last packet was received. ", totalTime, interval);
-                message += String.Format("The Service is currently configured to log inactivity every {0} {1}.", frequency, interval);
+                unit = unit.Remove(unit.Length - 1);
+                message = String.Format("It has been {0} {1} since last packet was received. ", totalTime, unit);
+                message += String.Format("The Service is currently configured to log inactivity every {0} {1}.", interval, unit);
             }
                 // Write an entry to the event log.
             eventLog.WriteEntry(message, EventLogEntryType.Warning, 3);     // 3 is the id for backend inactivity

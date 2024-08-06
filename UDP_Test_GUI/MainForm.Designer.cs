@@ -54,8 +54,8 @@
             this.label5 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.currentTimeUnit = new System.Windows.Forms.Label();
             this.currentInterval = new System.Windows.Forms.Label();
-            this.currentFrequency = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
@@ -301,8 +301,8 @@
             // 
             // panel2
             // 
+            this.panel2.Controls.Add(this.currentTimeUnit);
             this.panel2.Controls.Add(this.currentInterval);
-            this.panel2.Controls.Add(this.currentFrequency);
             this.panel2.Controls.Add(this.label12);
             this.panel2.Controls.Add(this.label11);
             this.panel2.Controls.Add(this.label10);
@@ -322,41 +322,41 @@
             this.panel2.Size = new System.Drawing.Size(308, 113);
             this.panel2.TabIndex = 21;
             // 
+            // currentTimeUnit
+            // 
+            this.currentTimeUnit.AutoSize = true;
+            this.currentTimeUnit.Location = new System.Drawing.Point(261, 85);
+            this.currentTimeUnit.Name = "currentTimeUnit";
+            this.currentTimeUnit.Size = new System.Drawing.Size(44, 13);
+            this.currentTimeUnit.TabIndex = 15;
+            this.currentTimeUnit.Text = "Minutes";
+            // 
             // currentInterval
             // 
             this.currentInterval.AutoSize = true;
-            this.currentInterval.Location = new System.Drawing.Point(261, 85);
+            this.currentInterval.Location = new System.Drawing.Point(279, 65);
             this.currentInterval.Name = "currentInterval";
-            this.currentInterval.Size = new System.Drawing.Size(44, 13);
-            this.currentInterval.TabIndex = 15;
-            this.currentInterval.Text = "Minutes";
-            // 
-            // currentFrequency
-            // 
-            this.currentFrequency.AutoSize = true;
-            this.currentFrequency.Location = new System.Drawing.Point(283, 65);
-            this.currentFrequency.Name = "currentFrequency";
-            this.currentFrequency.Size = new System.Drawing.Size(13, 13);
-            this.currentFrequency.TabIndex = 14;
-            this.currentFrequency.Text = "2";
+            this.currentInterval.Size = new System.Drawing.Size(13, 13);
+            this.currentInterval.TabIndex = 14;
+            this.currentInterval.Text = "2";
             // 
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(220, 85);
+            this.label12.Location = new System.Drawing.Point(232, 85);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(45, 13);
+            this.label12.Size = new System.Drawing.Size(29, 13);
             this.label12.TabIndex = 13;
-            this.label12.Text = "Interval:";
+            this.label12.Text = "Unit:";
             // 
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(224, 65);
+            this.label11.Location = new System.Drawing.Point(233, 65);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(60, 13);
+            this.label11.Size = new System.Drawing.Size(48, 13);
             this.label11.TabIndex = 12;
-            this.label11.Text = "Frequency:";
+            this.label11.Text = "Interval: ";
             // 
             // label10
             // 
@@ -451,11 +451,11 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label currentFrequency;
+        private System.Windows.Forms.Label currentInterval;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.Label currentInterval;
+        private System.Windows.Forms.Label currentTimeUnit;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label statusLabel;
         private System.Windows.Forms.Label label14;

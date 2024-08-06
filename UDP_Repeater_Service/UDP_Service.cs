@@ -130,14 +130,14 @@ class TheMainProgram
             string receivePort  =   (string)jsonObject["currentConfig"]["receiveFrom"]["port"];
             string sendIp       =   (string)jsonObject["currentConfig"]["sendTo"]["ip"];
             string sendPort     =   (string)jsonObject["currentConfig"]["sendTo"]["port"];
-            int    frequency    =   ( int  )jsonObject["inactivitySettings"]["frequency"];
-            string interval     =   (string)jsonObject["inactivitySettings"]["interval"];
+            int    interval     =   ( int  )jsonObject["inactivitySettings"]["inactivityInterval"];
+            string unit         =   (string)jsonObject["inactivitySettings"]["inactivityUnit"];
             string promEndpoint =   (string)jsonObject["monitoring"]["prom"];
             string lokiEndpoint =   (string)jsonObject["monitoring"]["loki"];
             string nameOfNIC    =   (string)jsonObject["descriptionOfNIC"];
 
 
-            Backend backendObject = new Backend(receiveIp, receivePort, sendIp, sendPort, frequency, interval, 
+            Backend backendObject = new Backend(receiveIp, receivePort, sendIp, sendPort, interval, unit, 
                                                 promEndpoint, lokiEndpoint, nameOfNIC);
 
             return backendObject;
@@ -187,8 +187,8 @@ class TheMainProgram
                     jsonObject["defaultSettings"]["receiveFrom"]["port"] = newbackendObject.receivePort.ToString();
                     break;
                 case Backend.changeType.inactive:
-                    jsonObject["inactivitySettings"]["frequency"] = newbackendObject.frequency.ToString();
-                    jsonObject["inactivitySettings"]["interval"]  = newbackendObject.interval;
+                    jsonObject["inactivitySettings"]["inactivityInterval"] = newbackendObject.inactivityInterval.ToString();
+                    jsonObject["inactivitySettings"]["inactivityUnit"]  = newbackendObject.inactivityUnit;
                     break;
                 case Backend.changeType.setup:
                     jsonObject["monitoring"]["prom"] = newbackendObject.promEndpoint;

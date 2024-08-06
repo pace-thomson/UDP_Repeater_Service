@@ -134,8 +134,8 @@ namespace GUIreceiver
                         newbackendObject.change = Backend.changeType.defaultRecieve;
                         break;                                                   
                     case "inactive":
-                        newbackendObject.frequency = int.Parse(dataParts[0]);
-                        newbackendObject.interval = dataParts[1];
+                        newbackendObject.inactivityInterval = int.Parse(dataParts[0]);
+                        newbackendObject.inactivityUnit = dataParts[1];
                         newbackendObject.change = Backend.changeType.inactive;
                         break;
                     case "setup":

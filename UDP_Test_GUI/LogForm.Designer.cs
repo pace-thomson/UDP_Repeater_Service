@@ -153,20 +153,20 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.label1.Location = new System.Drawing.Point(467, 51);
+            this.label1.Location = new System.Drawing.Point(471, 51);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(57, 13);
+            this.label1.Size = new System.Drawing.Size(42, 13);
             this.label1.TabIndex = 9;
-            this.label1.Text = "Frequency";
+            this.label1.Text = "Interval";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(579, 51);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(42, 13);
+            this.label4.Size = new System.Drawing.Size(52, 13);
             this.label4.TabIndex = 10;
-            this.label4.Text = "Interval";
+            this.label4.Text = "Time Unit";
             // 
             // inactivityInputBox
             // 
