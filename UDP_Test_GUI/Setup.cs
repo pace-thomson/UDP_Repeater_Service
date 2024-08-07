@@ -30,6 +30,7 @@ using System.Text;
 using System.Windows.Forms;
 using UDP_Repeater_GUI;
 using Newtonsoft.Json.Linq;
+using SharpPcap.LibPcap;
 
 namespace UDP_Test_GUI
 {
@@ -85,13 +86,15 @@ namespace UDP_Test_GUI
         {
             try
             {
-                var devices = CaptureDeviceList.Instance;
-                foreach (ICaptureDevice dev in devices)
+                LibPcapLiveDeviceList deviceList = LibPcapLiveDeviceList.Instance;
+                ICaptureDevice device = null;
+                
+                foreach (LibPcapLiveDevice dev in deviceList)
                 {
                     int rowNum = listOfNICs.Rows.Add();
                     DataGridViewRow row = listOfNICs.Rows[rowNum];
 
-                    row.Cells["nameColumn"].Value = dev.Name;
+                    row.Cells["nameColumn"].Value = dev.Interface.FriendlyName;
                     row.Cells["descriptionColumn"].Value = dev.Description;
                     row.Cells["macAddressColumn"].Value = dev.MacAddress;
                     if (dev.MacAddress == null)
@@ -118,7 +121,7 @@ namespace UDP_Test_GUI
 
             promTextbox.Text = (string)jsonObject["monitoring"]["prom"];
             lokiTextbox.Text = (string)jsonObject["monitoring"]["loki"];
-            nicTextbox.Text  = (string)jsonObject["descriptionOfNIC"];
+            nicTextbox.Text  = (string)jsonObject["macAddressOfNIC"];
         }
 
         /// <summary> 
@@ -148,16 +151,17 @@ namespace UDP_Test_GUI
                             Uri.IsWellFormedUriString(loki, UriKind.Absolute))
                         {
                             DataGridViewRow row = listOfNICs.SelectedRows[0];
-                            string nic = row.Cells["descriptionColumn"].Value.ToString();
+                            string name = row.Cells["nameColumn"].Value.ToString();
+                            string description = row.Cells["descriptionColumn"].Value.ToString();
                             string mac = row.Cells["macAddressColumn"].Value.ToString();
 
 
                             using (UdpClient sendRequest = new UdpClient())
                             {
-                                byte[] bytes = Encoding.ASCII.GetBytes($"{this.prom},{this.loki},setup,{nic}");
+                                byte[] bytes = Encoding.ASCII.GetBytes($"{this.prom},{this.loki},setup,{mac}");
                                 sendRequest.Send(bytes, bytes.Length, "127.0.0.1", 63763);
 
-                                theMainForm.logger.LogNicChange(nic, mac);
+                                theMainForm.logger.LogNicChange(name, mac);
                                 theMainForm.logger.LogMonitoringChange(this.prom, this.loki);
 
                                 sendRequest.Close();

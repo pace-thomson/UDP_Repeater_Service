@@ -31,6 +31,7 @@ using SharpPcap;
 using System.Net;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using Newtonsoft.Json.Linq;
 
 
 namespace Repeater
@@ -325,7 +326,7 @@ namespace Repeater
                 ICaptureDevice device = null;
                 foreach (var dev in devices)
                 {
-                    if (dev.Description == backendObject.descriptionOfNIC)
+                    if (dev.MacAddress.ToString() == backendObject.macAddressOfNIC)
                     {
                         device = dev;
                         break;
@@ -335,7 +336,7 @@ namespace Repeater
                 if (device == null)
                 {
                     device = devices[0];
-                    backendObject.WarningLogger($"No device matching \"{backendObject.descriptionOfNIC}\" was found, " +
+                    backendObject.WarningLogger($"No device matching \"{backendObject.macAddressOfNIC}\" was found, " +
                                                 $"{device.Description} is being used.");
                 }
 
@@ -386,9 +387,10 @@ namespace Repeater
             try
             {       // start timing for packet ingress/egress
                 stopWatch.Start();
-
+                
                     // get the whole packet
                 RawCapture rawPacket = e.GetPacket();
+                
                 byte[] wholePacket = rawPacket.Data;
 
                     // get the actual data section of the packet. The header is always 42 bytes long
@@ -400,8 +402,7 @@ namespace Repeater
 
                     // stop the stopwatch, time the packet handling perfomance and record it
                 stopWatch.Stop();
-                double ticks = (double)stopWatch.ElapsedTicks;
-                backendObject.AddNewPacketTimeHandled(1000 * ticks / Stopwatch.Frequency);
+                backendObject.AddNewPacketTimeHandled(stopWatch.Elapsed.TotalMilliseconds);
                 stopWatch.Reset();
 
                     // sending to GUI section
@@ -416,6 +417,65 @@ namespace Repeater
             catch (Exception ex)
             {
                 backendObject.ExceptionLogger(ex);
+            }
+        }
+
+
+
+
+        public async void TimePacketHandling(CancellationToken token)
+        {
+            try
+            {
+                var tcs = new TaskCompletionSource<bool>();
+
+                token.Register(() =>
+                {
+                    tcs.SetResult(true);
+                });
+
+                CaptureDeviceList devices = CaptureDeviceList.Instance;
+                ICaptureDevice device = null;
+                foreach (var dev in devices)
+                {
+                    if (dev.Description == backendObject.macAddressOfNIC)
+                    {
+                        device = dev;
+                        break;
+                    }
+                }
+
+                if (device == null)
+                {
+                    device = devices[0];
+                }
+
+                // Register our handler function to the 'packet arrival' event
+                device.OnPacketArrival += new PacketArrivalEventHandler(device_OnPacketArrival);
+
+                // Open the device for capturing
+                int readTimeoutMilliseconds = 1000;
+                device.Open(DeviceModes.Promiscuous, readTimeoutMilliseconds);
+
+                // filters for out listening port
+                device.Filter = $"udp port {backendObject.receivePort} and host {backendObject.receiveIp}";
+
+                // start listening
+                device.StartCapture();
+
+                // wait for the cancellation token to pop
+                await tcs.Task;
+
+                device.StopCapture();
+                device.Close();
+
+                CloseAllOurSockets();
+
+                return;
+            }
+            catch (Exception e)
+            {
+                backendObject.ExceptionLogger(e);
             }
         }
 

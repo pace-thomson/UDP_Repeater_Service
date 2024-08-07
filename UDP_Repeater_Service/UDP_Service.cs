@@ -140,7 +140,7 @@ class TheMainProgram
             string unit         =   (string)jsonObject["inactivitySettings"]["inactivityUnit"];
             string promEndpoint =   (string)jsonObject["monitoring"]["prom"];
             string lokiEndpoint =   (string)jsonObject["monitoring"]["loki"];
-            string nameOfNIC    =   (string)jsonObject["descriptionOfNIC"];
+            string nameOfNIC    =   (string)jsonObject["macAddressOfNIC"];
 
 
             Backend backendObject = new Backend(receiveIp, receivePort, sendIp, sendPort, interval, unit, 
@@ -199,7 +199,7 @@ class TheMainProgram
                 case Backend.changeType.setup:
                     jsonObject["monitoring"]["prom"] = newbackendObject.promEndpoint;
                     jsonObject["monitoring"]["loki"] = newbackendObject.lokiEndpoint;
-                    jsonObject["descriptionOfNIC"]   = newbackendObject.descriptionOfNIC;
+                    jsonObject["macAddressOfNIC"]   = newbackendObject.macAddressOfNIC;
                     break;
                 case Backend.changeType.restoreToDefaults:
                     jsonObject["currentConfig"]["receiveFrom"]["ip"]    =   (string)jsonObject["defaultSettings"]["receiveFrom"]["ip"];

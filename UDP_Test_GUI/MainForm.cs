@@ -322,13 +322,13 @@ namespace UDP_Repeater_GUI
                 }
                 catch (ObjectDisposedException e)
                 {
-                        // Handle if the UDP client is disposed
+                    // Handle if the UDP client is disposed
                     isListening = false;
                     logger.LogException(e);
                 }
                 catch (Exception ex)
                 {
-                        // Handle other exceptions
+                    // Handle other exceptions
                     MessageBox.Show($"Error receiving data: {ex.Message}");
                     logger.LogException(ex);
                 }

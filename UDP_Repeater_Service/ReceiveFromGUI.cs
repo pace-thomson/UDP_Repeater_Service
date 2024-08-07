@@ -141,7 +141,7 @@ namespace GUIreceiver
                     case "setup":
                         newbackendObject.promEndpoint = dataParts[0];
                         newbackendObject.lokiEndpoint = dataParts[1];
-                        newbackendObject.descriptionOfNIC = dataParts[3];
+                        newbackendObject.macAddressOfNIC = dataParts[3];
                         newbackendObject.change = Backend.changeType.setup;
                         backendObject.WarningLogger("Restarting service due to NIC/Monitoring reconfiguration.");
                         break;

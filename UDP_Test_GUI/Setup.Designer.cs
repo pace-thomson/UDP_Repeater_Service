@@ -30,9 +30,6 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Setup));
             this.listOfNICs = new System.Windows.Forms.DataGridView();
-            this.nameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.descriptionColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.macAddressColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.sumbitButton = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -49,6 +46,9 @@
             this.label7 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.cancelButton = new System.Windows.Forms.Button();
+            this.nameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.descriptionColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.macAddressColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.listOfNICs)).BeginInit();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
@@ -69,26 +69,6 @@
             this.listOfNICs.RowHeadersVisible = false;
             this.listOfNICs.Size = new System.Drawing.Size(581, 189);
             this.listOfNICs.TabIndex = 0;
-            // 
-            // nameColumn
-            // 
-            this.nameColumn.HeaderText = "Name";
-            this.nameColumn.Name = "nameColumn";
-            this.nameColumn.ReadOnly = true;
-            this.nameColumn.Width = 200;
-            // 
-            // descriptionColumn
-            // 
-            this.descriptionColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.descriptionColumn.HeaderText = "Description";
-            this.descriptionColumn.Name = "descriptionColumn";
-            this.descriptionColumn.ReadOnly = true;
-            // 
-            // macAddressColumn
-            // 
-            this.macAddressColumn.HeaderText = "Mac Address";
-            this.macAddressColumn.Name = "macAddressColumn";
-            this.macAddressColumn.ReadOnly = true;
             // 
             // sumbitButton
             // 
@@ -259,6 +239,26 @@
             this.cancelButton.Text = "Cancel";
             this.cancelButton.UseVisualStyleBackColor = true;
             // 
+            // nameColumn
+            // 
+            this.nameColumn.HeaderText = "Name";
+            this.nameColumn.Name = "nameColumn";
+            this.nameColumn.ReadOnly = true;
+            this.nameColumn.Width = 150;
+            // 
+            // descriptionColumn
+            // 
+            this.descriptionColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.descriptionColumn.HeaderText = "Description";
+            this.descriptionColumn.Name = "descriptionColumn";
+            this.descriptionColumn.ReadOnly = true;
+            // 
+            // macAddressColumn
+            // 
+            this.macAddressColumn.HeaderText = "Mac Address";
+            this.macAddressColumn.Name = "macAddressColumn";
+            this.macAddressColumn.ReadOnly = true;
+            // 
             // Setup
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -293,9 +293,6 @@
         private System.Windows.Forms.Button sumbitButton;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.DataGridViewTextBoxColumn nameColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn descriptionColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn macAddressColumn;
         private System.Windows.Forms.TextBox promEndpoint;
         private System.Windows.Forms.TextBox lokiEndpoint;
         private System.Windows.Forms.Label label3;
@@ -309,5 +306,8 @@
         private System.Windows.Forms.TextBox nicTextbox;
         private System.Windows.Forms.TextBox lokiTextbox;
         private System.Windows.Forms.TextBox promTextbox;
+        private System.Windows.Forms.DataGridViewTextBoxColumn nameColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn descriptionColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn macAddressColumn;
     }
 }

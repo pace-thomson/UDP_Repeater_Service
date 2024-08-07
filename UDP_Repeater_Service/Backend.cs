@@ -58,8 +58,8 @@ namespace BackendClassNameSpace
         public string promEndpoint;
             /// <summary> The uri string for the endpoint that our loki logs will be sent to. </summary>
         public string lokiEndpoint;
-            /// <summary> The device.Description of the network card that we're listening on. </summary>
-        public string descriptionOfNIC;
+            /// <summary> The device.Name of the network card that we're listening on. </summary>
+        public string macAddressOfNIC;
 
             /// <summary> How we keep track of the change type. Only used with newBackendObject. </summary>
         public changeType change;
@@ -130,7 +130,7 @@ namespace BackendClassNameSpace
             this.inactivityUnit = newUnit;
             this.promEndpoint = PromEndpoint;
             this.lokiEndpoint = LokiEndpoint;
-            this.descriptionOfNIC = NameOfNIC;
+            this.macAddressOfNIC = NameOfNIC;
 
                 // windows event logger set up fields
             this.eventLog = new EventLog("UDP Packet Repeater");
@@ -204,7 +204,7 @@ namespace BackendClassNameSpace
             this.inactivityUnit     =   originalBackendObject.inactivityUnit;
             this.promEndpoint       =   originalBackendObject.promEndpoint;
             this.lokiEndpoint       =   originalBackendObject.lokiEndpoint;
-            this.descriptionOfNIC   =   originalBackendObject.descriptionOfNIC;
+            this.macAddressOfNIC   =   originalBackendObject.macAddressOfNIC;
         }
 
         /// <summary> 
@@ -255,7 +255,7 @@ namespace BackendClassNameSpace
                         ""prom"": ""Not Configured Yet"",
                         ""loki"": ""Not Configured Yet""
                     },
-                    ""descriptionOfNIC"":""Not Configured Yet"" 
+                    ""macAddressOfNIC"":""Not Configured Yet"" 
                 }";
 
                 // Write the JSON string to a file

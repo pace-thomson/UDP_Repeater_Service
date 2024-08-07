@@ -283,16 +283,16 @@ namespace UDP_Repeater_GUI
         ///  Description: Logs NIC changes into the event log. <br/><br/>
         ///
         ///  Inputs:  <br/>
-        ///  string <paramref name="description"/> - The new NIC's description. <br/>
+        ///  string <paramref name="name"/> - The new NIC's name. <br/>
         ///  string <paramref name="type"/> - The new NIC's interface type. <br/><br/>
         ///  
         ///  Returns:  None
         /// </summary>
-        public void LogNicChange(string description, string macAddress)
+        public void LogNicChange(string name, string macAddress)
         {
             string message = String.Format("The listening Network Interface Card was changed. \n" +
-                                           "Description: {0} \n" +
-                                           "Mac Address: {1}", description, macAddress);
+                                           "Name: {0} \n" +
+                                           "Mac Address: {1}", name, macAddress);
 
             eventLog.WriteEntry(message, EventLogEntryType.Information, 8);  // 8 is a NIC config change
             if (lokiLogger != null)

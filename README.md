@@ -33,6 +33,16 @@ system up and running.
 This system implements a Prometheus/Loki/Grafana monitoring stack for simple and powerful observability. System endpoints for Prometheus metrics and 
 Loki logging are user configurable through the GUI. This data is visualized using a grafana dashboard. Dashboard setup information is incluced in this repo
 in the Dashboard_Config.json file. Below is a screenshot of the dashboard when running alongside this system. 
+
+I run the prometheus server with the following command:
+```shell
+PS C:\Users> .\prometheus.exe --enable-feature=otlp-write-receiver
+```
+I run the loki server with the following command:
+```shell
+PS C:\Users> .\loki-windows-amd64.exe --config.file=loki-local-config.yaml
+```
+
 <p align="center">
   <img src="./Images_For_README/Dashboard_Screenshot.png" alt="Grafana Dashboard Screenshot">
 </p>
