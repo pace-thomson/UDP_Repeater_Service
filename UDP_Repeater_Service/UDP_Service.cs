@@ -66,6 +66,12 @@ namespace UDP_Repeater_Service
             outerBackendObject = new Backend();
         }
 
+        public void DebuggerThing()
+        {
+            outerBackendObject.StartStopLogger("start");
+            TheMainProgram.main();
+        }
+
         /// <summary> 
         ///  Class Name: UDP_Service  <br/><br/> 
         ///  Parent Class: ServiceBase  <br/><br/> 

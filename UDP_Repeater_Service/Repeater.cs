@@ -30,6 +30,7 @@ using System.Timers;
 using SharpPcap;
 using System.Net;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 
 namespace Repeater
@@ -144,15 +145,106 @@ namespace Repeater
     /// </summary>
     class RepeaterClass
     {
-                /// <summary> A Backend object that we use to get the configuration settings. </summary>
+            /// <summary> The ip we are receiving from. </summary>
+        public string receiveIpString { get; set; }
+            /// <summary> The port we are receiving from. </summary>
+        public string receivePortString { get; set; }
+            /// <summary> A Backend object that we use to get the configuration settings. </summary>
         public static Backend backendObject { get; set; }
-                /// <summary> A timerClass object that we use to get the update the last received packet time. </summary>
+
+            /// <summary> A timerClass object that we use to get the update the last received packet time. </summary>
         public static TimerClass timer { get; set; }
-                /// <summary> Tells us if the send ip is multicast or not. </summary>
-        private static bool isMulticast { get; set; }
-                /// <summary> Times how long it takes to process packets. </summary>
+            /// <summary> Times how long it takes to process packets. </summary>
         public static Stopwatch stopWatch { get; set; }
 
+            /// <summary> Tells us if the send ip is multicast or not. </summary>
+        private static bool isMulticast { get; set; }
+            /// <summary> The sending endpoint object. </summary>
+        public IPEndPoint endPoint { get; set; }
+            /// <summary> The multicast sender, which is a Socket object. </summary>
+        public Socket multicastSender { get; set; }
+            /// <summary> The other sender, which is a UdpClient object. </summary>
+        public UdpClient otherSender { get; set; }
+            /// <summary> The GUI sender. Handles all of the sending to the GUI. </summary>
+        public UdpClient guiSender { get; set; }
+
+
+        /// <summary> 
+        ///  Class Name: RepeaterClass  <br/><br/> 
+        ///
+        ///  Description: The RepeaterClass object Constructor <br/><br/>
+        ///
+        ///  Inputs:  <br/>
+        ///  Backend <paramref name="BackendObject"/> - The Backend object that we use to get our sending 
+        ///                                             settings and error logging. <br/><br/> 
+        /// </summary>
+        /// <returns>A RepeaterClass Object</returns>
+        public RepeaterClass(Backend BackendObject)
+        {
+            backendObject = BackendObject;
+            timer = new TimerClass(BackendObject);
+            stopWatch = new Stopwatch();
+
+            isMulticast = IsMulticastSetter();
+
+            guiSender = new UdpClient("127.0.0.1", 56722);
+        }
+
+
+        /// <summary> 
+        ///  Class Name: RepeaterClass  <br/><br/>
+        ///
+        ///  Description: Checks if supplied ip string is multicast or not, and sets the corrresponding sender. <br/><br/>
+        ///
+        ///  Inputs: None <br/><br/>
+        ///  
+        ///  Returns:  bool - whether the ip is multicast or not. 
+        /// </summary>
+        public bool IsMulticastSetter()
+        {
+            try
+            {
+                IPAddress ip = IPAddress.Parse(backendObject.sendIp);
+                this.endPoint = new IPEndPoint(ip, backendObject.sendPort);
+
+                string[] split = backendObject.sendIp.Split('.');
+                int firstOctect = int.Parse(split[0]);
+                if (firstOctect >= 224 && firstOctect <= 239)
+                {
+                    this.multicastSender = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+                    this.multicastSender.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, new MulticastOption(ip));
+                    this.multicastSender.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.MulticastTimeToLive, 16);
+                    this.multicastSender.Connect(endPoint);
+                    return true;
+                }
+                else
+                {
+                    this.otherSender = new UdpClient(backendObject.sendIp, backendObject.sendPort);
+                    return false;
+                }
+            }
+            catch (Exception e)
+            {
+                backendObject.ExceptionLogger(e);
+                return false;
+            }
+        }
+
+        public void CloseAllOurSockets()
+        {
+            if (multicastSender != null)
+            {
+                multicastSender.Close();
+            }
+            if (otherSender != null)
+            {
+                otherSender.Close();
+            }
+            if (guiSender != null)
+            {
+                guiSender.Close();
+            }
+        }
 
         /// <summary> 
         ///  Class Name: RepeaterClass  <br/><br/>
@@ -165,46 +257,15 @@ namespace Repeater
         ///  
         ///  Returns:  None
         /// </summary>
-        public static void SendMessageOut(byte[] messageBytes)
+        public void SendMessageOut(byte[] messageBytes)
         {
-            IPAddress ip = IPAddress.Parse(backendObject.sendIp);
-            IPEndPoint endPoint = new IPEndPoint(ip, backendObject.sendPort);
-
             if ( isMulticast )
             {
-                try
-                {
-                    using (Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp))
-                    {
-                        s.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, new MulticastOption(ip));
-                        s.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.MulticastTimeToLive, 16); 
-
-                        s.Connect(endPoint);
-
-                        s.Send(messageBytes, messageBytes.Length, SocketFlags.None);
-
-                        s.Close();
-                    }
-                }
-                catch (Exception e)
-                {
-                    backendObject.ExceptionLogger(e);
-                }
+                multicastSender.Send(messageBytes, messageBytes.Length, SocketFlags.None);
             } 
             else
             {
-                using (UdpClient sender = new UdpClient())
-                {
-                    try
-                    {
-                        sender.Send(messageBytes, messageBytes.Length, endPoint);
-                    }
-                    catch (Exception e)
-                    {
-                        backendObject.ExceptionLogger(e);
-                    }
-                    sender.Close();
-                }
+                otherSender.Send(messageBytes, messageBytes.Length);
             }
         }
 
@@ -219,27 +280,21 @@ namespace Repeater
         ///  
         ///  Returns:  None
         /// </summary>
-        public static void SendToGUI(int payloadLength)
+        public void SendToGUI(int payloadLength)
         {
-            using (UdpClient sender = new UdpClient())
+            try
             {
-                try
-                {
-                    string receiveIp = backendObject.receiveIp;
-                    string receivePort = backendObject.receivePort.ToString();
-                    string dataLength = payloadLength.ToString();
+                string receiveIp = backendObject.receiveIp;
+                string receivePort = backendObject.receivePort.ToString();
+                string dataLength = payloadLength.ToString();
 
-                    byte[] bytes = Encoding.ASCII.GetBytes(receiveIp + "," + receivePort + "," + dataLength);
+                byte[] bytes = Encoding.ASCII.GetBytes(receiveIp + "," + receivePort + "," + dataLength);
 
-
-                    sender.Send(bytes, bytes.Length, "127.0.0.1", 50000);
-
-                }
-                catch (Exception e)
-                {
-                    backendObject.ExceptionLogger(e);
-                }
-                sender.Close();
+                guiSender.Send(bytes, bytes.Length);
+            }
+            catch (Exception e)
+            {
+                backendObject.ExceptionLogger(e);
             }
         }
 
@@ -255,7 +310,7 @@ namespace Repeater
         ///  
         ///  Returns:  None
         /// </summary>
-        public static async void StartReceiver(CancellationToken token)
+        public async void StartReceiver(CancellationToken token)
         {
             try
             {
@@ -303,6 +358,8 @@ namespace Repeater
                 device.StopCapture();
                 device.Close();
 
+                CloseAllOurSockets();
+
                 return;
             }
             catch (Exception e)
@@ -324,7 +381,7 @@ namespace Repeater
         ///  
         ///  Returns:  None
         /// </summary>
-        private static void device_OnPacketArrival(object sender, PacketCapture e)
+        private void device_OnPacketArrival(object sender, PacketCapture e)
         {
             try
             {       // start timing for packet ingress/egress
@@ -362,39 +419,6 @@ namespace Repeater
             }
         }
 
-
-        /// <summary> 
-        ///  Class Name: RepeaterClass  <br/><br/>
-        ///
-        ///  Description: Checks if supplied ip string is multicast or not. <br/><br/>
-        ///
-        ///  Inputs:  <br/>
-        ///  string <paramref name="ip"/> - The ip to check. <br/><br/>
-        ///  
-        ///  Returns:  bool - whether the ip is multicast or not. 
-        /// </summary>
-        public static bool IsMulticastSetter(string ip)
-        {
-            try
-            {
-                string[] split = ip.Split('.');
-                int firstOctect = int.Parse(split[0]);
-                if (firstOctect >= 224 && firstOctect <= 239)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            catch (Exception e)
-            {
-                backendObject.ExceptionLogger(e);
-                return false;
-            }
-        }
-
         /// <summary> 
         ///  Class Name: RepeaterClass  <br/><br/> 
         ///
@@ -411,21 +435,15 @@ namespace Repeater
         {
             try
             {
-                backendObject = BackendObject;
+                RepeaterClass repeaterObject = new RepeaterClass(BackendObject);
 
-                isMulticast = IsMulticastSetter(backendObject.sendIp);
-
-                timer = new TimerClass(BackendObject);
-
-                stopWatch = new Stopwatch();
-
-                StartReceiver(token);
+                repeaterObject.StartReceiver(token);
 
                 return;
             }
             catch (Exception e)
             {
-                backendObject.ExceptionLogger(e);
+                BackendObject.ExceptionLogger(e);
             }
         }
     }

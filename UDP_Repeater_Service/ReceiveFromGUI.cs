@@ -55,7 +55,7 @@ namespace GUIreceiver
                 {
                     try
                     {
-                        listener = new UdpClient(50001);
+                        listener = new UdpClient(63763);
                         socketOpen = true;
                     }
                     catch (SocketException) 
@@ -64,7 +64,7 @@ namespace GUIreceiver
                         
                         if (socketCantConnectCount > 15)
                         {
-                            backendObject.WarningLogger("Receiving from GUI port 50001 not open. " +
+                            backendObject.WarningLogger("Receiving from GUI port 63763 not open. " +
                                                         "Tried 15 times to connect without success");
                             break;
                         }

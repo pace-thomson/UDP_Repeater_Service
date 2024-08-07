@@ -109,7 +109,7 @@ namespace UDP_Repeater_GUI
 
                         // we communicate back and forth with the Service with comma seperated strings
                         byte[] bytes = Encoding.ASCII.GetBytes(ip + "," + portString + "," + mode);
-                        sendRequest.Send(bytes, bytes.Length, "127.0.0.1", 50001);
+                        sendRequest.Send(bytes, bytes.Length, "127.0.0.1", 63763);
 
 
                         theMainForm.logger.LogConfigChange(mode, ip, portString);
@@ -156,7 +156,7 @@ namespace UDP_Repeater_GUI
                             // sends empty message to tell service that default setting were selected
                             // This doesn't even get read by the backend, it just is a placeholder
                     byte[] bytes = Encoding.ASCII.GetBytes(",,");
-                    sendRequest.Send(bytes, bytes.Length, "127.0.0.1", 50001);
+                    sendRequest.Send(bytes, bytes.Length, "127.0.0.1", 63763);
                     theMainForm.logger.LogConfigChange("Reverted to Default", "N/A", "N/A");
                     theMainForm.UpdateCurrentConfigGroupWithDefaults();
                 }

@@ -155,7 +155,7 @@ namespace UDP_Test_GUI
                             using (UdpClient sendRequest = new UdpClient())
                             {
                                 byte[] bytes = Encoding.ASCII.GetBytes($"{this.prom},{this.loki},setup,{nic}");
-                                sendRequest.Send(bytes, bytes.Length, "127.0.0.1", 50001);
+                                sendRequest.Send(bytes, bytes.Length, "127.0.0.1", 63763);
 
                                 theMainForm.logger.LogNicChange(nic, mac);
                                 theMainForm.logger.LogMonitoringChange(this.prom, this.loki);

@@ -63,7 +63,7 @@ namespace UDP_Repeater_GUI
         {
             InitializeComponent();
 
-                // double unhandled exception handling, just in case
+                // double unhandling exception handling, just in case
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
             Application.ThreadException += new System.Threading.ThreadExceptionEventHandler(ThreadExceptionHandlerFunction);
 
@@ -159,13 +159,9 @@ namespace UDP_Repeater_GUI
             }
 
             double creationDiff = (DateTime.Now - File.GetCreationTime("C:\\Windows\\SysWOW64\\UDP_Repeater_Config.json")).TotalSeconds;
-            if (creationDiff > 30)
+            if (creationDiff > 10)
             {
-                double modifiedDiff = (DateTime.Now - File.GetLastWriteTime("C:\\Windows\\SysWOW64\\UDP_Repeater_Config.json")).TotalSeconds;
-                if (modifiedDiff < 5)
-                {
-                    return;
-                }
+                return;
             }
 
             using (Setup setupForm = new Setup(this))
@@ -199,8 +195,8 @@ namespace UDP_Repeater_GUI
             currentReceivePort.Text  =  (string)jsonObject["currentConfig"]["receiveFrom"]["port"];
             currentSendIp.Text       =  (string)jsonObject["currentConfig"]["sendTo"]["ip"];
             currentSendPort.Text     =  (string)jsonObject["currentConfig"]["sendTo"]["port"];
-            currentInterval.Text    =  (string)jsonObject["inactivitySettings"]["interval"];
-            currentTimeUnit.Text     =  FirstLetterCapital((string)jsonObject["inactivitySettings"]["interval"]);
+            currentInterval.Text     =  (string)jsonObject["inactivitySettings"]["inactivityInterval"];
+            currentTimeUnit.Text     =  FirstLetterCapital((string)jsonObject["inactivitySettings"]["inactivityUnit"]);
             if (currentInterval.Text != "1")
             {
                 currentTimeUnit.Text += "s";
@@ -295,7 +291,7 @@ namespace UDP_Repeater_GUI
                 if (!isListening)
                 {
                     isListening = true;
-                    udpClient = new UdpClient(50000);
+                    udpClient = new UdpClient(56722);
                     await ReceiveDataAsync();
                 }
             }
