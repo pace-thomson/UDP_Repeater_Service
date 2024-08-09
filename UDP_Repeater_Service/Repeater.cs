@@ -171,8 +171,6 @@ namespace Repeater
         public UdpClient guiSender { get; set; }
 
 
-        private CancellationToken token { get; set; }
-
         private Socket listenerSocket { get; set; }
 
         private byte[] buffer { get; set; }
@@ -197,8 +195,6 @@ namespace Repeater
             isMulticast = IsMulticastSetter();
 
             guiSender = new UdpClient("127.0.0.1", 56722);
-
-            token = originalToken;
 
             buffer = new byte[1028];
         }
@@ -245,18 +241,10 @@ namespace Repeater
 
         public void CloseAllOurSockets()
         {
-            if (multicastSender != null)
-            {
-                multicastSender.Close();
-            }
-            if (otherSender != null)
-            {
-                otherSender.Close();
-            }
-            if (guiSender != null)
-            {
-                guiSender.Close();
-            }
+            if (listenerSocket != null) { listenerSocket.Dispose(); }
+            if (multicastSender != null) { multicastSender.Dispose(); }
+            if (otherSender != null) { otherSender.Dispose(); }
+            if (guiSender != null) { guiSender.Dispose(); }
         }
 
         /// <summary> 
@@ -341,10 +329,8 @@ namespace Repeater
                         backendObject.WarningLogger($"Invalid listening IP Address: {backendObject.ipAddressOfNIC}, currently listening on default NIC \n" +
                                                     $"Name: {networkInterface.Name} \n" +
                                                     $"IP Address: {nic.Address} \n");
+
                         backendObject.ipAddressOfNIC = nic.Address.ToString();
-
-
-                        // WRITE TO JSON HERE
 
                         return;
                     }
@@ -359,38 +345,31 @@ namespace Repeater
         ///  packet arrival. It then starts listening and waits for the cancellation token to stop the listening. <br/><br/>
         ///
         ///  Inputs:  <br/>
-        ///  CancellationToken <paramref name="token"/> - A token that signal a configuration change was made, so this task need to end. <br/><br/>
+        ///  CancellationToken <paramref name="token"/> - A token that signals a configuration change was made, so this task need to end. <br/><br/>
         ///  
         ///  Returns:  None
         /// </summary>
-        public void SetupAndStartListener()
+        public void SetupAndStartListener(CancellationToken token)
         {
             try
             {
-                if (!token.IsCancellationRequested)
+                try
                 {
-                    try
-                    {
-                        listenerSocket = new Socket(AddressFamily.InterNetwork, SocketType.Raw, ProtocolType.Udp);
-                        listenerSocket.Bind(new IPEndPoint(IPAddress.Parse(backendObject.ipAddressOfNIC), backendObject.receivePort));
-                    }
-                    catch (FormatException)     // This gets thrown if the IP doesn't match one found on the machine's nics, so we set a default
-                    {
-                        HandleBadNicIP();
-                    }
-                    
-                    //    // Set socket options
-                    //listenerSocket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.HeaderIncluded, true);
-                    //byte[] byTrue = new byte[4] { 1, 0, 0, 0 };
-                    //byte[] byOut = new byte[4];
-                    //listenerSocket.IOControl(IOControlCode.ReceiveAll, byTrue, byOut);
-                    
-                    listenerSocket.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), null);
+                    listenerSocket = new Socket(AddressFamily.InterNetwork, SocketType.Raw, ProtocolType.Udp);
+                    listenerSocket.Bind(new IPEndPoint(IPAddress.Parse(backendObject.ipAddressOfNIC), backendObject.receivePort));
                 }
-                else
+                catch (FormatException)     // This gets thrown if the IP doesn't match one found on the machine's nics, so we set a default
                 {
-                    CloseAllOurSockets();
+                    HandleBadNicIP();
                 }
+
+                while (!token.IsCancellationRequested)
+                {
+                    listenerSocket.Receive(buffer);
+                    ReceiveCallback();
+                }
+
+                CloseAllOurSockets();
             }
             catch (Exception ex)
             {
@@ -405,29 +384,26 @@ namespace Repeater
         ///  to the GUI. This also times the packet handling time and reports it, increments total packets <br/>
         ///  handled, and updates the last received packet time.  <br/><br/>
         ///
-        ///  Inputs:  <br/>
-        ///  IAsyncResult <paramref name="AR"/> - The result oject, I don't use it. <br/><br/>
+        ///  Inputs:  <br/><br/>
         ///  
         ///  Returns:  None
         /// </summary>
-        private void ReceiveCallback(IAsyncResult AR)
+        private void ReceiveCallback()
         {
             try
             {
                 stopWatch.Start();
-                listenerSocket.EndReceive(AR);
 
-
-                // Parse the IP header to find UDP packets
+                // Parse the IP header to find UDP packet
                 var ipHeaderLength = (buffer[0] & 0x0F) * 4;
-                var protocol = buffer[9];
+                int udpHeaderOffset = ipHeaderLength;
+                int udpLength = (buffer[udpHeaderOffset + 4] << 8) | buffer[udpHeaderOffset + 5];
 
-                // Check if the protocol is UDP (protocol number 17)
-                if (protocol == 17)
+                string sourceIP = $"{buffer[12]}.{buffer[13]}.{buffer[14]}.{buffer[15]}";
+                int destinationPort = (buffer[udpHeaderOffset + 2] << 8) | buffer[udpHeaderOffset + 3];
+
+                if (sourceIP == backendObject.receiveIp && destinationPort == backendObject.receivePort)
                 {
-                    var udpHeaderOffset = ipHeaderLength;
-                    var udpLength = (buffer[udpHeaderOffset + 4] << 8) | buffer[udpHeaderOffset + 5];
-
                     // Extract UDP payload
                     var udpPayloadOffset = udpHeaderOffset + 8;
                     var udpPayloadLength = udpLength - 8;
@@ -452,8 +428,6 @@ namespace Repeater
                     // increment the packets received counter for prometheus
                     backendObject.IncrementTotalPacketsHandled();
                 }
-
-                SetupAndStartListener();
             }
             catch (Exception ex)
             {
@@ -480,7 +454,7 @@ namespace Repeater
             {
                 RepeaterClass repeaterObject = new RepeaterClass(BackendObject, token);
 
-                repeaterObject.SetupAndStartListener();
+                repeaterObject.SetupAndStartListener(token);
 
                 return;
             }

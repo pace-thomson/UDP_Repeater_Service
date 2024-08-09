@@ -93,11 +93,11 @@ namespace BackendClassNameSpace
             /// <summary> Our Meter object (the base for all of the metric instrumentation) </summary>
         public Meter myMeter;
             /// <summary> The counter for packets handled </summary>
-        public Counter<long> TotalPacketsHandled;
+        public Counter<UInt64> TotalPacketsHandled;
             /// <summary> Tracks the memory use of the backend. </summary>
         public ObservableGauge<double> processMemory;
             /// <summary> Tracks average time for packet ingress/egress </summary>
-        public Histogram<double> packetHandling;
+        public Histogram<double> packetHandlingTimer;
 
 
         /// <summary> 
@@ -172,9 +172,9 @@ namespace BackendClassNameSpace
                                     })
                                     .Build();
                 this.myMeter = new Meter("JT4.Repeater.MyLibrary", "1.0");
-                this.TotalPacketsHandled = myMeter.CreateCounter<long>("TotalPacketsHandled");
+                this.TotalPacketsHandled = myMeter.CreateCounter<UInt64>("TotalPacketsHandled");
                 this.processMemory = myMeter.CreateObservableGauge("backendMemory", () => GetProcessMemory());
-                this.packetHandling = myMeter.CreateHistogram<double>("packetHandling");
+                this.packetHandlingTimer = myMeter.CreateHistogram<double>("packetHandlingTimer");
             }
             catch (UriFormatException) 
             {
@@ -366,11 +366,11 @@ namespace BackendClassNameSpace
         /// </summary>
         public void AddNewPacketTimeHandled(double stopWatchTime)
         {
-            if (packetHandling == null)
+            if (packetHandlingTimer == null)
             {
                 return;
             }
-            packetHandling.Record(stopWatchTime);
+            packetHandlingTimer.Record(stopWatchTime);
         }
 
 

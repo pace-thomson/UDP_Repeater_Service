@@ -89,13 +89,11 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(68, 46);
+            this.label1.Location = new System.Drawing.Point(82, 44);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(483, 48);
+            this.label1.Size = new System.Drawing.Size(440, 48);
             this.label1.TabIndex = 2;
-            this.label1.Text = "Please select a Network Interface Card to use for listening on this system. Pleas" +
-    "e\r\nalso input the Prometheus and Loki endpoints you wish to use. \r\nThese setting" +
-    "s can be changed later if needed.";
+            this.label1.Text = resources.GetString("label1.Text");
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // label2
@@ -175,11 +173,11 @@
             // 
             this.nicTextbox.BackColor = System.Drawing.SystemColors.Control;
             this.nicTextbox.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.nicTextbox.Location = new System.Drawing.Point(174, 11);
+            this.nicTextbox.Location = new System.Drawing.Point(193, 10);
             this.nicTextbox.Name = "nicTextbox";
-            this.nicTextbox.Size = new System.Drawing.Size(259, 13);
+            this.nicTextbox.Size = new System.Drawing.Size(170, 13);
             this.nicTextbox.TabIndex = 11;
-            this.nicTextbox.Text = "Intel(R) Ethernet Connection (17) I219-LM";
+            this.nicTextbox.Text = "172.18.46.213";
             // 
             // lokiTextbox
             // 
@@ -195,7 +193,7 @@
             // 
             this.label8.AutoSize = true;
             this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label8.Location = new System.Drawing.Point(26, 51);
+            this.label8.Location = new System.Drawing.Point(35, 51);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(89, 13);
             this.label8.TabIndex = 2;
@@ -215,7 +213,7 @@
             // 
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(7, 30);
+            this.label7.Location = new System.Drawing.Point(15, 30);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(131, 13);
             this.label7.TabIndex = 1;
@@ -227,9 +225,9 @@
             this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label6.Location = new System.Drawing.Point(3, 9);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(143, 13);
+            this.label6.Size = new System.Drawing.Size(159, 13);
             this.label6.TabIndex = 0;
-            this.label6.Text = "Network Interface Card:";
+            this.label6.Text = "Listening Network Card IP:";
             // 
             // cancelButton
             // 

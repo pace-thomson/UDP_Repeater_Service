@@ -559,10 +559,12 @@ namespace UDP_Repeater_GUI
                     using (Setup setupForm = new Setup(this))
                     {
                         DialogResult result = setupForm.ShowDialog();
-                            // OK is the result of a successful "Submit" button press, so we restart the gui because 
+                            // OK is the result of a successful setupForm "Submit" button press, so we restart the gui because 
                             // the loki logging doesn't like being reconfigured when its already been assigned. 
+                            // The same thing happens to the Service for that reason
                         if (result == DialogResult.OK)
                         {
+                            System.Threading.Thread.Sleep(1000);
                                 // This does call the FormClosing event with CloseReason.ApplicationExitCall 
                             Application.Restart();      
                             Environment.Exit(0);
