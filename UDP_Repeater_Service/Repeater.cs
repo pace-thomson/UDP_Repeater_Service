@@ -32,6 +32,7 @@ using System.Net;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Newtonsoft.Json.Linq;
+using System.Net.NetworkInformation;
 
 
 namespace Repeater
@@ -170,6 +171,13 @@ namespace Repeater
         public UdpClient guiSender { get; set; }
 
 
+        private CancellationToken token { get; set; }
+
+        private Socket listenerSocket { get; set; }
+
+        private byte[] buffer { get; set; }
+
+
         /// <summary> 
         ///  Class Name: RepeaterClass  <br/><br/> 
         ///
@@ -180,7 +188,7 @@ namespace Repeater
         ///                                             settings and error logging. <br/><br/> 
         /// </summary>
         /// <returns>A RepeaterClass Object</returns>
-        public RepeaterClass(Backend BackendObject)
+        public RepeaterClass(Backend BackendObject, CancellationToken originalToken)
         {
             backendObject = BackendObject;
             timer = new TimerClass(BackendObject);
@@ -189,6 +197,10 @@ namespace Repeater
             isMulticast = IsMulticastSetter();
 
             guiSender = new UdpClient("127.0.0.1", 56722);
+
+            token = originalToken;
+
+            buffer = new byte[1028];
         }
 
 
@@ -260,16 +272,22 @@ namespace Repeater
         /// </summary>
         public void SendMessageOut(byte[] messageBytes)
         {
-            if ( isMulticast )
+            try
             {
-                multicastSender.Send(messageBytes, messageBytes.Length, SocketFlags.None);
-            } 
-            else
+                if (isMulticast)
+                {
+                    multicastSender.Send(messageBytes, messageBytes.Length, SocketFlags.None);
+                }
+                else
+                {
+                    otherSender.Send(messageBytes, messageBytes.Length);
+                }
+            }
+            catch (Exception ex)
             {
-                otherSender.Send(messageBytes, messageBytes.Length);
+                backendObject.ExceptionLogger(ex);
             }
         }
-
 
         /// <summary> 
         ///  Class Name: RepeaterClass  <br/> <br/>
@@ -299,120 +317,143 @@ namespace Repeater
             }
         }
 
-
         /// <summary> 
         ///  Class Name: RepeaterClass  <br/><br/>
         ///
-        ///  Description: Continually listens for packets in promiscuous mode. Sets up the event handler for <br/>
-        ///  packet arrival. It then starts listening and waits for the cancellation token to stop the listening. <br/><br/>
+        ///  Description: Gets called if backendObject.ipAddressOfNIC isn't valid. It finds and sets the first valid <br/>
+        ///  NIC to be the one we use for listening, and logs a warning. <br/><br/>
         ///
-        ///  Inputs:  <br/>
-        ///  CancellationToken <paramref name="token"/> - A token that signal a configuration change was made, so this task need to restart. <br/><br/>
+        ///  Inputs: None <br/><br/>
         ///  
         ///  Returns:  None
         /// </summary>
-        public async void StartReceiver(CancellationToken token)
+        public void HandleBadNicIP()
         {
-            try
+            foreach (NetworkInterface networkInterface in NetworkInterface.GetAllNetworkInterfaces())
             {
-                var tcs = new TaskCompletionSource<bool>();
-
-                token.Register(() =>
+                foreach (var nic in networkInterface.GetIPProperties().UnicastAddresses)
                 {
-                    tcs.SetResult(true);
-                });
-
-                CaptureDeviceList devices = CaptureDeviceList.Instance;
-                ICaptureDevice device = null;
-                foreach (var dev in devices)
-                {
-                    if (dev.MacAddress.ToString() == backendObject.macAddressOfNIC)
+                    if (nic.Address.AddressFamily == AddressFamily.InterNetwork)
                     {
-                        device = dev;
-                        break;
+                            // we choose the first valid option and use that
+                        listenerSocket = new Socket(AddressFamily.InterNetwork, SocketType.Raw, ProtocolType.Udp);
+                        listenerSocket.Bind(new IPEndPoint(nic.Address, backendObject.receivePort));
+                        backendObject.WarningLogger($"Invalid listening IP Address: {backendObject.ipAddressOfNIC}, currently listening on default NIC \n" +
+                                                    $"Name: {networkInterface.Name} \n" +
+                                                    $"IP Address: {nic.Address} \n");
+                        backendObject.ipAddressOfNIC = nic.Address.ToString();
+
+
+                        // WRITE TO JSON HERE
+
+                        return;
                     }
                 }
-
-                if (device == null)
-                {
-                    device = devices[0];
-                    backendObject.WarningLogger($"No device matching \"{backendObject.macAddressOfNIC}\" was found, " +
-                                                $"{device.Description} is being used.");
-                }
-
-                    // Register our handler function to the 'packet arrival' event
-                device.OnPacketArrival += new PacketArrivalEventHandler(device_OnPacketArrival);
-
-                    // Open the device for capturing
-                int readTimeoutMilliseconds = 1000;
-                device.Open(DeviceModes.Promiscuous, readTimeoutMilliseconds);
-
-                    // filters for out listening port
-                device.Filter = $"udp port {backendObject.receivePort} and host {backendObject.receiveIp}";
-
-                    // start listening
-                device.StartCapture();
-
-                    // wait for the cancellation token to pop
-                await tcs.Task;
-
-                device.StopCapture();
-                device.Close();
-
-                CloseAllOurSockets();
-
-                return;
-            }
-            catch (Exception e)
-            {
-                backendObject.ExceptionLogger(e);
             }
         }
 
         /// <summary> 
         ///  Class Name: RepeaterClass  <br/><br/>
         ///
-        ///  Description: Gets the packet and sends it to the target ip endpoint and it's information
+        ///  Description: Intializes the listening socket. Sets up the event handler for <br/>
+        ///  packet arrival. It then starts listening and waits for the cancellation token to stop the listening. <br/><br/>
+        ///
+        ///  Inputs:  <br/>
+        ///  CancellationToken <paramref name="token"/> - A token that signal a configuration change was made, so this task need to end. <br/><br/>
+        ///  
+        ///  Returns:  None
+        /// </summary>
+        public void SetupAndStartListener()
+        {
+            try
+            {
+                if (!token.IsCancellationRequested)
+                {
+                    try
+                    {
+                        listenerSocket = new Socket(AddressFamily.InterNetwork, SocketType.Raw, ProtocolType.Udp);
+                        listenerSocket.Bind(new IPEndPoint(IPAddress.Parse(backendObject.ipAddressOfNIC), backendObject.receivePort));
+                    }
+                    catch (FormatException)     // This gets thrown if the IP doesn't match one found on the machine's nics, so we set a default
+                    {
+                        HandleBadNicIP();
+                    }
+                    
+                    //    // Set socket options
+                    //listenerSocket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.HeaderIncluded, true);
+                    //byte[] byTrue = new byte[4] { 1, 0, 0, 0 };
+                    //byte[] byOut = new byte[4];
+                    //listenerSocket.IOControl(IOControlCode.ReceiveAll, byTrue, byOut);
+                    
+                    listenerSocket.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), null);
+                }
+                else
+                {
+                    CloseAllOurSockets();
+                }
+            }
+            catch (Exception ex)
+            {
+                backendObject.ExceptionLogger(ex);
+            }
+        }
+
+        /// <summary> 
+        ///  Class Name: RepeaterClass  <br/><br/>
+        ///
+        ///  Description: Gets the payload and sends it to the target ip endpoint and it's information
         ///  to the GUI. This also times the packet handling time and reports it, increments total packets <br/>
         ///  handled, and updates the last received packet time.  <br/><br/>
         ///
         ///  Inputs:  <br/>
-        ///  object <paramref name="sender"/> - The sender oject, I don't us it. <br/>
-        ///  PacketCapture <paramref name="e"/> - The captured packet. <br/><br/>
+        ///  IAsyncResult <paramref name="AR"/> - The result oject, I don't use it. <br/><br/>
         ///  
         ///  Returns:  None
         /// </summary>
-        private void device_OnPacketArrival(object sender, PacketCapture e)
+        private void ReceiveCallback(IAsyncResult AR)
         {
             try
-            {       // start timing for packet ingress/egress
+            {
                 stopWatch.Start();
-                
-                    // get the whole packet
-                RawCapture rawPacket = e.GetPacket();
-                
-                byte[] wholePacket = rawPacket.Data;
+                listenerSocket.EndReceive(AR);
 
-                    // get the actual data section of the packet. The header is always 42 bytes long
-                byte[] dataSection = new byte[wholePacket.Length - 42];
-                Array.Copy(wholePacket, 42, dataSection, 0, dataSection.Length);
 
-                    // actual sending section
-                SendMessageOut(dataSection);
+                // Parse the IP header to find UDP packets
+                var ipHeaderLength = (buffer[0] & 0x0F) * 4;
+                var protocol = buffer[9];
+
+                // Check if the protocol is UDP (protocol number 17)
+                if (protocol == 17)
+                {
+                    var udpHeaderOffset = ipHeaderLength;
+                    var udpLength = (buffer[udpHeaderOffset + 4] << 8) | buffer[udpHeaderOffset + 5];
+
+                    // Extract UDP payload
+                    var udpPayloadOffset = udpHeaderOffset + 8;
+                    var udpPayloadLength = udpLength - 8;
+
+                    byte[] udpPayload = new byte[udpPayloadLength];
+                    Array.Copy(buffer, udpPayloadOffset, udpPayload, 0, udpPayloadLength);
+
+                    // Process the UDP packet
+                    SendMessageOut(udpPayload);
 
                     // stop the stopwatch, time the packet handling perfomance and record it
-                stopWatch.Stop();
-                backendObject.AddNewPacketTimeHandled(stopWatch.Elapsed.TotalMilliseconds);
-                stopWatch.Reset();
+                    stopWatch.Stop();
+                    backendObject.AddNewPacketTimeHandled(stopWatch.Elapsed.TotalMilliseconds);
+                    stopWatch.Reset();
 
                     // sending to GUI section
-                SendToGUI(dataSection.Length);
+                    SendToGUI(udpPayload.Length);
 
                     // update last received packet time for inactivity checker
-                timer.UpdateLastReceivedTime(DateTime.Now);
+                    timer.UpdateLastReceivedTime(DateTime.Now);
 
                     // increment the packets received counter for prometheus
-                backendObject.IncrementTotalPacketsHandled();
+                    backendObject.IncrementTotalPacketsHandled();
+                }
+
+                SetupAndStartListener();
             }
             catch (Exception ex)
             {
@@ -421,83 +462,25 @@ namespace Repeater
         }
 
 
-
-
-        public async void TimePacketHandling(CancellationToken token)
-        {
-            try
-            {
-                var tcs = new TaskCompletionSource<bool>();
-
-                token.Register(() =>
-                {
-                    tcs.SetResult(true);
-                });
-
-                CaptureDeviceList devices = CaptureDeviceList.Instance;
-                ICaptureDevice device = null;
-                foreach (var dev in devices)
-                {
-                    if (dev.Description == backendObject.macAddressOfNIC)
-                    {
-                        device = dev;
-                        break;
-                    }
-                }
-
-                if (device == null)
-                {
-                    device = devices[0];
-                }
-
-                // Register our handler function to the 'packet arrival' event
-                device.OnPacketArrival += new PacketArrivalEventHandler(device_OnPacketArrival);
-
-                // Open the device for capturing
-                int readTimeoutMilliseconds = 1000;
-                device.Open(DeviceModes.Promiscuous, readTimeoutMilliseconds);
-
-                // filters for out listening port
-                device.Filter = $"udp port {backendObject.receivePort} and host {backendObject.receiveIp}";
-
-                // start listening
-                device.StartCapture();
-
-                // wait for the cancellation token to pop
-                await tcs.Task;
-
-                device.StopCapture();
-                device.Close();
-
-                CloseAllOurSockets();
-
-                return;
-            }
-            catch (Exception e)
-            {
-                backendObject.ExceptionLogger(e);
-            }
-        }
-
         /// <summary> 
-        ///  Class Name: RepeaterClass  <br/><br/> 
+        /// Class Name: RepeaterClass  <br/><br/> 
         ///
-        ///  Description: The main function of the RepeaterClass. Starts and runs the StartReceiver funtion <br/>
-        ///  in it's own task. Also initializes the backendOjbect and timer fields. <br/><br/>
+        /// Description: The main function of the RepeaterClass. Starts and runs the StartReceiver funtion <br/>
+        /// in it's own task. Also initializes the backendOjbect and timer fields. <br/><br/>
         ///
-        ///  Inputs:  <br/>
-        ///  Backend <paramref name="BackendObject"/> - The Backend object to supply configuraiton information <br/>
-        ///  CancellationToken <paramref name="token"/> - A token that signals a configuration change was made, so this task needs to restart. <br/><br/>
-        ///  
-        ///  Returns:  None
+        /// Inputs:  <br/>
+        /// Backend <paramref name="BackendObject"/> - The Backend object to supply configuraiton information <br/>
+        /// CancellationToken <paramref name="token"/> - A token that signals a configuration change was made, so this task needs to restart. <br/><br/>
+        /// 
+        /// Returns:  None
         /// </summary>
         public async static void main(Backend BackendObject, CancellationToken token)
         {
             try
             {
-                RepeaterClass repeaterObject = new RepeaterClass(BackendObject);
+                RepeaterClass repeaterObject = new RepeaterClass(BackendObject, token);
 
-                repeaterObject.StartReceiver(token);
+                repeaterObject.SetupAndStartListener();
 
                 return;
             }

@@ -47,8 +47,8 @@
             this.label6 = new System.Windows.Forms.Label();
             this.cancelButton = new System.Windows.Forms.Button();
             this.nameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ipAddressColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.descriptionColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.macAddressColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.listOfNICs)).BeginInit();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
@@ -57,11 +57,14 @@
             // 
             this.listOfNICs.AllowUserToAddRows = false;
             this.listOfNICs.AllowUserToDeleteRows = false;
+            this.listOfNICs.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.listOfNICs.ColumnHeadersHeight = 28;
             this.listOfNICs.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.nameColumn,
-            this.descriptionColumn,
-            this.macAddressColumn});
+            this.ipAddressColumn,
+            this.descriptionColumn});
             this.listOfNICs.Location = new System.Drawing.Point(27, 175);
             this.listOfNICs.MultiSelect = false;
             this.listOfNICs.Name = "listOfNICs";
@@ -246,18 +249,18 @@
             this.nameColumn.ReadOnly = true;
             this.nameColumn.Width = 150;
             // 
+            // ipAddressColumn
+            // 
+            this.ipAddressColumn.HeaderText = "IP Address";
+            this.ipAddressColumn.Name = "ipAddressColumn";
+            this.ipAddressColumn.ReadOnly = true;
+            // 
             // descriptionColumn
             // 
             this.descriptionColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.descriptionColumn.HeaderText = "Description";
             this.descriptionColumn.Name = "descriptionColumn";
             this.descriptionColumn.ReadOnly = true;
-            // 
-            // macAddressColumn
-            // 
-            this.macAddressColumn.HeaderText = "Mac Address";
-            this.macAddressColumn.Name = "macAddressColumn";
-            this.macAddressColumn.ReadOnly = true;
             // 
             // Setup
             // 
@@ -307,7 +310,7 @@
         private System.Windows.Forms.TextBox lokiTextbox;
         private System.Windows.Forms.TextBox promTextbox;
         private System.Windows.Forms.DataGridViewTextBoxColumn nameColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ipAddressColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn descriptionColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn macAddressColumn;
     }
 }

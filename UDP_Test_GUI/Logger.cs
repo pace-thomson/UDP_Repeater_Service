@@ -288,11 +288,11 @@ namespace UDP_Repeater_GUI
         ///  
         ///  Returns:  None
         /// </summary>
-        public void LogNicChange(string name, string macAddress)
+        public void LogNicChange(string name, string ipAddress)
         {
             string message = String.Format("The listening Network Interface Card was changed. \n" +
                                            "Name: {0} \n" +
-                                           "Mac Address: {1}", name, macAddress);
+                                           "IP Address: {1}", name, ipAddress);
 
             eventLog.WriteEntry(message, EventLogEntryType.Information, 8);  // 8 is a NIC config change
             if (lokiLogger != null)

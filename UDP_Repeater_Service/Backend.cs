@@ -59,7 +59,7 @@ namespace BackendClassNameSpace
             /// <summary> The uri string for the endpoint that our loki logs will be sent to. </summary>
         public string lokiEndpoint;
             /// <summary> The device.Name of the network card that we're listening on. </summary>
-        public string macAddressOfNIC;
+        public string ipAddressOfNIC;
 
             /// <summary> How we keep track of the change type. Only used with newBackendObject. </summary>
         public changeType change;
@@ -114,12 +114,12 @@ namespace BackendClassNameSpace
         ///  string <paramref name="newUnit"/>      -    The unit (minute, day, hour) at which the service reports inactivity <br/>
         ///  string <paramref name="PromEndpoint"/> -    The endpoint of the prometheus server we are sending metrics to. <br/>
         ///  string <paramref name="LokiEndpoint"/> -    The endpoint of the loki server we are sending logs to. <br/>
-        ///  string <paramref name="NameOfNIC"/>    -    The name of the NIC we're listening on <br/><br/> 
+        ///  string <paramref name="IpAddressOfNIC"/>    -    The name of the NIC we're listening on <br/><br/> 
         ///  
         /// Returns: A Backend Object
         /// </summary>
         public Backend(string ReceiveIp, string ReceivePort, string SendIp, string SendPort, int newInterval, string newUnit, 
-                        string PromEndpoint, string LokiEndpoint, string NameOfNIC)
+                        string PromEndpoint, string LokiEndpoint, string IpAddressOfNIC)
         {
                 // system configuration set up fields
             this.receiveIp = ReceiveIp;
@@ -130,7 +130,7 @@ namespace BackendClassNameSpace
             this.inactivityUnit = newUnit;
             this.promEndpoint = PromEndpoint;
             this.lokiEndpoint = LokiEndpoint;
-            this.macAddressOfNIC = NameOfNIC;
+            this.ipAddressOfNIC = IpAddressOfNIC;
 
                 // windows event logger set up fields
             this.eventLog = new EventLog("UDP Packet Repeater");
@@ -204,7 +204,7 @@ namespace BackendClassNameSpace
             this.inactivityUnit     =   originalBackendObject.inactivityUnit;
             this.promEndpoint       =   originalBackendObject.promEndpoint;
             this.lokiEndpoint       =   originalBackendObject.lokiEndpoint;
-            this.macAddressOfNIC   =   originalBackendObject.macAddressOfNIC;
+            this.ipAddressOfNIC   =   originalBackendObject.ipAddressOfNIC;
         }
 
         /// <summary> 
@@ -255,7 +255,7 @@ namespace BackendClassNameSpace
                         ""prom"": ""Not Configured Yet"",
                         ""loki"": ""Not Configured Yet""
                     },
-                    ""macAddressOfNIC"":""Not Configured Yet"" 
+                    ""ipAddressOfNIC"":""Not Configured Yet"" 
                 }";
 
                 // Write the JSON string to a file

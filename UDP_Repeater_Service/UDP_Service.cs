@@ -24,9 +24,12 @@ using Repeater;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Net.Sockets;
+using System.Net;
 using System.ServiceProcess;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 
 
 
@@ -140,11 +143,11 @@ class TheMainProgram
             string unit         =   (string)jsonObject["inactivitySettings"]["inactivityUnit"];
             string promEndpoint =   (string)jsonObject["monitoring"]["prom"];
             string lokiEndpoint =   (string)jsonObject["monitoring"]["loki"];
-            string nameOfNIC    =   (string)jsonObject["macAddressOfNIC"];
+            string ipOfNIC      =   (string)jsonObject["ipAddressOfNIC"];
 
 
             Backend backendObject = new Backend(receiveIp, receivePort, sendIp, sendPort, interval, unit, 
-                                                promEndpoint, lokiEndpoint, nameOfNIC);
+                                                promEndpoint, lokiEndpoint, ipOfNIC);
 
             return backendObject;
         }
@@ -193,13 +196,13 @@ class TheMainProgram
                     jsonObject["defaultSettings"]["receiveFrom"]["port"] = newbackendObject.receivePort.ToString();
                     break;
                 case Backend.changeType.inactive:
-                    jsonObject["inactivitySettings"]["inactivityInterval"] = newbackendObject.inactivityInterval.ToString();
-                    jsonObject["inactivitySettings"]["inactivityUnit"]  = newbackendObject.inactivityUnit;
+                    jsonObject["inactivitySettings"]["inactivityInterval"]  = newbackendObject.inactivityInterval.ToString();
+                    jsonObject["inactivitySettings"]["inactivityUnit"]      = newbackendObject.inactivityUnit;
                     break;
                 case Backend.changeType.setup:
                     jsonObject["monitoring"]["prom"] = newbackendObject.promEndpoint;
                     jsonObject["monitoring"]["loki"] = newbackendObject.lokiEndpoint;
-                    jsonObject["macAddressOfNIC"]   = newbackendObject.macAddressOfNIC;
+                    jsonObject["ipAddressOfNIC"]     = newbackendObject.ipAddressOfNIC;
                     break;
                 case Backend.changeType.restoreToDefaults:
                     jsonObject["currentConfig"]["receiveFrom"]["ip"]    =   (string)jsonObject["defaultSettings"]["receiveFrom"]["ip"];
@@ -235,7 +238,6 @@ class TheMainProgram
 
         Backend.ExceptionLoggerStatic(ex);
     }
-
 
 
     /// <summary> 

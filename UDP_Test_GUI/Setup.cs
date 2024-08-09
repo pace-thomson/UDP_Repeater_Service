@@ -31,6 +31,8 @@ using System.Windows.Forms;
 using UDP_Repeater_GUI;
 using Newtonsoft.Json.Linq;
 using SharpPcap.LibPcap;
+using System.Net.NetworkInformation;
+using System.Security.Cryptography;
 
 namespace UDP_Test_GUI
 {
@@ -86,20 +88,19 @@ namespace UDP_Test_GUI
         {
             try
             {
-                LibPcapLiveDeviceList deviceList = LibPcapLiveDeviceList.Instance;
-                ICaptureDevice device = null;
-                
-                foreach (LibPcapLiveDevice dev in deviceList)
+                foreach (NetworkInterface networkInterface in NetworkInterface.GetAllNetworkInterfaces())
                 {
-                    int rowNum = listOfNICs.Rows.Add();
-                    DataGridViewRow row = listOfNICs.Rows[rowNum];
-
-                    row.Cells["nameColumn"].Value = dev.Interface.FriendlyName;
-                    row.Cells["descriptionColumn"].Value = dev.Description;
-                    row.Cells["macAddressColumn"].Value = dev.MacAddress;
-                    if (dev.MacAddress == null)
+                    foreach (var nic in networkInterface.GetIPProperties().UnicastAddresses)
                     {
-                        row.Cells["macAddressColumn"].Value = "N/A";
+                        if (nic.Address.AddressFamily == AddressFamily.InterNetwork)
+                        {
+                            int rowNum = listOfNICs.Rows.Add();
+                            DataGridViewRow row = listOfNICs.Rows[rowNum];
+
+                            row.Cells["nameColumn"].Value = networkInterface.Name;
+                            row.Cells["ipAddressColumn"].Value = nic.Address.ToString();
+                            row.Cells["descriptionColumn"].Value = networkInterface.Description;
+                        }
                     }
                 }
             }
@@ -121,7 +122,7 @@ namespace UDP_Test_GUI
 
             promTextbox.Text = (string)jsonObject["monitoring"]["prom"];
             lokiTextbox.Text = (string)jsonObject["monitoring"]["loki"];
-            nicTextbox.Text  = (string)jsonObject["macAddressOfNIC"];
+            nicTextbox.Text  = (string)jsonObject["ipAddressOfNIC"];
         }
 
         /// <summary> 
@@ -152,16 +153,16 @@ namespace UDP_Test_GUI
                         {
                             DataGridViewRow row = listOfNICs.SelectedRows[0];
                             string name = row.Cells["nameColumn"].Value.ToString();
+                            string ip = row.Cells["ipAddressColumn"].Value.ToString();
                             string description = row.Cells["descriptionColumn"].Value.ToString();
-                            string mac = row.Cells["macAddressColumn"].Value.ToString();
 
 
                             using (UdpClient sendRequest = new UdpClient())
                             {
-                                byte[] bytes = Encoding.ASCII.GetBytes($"{this.prom},{this.loki},setup,{mac}");
+                                byte[] bytes = Encoding.ASCII.GetBytes($"{this.prom},{this.loki},setup,{ip}");
                                 sendRequest.Send(bytes, bytes.Length, "127.0.0.1", 63763);
 
-                                theMainForm.logger.LogNicChange(name, mac);
+                                theMainForm.logger.LogNicChange(name, ip);
                                 theMainForm.logger.LogMonitoringChange(this.prom, this.loki);
 
                                 sendRequest.Close();
