@@ -204,7 +204,7 @@ namespace BackendClassNameSpace
             this.inactivityUnit     =   originalBackendObject.inactivityUnit;
             this.promEndpoint       =   originalBackendObject.promEndpoint;
             this.lokiEndpoint       =   originalBackendObject.lokiEndpoint;
-            this.ipAddressOfNIC   =   originalBackendObject.ipAddressOfNIC;
+            this.ipAddressOfNIC     =   originalBackendObject.ipAddressOfNIC;
         }
 
         /// <summary> 
@@ -314,12 +314,12 @@ namespace BackendClassNameSpace
         /// </summary>
         public void UpdateWithNewBackendObject(Backend newBackendObject)
         {
-            this.receiveIp = newBackendObject.receiveIp;
-            this.receivePort = newBackendObject.receivePort;
-            this.sendIp = newBackendObject.sendIp;
-            this.sendPort = newBackendObject.sendPort;
-            this.inactivityInterval = newBackendObject.inactivityInterval;
-            this.inactivityUnit = newBackendObject.inactivityUnit;
+            this.receiveIp          =   newBackendObject.receiveIp;
+            this.receivePort        =   newBackendObject.receivePort;
+            this.sendIp             =   newBackendObject.sendIp;
+            this.sendPort           =   newBackendObject.sendPort;
+            this.inactivityInterval =   newBackendObject.inactivityInterval;
+            this.inactivityUnit     =   newBackendObject.inactivityUnit;
         }
 
 
@@ -437,9 +437,9 @@ namespace BackendClassNameSpace
                                       temporaryLokiEndpoint,
                                       labels: new List<LokiLabel>
                                       {
-                                      new LokiLabel(){ Key = "RepeaterSide", Value = "Backend/Service" },
-                                      new LokiLabel(){ Key = "MachineName", Value = Environment.MachineName },
-                                      new LokiLabel(){ Key = "User", Value = Environment.UserName }
+                                          new LokiLabel(){ Key = "RepeaterSide", Value = "Backend/Service" },
+                                          new LokiLabel(){ Key = "MachineName", Value = Environment.MachineName },
+                                          new LokiLabel(){ Key = "User", Value = Environment.UserName }
                                       },
                                       textFormatter: new MessageTemplateTextFormatter(outputTemplate, null)
                                   )
@@ -522,14 +522,14 @@ namespace BackendClassNameSpace
             string lokiLogMessage = "";
 
             if (mode == "start")
-            {
-                eventLogMessage = "Repeater Service started.";
-                lokiLogMessage = "Repeater Service \u001b[32mstarted\u001b[0m.";    // adds green ANSII color code
+            {   
+                eventLogMessage = "Repeater Service started.";                          // Windows event log doesn't support the color code
+                lokiLogMessage = "Repeater Service \u001b[32mstarted\u001b[0m.";        // adds green ANSII color code
             }
             else if (mode == "stop")
             {
-                eventLogMessage = "Repeater Service stopped.";
-                lokiLogMessage = "Repeater Service \u001B[31mstopped\u001B[0m.";    // adds red ANSII color code
+                eventLogMessage = "Repeater Service stopped.";                          // Windows event log doesn't support the color code
+                lokiLogMessage = "Repeater Service \u001B[31mstopped\u001B[0m.";        // adds red ANSII color code
             }
             eventLog.WriteEntry(eventLogMessage, EventLogEntryType.Information, 4);     // 4 is id for backend start/stop
 

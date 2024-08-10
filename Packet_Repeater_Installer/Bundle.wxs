@@ -45,12 +45,6 @@
 						Vital="no"
 						SourceFile="C:\Users\pthomson01.ctr\Documents\ndp472-kb4054531-web.exe"/>
 			
-            <!-- NPCAP INSTALLER -->
-			<ExePackage DetectCondition="false"
-						UninstallArguments="/uninstall /quiet /norestart"
-						Vital="no"
-						SourceFile="C:\Users\pthomson01.ctr\source\repos\pace-thomson\UDP_Repeater_Service\UDP_Packet_Repeater_Installer\bin\x86\Debug\npcap-1.79.exe"/>
-			
             <!-- FRONTEND AND BACKEND INSTALLER -->
 			<PackageGroupRef Id="Repeater_Installer"/>
 			

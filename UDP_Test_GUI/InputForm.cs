@@ -82,7 +82,7 @@ namespace UDP_Repeater_GUI
                 {
                     portInt = int.Parse(portTextbox.Text);
                 }
-                catch (FormatException)     // gets called if portTextbox is empty
+                catch (FormatException)     // gets thrown if portTextbox is empty
                 {
                     MessageBox.Show("Please fill in all input fields.");
                     inputValid = false;

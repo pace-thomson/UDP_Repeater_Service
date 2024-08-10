@@ -24,12 +24,9 @@ using Repeater;
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Net.Sockets;
-using System.Net;
 using System.ServiceProcess;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Timers;
 
 
 
@@ -67,12 +64,6 @@ namespace UDP_Repeater_Service
                 EventLog.CreateEventSource("UDP_Repeater_Frontend", "UDP Packet Repeater");
             }
             outerBackendObject = new Backend();
-        }
-
-        public void DebuggerThing()
-        {
-            outerBackendObject.StartStopLogger("start");
-            TheMainProgram.main();
         }
 
         /// <summary> 
@@ -279,6 +270,7 @@ class TheMainProgram
                 UpdateConfigJson(newbackendObject, backendObject);              // updates config.json
                 if (newbackendObject.change == Backend.changeType.setup)
                 {
+                    Thread.Sleep(1000);
                     Environment.Exit(1); // forces restart because loki/prom change is weird and this service is set to restart on failure
                 }
                 backendObject.UpdateWithNewBackendObject(newbackendObject);     // updates the original backendObject with the new values

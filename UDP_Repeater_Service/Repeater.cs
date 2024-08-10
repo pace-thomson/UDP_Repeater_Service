@@ -22,16 +22,12 @@
 
 using System;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Net.Sockets;
 using System.Text;
 using BackendClassNameSpace;
 using System.Timers;
-using SharpPcap;
 using System.Net;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
-using Newtonsoft.Json.Linq;
 using System.Net.NetworkInformation;
 
 
@@ -328,7 +324,7 @@ namespace Repeater
                         listenerSocket.Bind(new IPEndPoint(nic.Address, backendObject.receivePort));
                         backendObject.WarningLogger($"Invalid listening IP Address: {backendObject.ipAddressOfNIC}, currently listening on default NIC \n" +
                                                     $"Name: {networkInterface.Name} \n" +
-                                                    $"IP Address: {nic.Address} \n");
+                                                    $"IP Address: {nic.Address}");
 
                         backendObject.ipAddressOfNIC = nic.Address.ToString();
 
@@ -362,7 +358,8 @@ namespace Repeater
                 {
                     HandleBadNicIP();
                 }
-
+                    
+                    // This is the main listening loop
                 while (!token.IsCancellationRequested)
                 {
                     listenerSocket.Receive(buffer);
@@ -380,9 +377,9 @@ namespace Repeater
         /// <summary> 
         ///  Class Name: RepeaterClass  <br/><br/>
         ///
-        ///  Description: Gets the payload and sends it to the target ip endpoint and it's information
-        ///  to the GUI. This also times the packet handling time and reports it, increments total packets <br/>
-        ///  handled, and updates the last received packet time.  <br/><br/>
+        ///  Description: Gets the payload from the buffer and sends it to the target ip endpoint and it's  <br/>
+        ///  information to the GUI. This also times the packet handling time and reports it, increments total  <br/>
+        ///  packets handled, and updates the last received packet time.  <br/><br/>
         ///
         ///  Inputs:  <br/><br/>
         ///  

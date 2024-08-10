@@ -345,13 +345,13 @@ namespace UDP_Repeater_GUI
 
             if (mode == "start")
             {
-                eventLogMessage = "User Interface started.";
-                lokiLogMessage = "User Interface \u001b[32mstarted\u001b[0m.";
+                eventLogMessage = "User Interface started.";                            // Windows event log doesn't support the color code
+                lokiLogMessage = "User Interface \u001b[32mstarted\u001b[0m.";          // adds green ANSII color code
             }                                         
             else if (mode == "stop")                  
             {
-                eventLogMessage = "User Interface stopped.";
-                lokiLogMessage = "User Interface \u001B[31mstopped\u001B[0m.";
+                eventLogMessage = "User Interface stopped.";                            // Windows event log doesn't support the color code
+                lokiLogMessage = "User Interface \u001B[31mstopped\u001B[0m.";          // adds red ANSII color code
             }
 
             eventLog.WriteEntry(eventLogMessage, EventLogEntryType.Information, 5);     // 5 is id for frontend start/stop

@@ -23,16 +23,14 @@
 
 
 using System;
-using SharpPcap;
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
 using System.Windows.Forms;
 using UDP_Repeater_GUI;
 using Newtonsoft.Json.Linq;
-using SharpPcap.LibPcap;
 using System.Net.NetworkInformation;
-using System.Security.Cryptography;
+
 
 namespace UDP_Test_GUI
 {

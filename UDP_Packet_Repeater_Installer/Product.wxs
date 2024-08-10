@@ -199,12 +199,6 @@
 			<Component Guid="ABA12169-33E8-4140-A547-1268DA306C61">
 				<File Id="Newtonsoft.Json.dll" Source="$(var.UDP_Repeater_Service.TargetDir)Newtonsoft.Json.dll" KeyPath="yes" />
 			</Component>
-			<Component Guid="4A1DA99A-DC08-4E9E-9C05-88987C18D6D4">
-				<File Id="PacketDotNet.dll" Source="$(var.UDP_Repeater_Service.TargetDir)PacketDotNet.dll" KeyPath="yes" />
-			</Component>
-			<Component Guid="1dd19b92-90f8-4290-b495-1b6f920f5e79">
-				<File Id="SharpPcap.dll" Source="$(var.UDP_Repeater_Service.TargetDir)SharpPcap.dll" KeyPath="yes" />
-			</Component>
 
 			<!-- System libraries -->
 			<Component Guid="744f6f71-2a05-4ff8-9052-8c2d434c7de6">

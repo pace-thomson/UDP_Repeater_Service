@@ -29,16 +29,13 @@ namespace UDP_Repeater_Service
         /// </summary>
         static void Main()
         {
-            var myService = new UDP_Service();
+            ServiceBase[] ServicesToRun;
 
-            if (Environment.UserInteractive)
+            ServicesToRun = new ServiceBase[]
             {
-                myService.DebuggerThing();
-            }
-            else
-            {
-                ServiceBase.Run(myService);
-            }
+                new UDP_Service()
+            };
+            ServiceBase.Run(ServicesToRun);
         }
     }
 }

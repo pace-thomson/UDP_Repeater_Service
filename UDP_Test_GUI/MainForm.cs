@@ -42,7 +42,7 @@ namespace UDP_Repeater_GUI
             /// <summary> How it stays listening and updating without recursion </summary>
         private bool isListening;
             /// <summary> Tracks what number packet is being received </summary> 
-        private int totalPacketCounter;
+        private UInt64 totalPacketCounter;
             /// <summary> Puts the icon in the system tray </summary>
         private NotifyIcon sysTrayIcon;
             /// <summary> Our object for logging. </summary>
@@ -157,7 +157,8 @@ namespace UDP_Repeater_GUI
             {
                 return;
             }
-
+                
+                // if the file was just created, it means that it doesn't have "Setup" values and we just installed
             double creationDiff = (DateTime.Now - File.GetCreationTime("C:\\Windows\\SysWOW64\\UDP_Repeater_Config.json")).TotalSeconds;
             if (creationDiff > 10)
             {
@@ -169,6 +170,7 @@ namespace UDP_Repeater_GUI
                 DialogResult result = setupForm.ShowDialog();
                 if (result == DialogResult.OK)
                 {
+                        // This has to restart because reconfiguring the lokiLogger doesn't really work
                     Application.Restart();
                     Environment.Exit(0);
                 }
@@ -504,7 +506,7 @@ namespace UDP_Repeater_GUI
                     WindowState = FormWindowState.Minimized;
                 }
             }
-            else
+            else   // Covers for when the system or anything else closes the GUI
             {
                 DisposeOfStuff();
             }
