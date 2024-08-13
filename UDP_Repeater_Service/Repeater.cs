@@ -363,7 +363,7 @@ namespace Repeater
                 while (!token.IsCancellationRequested)
                 {
                     listenerSocket.Receive(buffer);
-                    ReceiveCallback();
+                    HandleNewPacket();
                 }
 
                 CloseAllOurSockets();
@@ -385,11 +385,11 @@ namespace Repeater
         ///  
         ///  Returns:  None
         /// </summary>
-        private void ReceiveCallback()
+        private void HandleNewPacket()
         {
             try
             {
-                stopWatch.Start();
+                stopWatch.Restart();
 
                 // Parse the IP header to find UDP packet
                 var ipHeaderLength = (buffer[0] & 0x0F) * 4;

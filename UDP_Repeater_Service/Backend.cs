@@ -93,7 +93,7 @@ namespace BackendClassNameSpace
             /// <summary> Our Meter object (the base for all of the metric instrumentation) </summary>
         public Meter myMeter;
             /// <summary> The counter for packets handled </summary>
-        public Counter<UInt64> TotalPacketsHandled;
+        public Counter<long> TotalPacketsHandled;
             /// <summary> Tracks the memory use of the backend. </summary>
         public ObservableGauge<double> processMemory;
             /// <summary> Tracks average time for packet ingress/egress </summary>
@@ -172,7 +172,7 @@ namespace BackendClassNameSpace
                                     })
                                     .Build();
                 this.myMeter = new Meter("JT4.Repeater.MyLibrary", "1.0");
-                this.TotalPacketsHandled = myMeter.CreateCounter<UInt64>("TotalPacketsHandled");
+                this.TotalPacketsHandled = myMeter.CreateCounter<long>("TotalPacketsHandled");
                 this.processMemory = myMeter.CreateObservableGauge("backendMemory", () => GetProcessMemory());
                 this.packetHandlingTimer = myMeter.CreateHistogram<double>("packetHandlingTimer");
             }
