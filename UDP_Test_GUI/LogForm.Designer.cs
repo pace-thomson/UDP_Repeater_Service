@@ -28,10 +28,14 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LogForm));
             this.logDataGridView = new System.Windows.Forms.DataGridView();
+            this.entryTypeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.logOriginColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.messageColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.timeStampColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.inactivityButton = new System.Windows.Forms.Button();
@@ -40,10 +44,7 @@
             this.label4 = new System.Windows.Forms.Label();
             this.inactivityInputBox = new System.Windows.Forms.NumericUpDown();
             this.loadingLabel = new System.Windows.Forms.Label();
-            this.entryTypeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.logOriginColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.messageColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.timeStampColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.backgroundLogPopulator = new System.ComponentModel.BackgroundWorker();
             ((System.ComponentModel.ISupportInitialize)(this.logDataGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.inactivityInputBox)).BeginInit();
             this.SuspendLayout();
@@ -68,11 +69,41 @@
             this.logDataGridView.Name = "logDataGridView";
             this.logDataGridView.ReadOnly = true;
             this.logDataGridView.RowHeadersVisible = false;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.logDataGridView.RowsDefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.logDataGridView.RowsDefaultCellStyle = dataGridViewCellStyle4;
             this.logDataGridView.RowTemplate.DefaultCellStyle.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.logDataGridView.Size = new System.Drawing.Size(808, 342);
             this.logDataGridView.TabIndex = 1;
+            // 
+            // entryTypeColumn
+            // 
+            this.entryTypeColumn.HeaderText = "Entry Type";
+            this.entryTypeColumn.Name = "entryTypeColumn";
+            this.entryTypeColumn.ReadOnly = true;
+            this.entryTypeColumn.Width = 90;
+            // 
+            // logOriginColumn
+            // 
+            this.logOriginColumn.HeaderText = "Origin";
+            this.logOriginColumn.Name = "logOriginColumn";
+            this.logOriginColumn.ReadOnly = true;
+            this.logOriginColumn.Width = 65;
+            // 
+            // messageColumn
+            // 
+            this.messageColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.messageColumn.DefaultCellStyle = dataGridViewCellStyle3;
+            this.messageColumn.HeaderText = "Message";
+            this.messageColumn.Name = "messageColumn";
+            this.messageColumn.ReadOnly = true;
+            // 
+            // timeStampColumn
+            // 
+            this.timeStampColumn.HeaderText = "Timestamp";
+            this.timeStampColumn.Name = "timeStampColumn";
+            this.timeStampColumn.ReadOnly = true;
+            this.timeStampColumn.Width = 150;
             // 
             // label2
             // 
@@ -168,35 +199,9 @@
             this.loadingLabel.TabIndex = 12;
             this.loadingLabel.Text = "Loading...";
             // 
-            // entryTypeColumn
+            // backgroundLogPopulator
             // 
-            this.entryTypeColumn.HeaderText = "Entry Type";
-            this.entryTypeColumn.Name = "entryTypeColumn";
-            this.entryTypeColumn.ReadOnly = true;
-            this.entryTypeColumn.Width = 90;
-            // 
-            // logOriginColumn
-            // 
-            this.logOriginColumn.HeaderText = "Origin";
-            this.logOriginColumn.Name = "logOriginColumn";
-            this.logOriginColumn.ReadOnly = true;
-            this.logOriginColumn.Width = 65;
-            // 
-            // messageColumn
-            // 
-            this.messageColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.messageColumn.DefaultCellStyle = dataGridViewCellStyle1;
-            this.messageColumn.HeaderText = "Message";
-            this.messageColumn.Name = "messageColumn";
-            this.messageColumn.ReadOnly = true;
-            // 
-            // timeStampColumn
-            // 
-            this.timeStampColumn.HeaderText = "Timestamp";
-            this.timeStampColumn.Name = "timeStampColumn";
-            this.timeStampColumn.ReadOnly = true;
-            this.timeStampColumn.Width = 150;
+            this.backgroundLogPopulator.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundLogPopulator_DoWork);
             // 
             // LogForm
             // 
@@ -218,7 +223,6 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "System Log";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.LogForm_FormClosing);
-            this.Shown += new System.EventHandler(this.LogForm_Shown);
             ((System.ComponentModel.ISupportInitialize)(this.logDataGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.inactivityInputBox)).EndInit();
             this.ResumeLayout(false);
@@ -240,5 +244,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn logOriginColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn messageColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn timeStampColumn;
+        private System.ComponentModel.BackgroundWorker backgroundLogPopulator;
     }
 }

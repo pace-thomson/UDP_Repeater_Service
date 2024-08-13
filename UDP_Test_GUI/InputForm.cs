@@ -154,7 +154,8 @@ namespace UDP_Repeater_GUI
                 try
                 {
                             // sends empty message to tell service that default setting were selected
-                            // This doesn't even get read by the backend, it just is a placeholder
+                            // This doesn't even get read by the backend, we just need a message sent to 
+                            // to tell the backend that a change was made.
                     byte[] bytes = Encoding.ASCII.GetBytes(",,");
                     sendRequest.Send(bytes, bytes.Length, "127.0.0.1", 63763);
                     theMainForm.logger.LogConfigChange("Reverted to Default", "N/A", "N/A");

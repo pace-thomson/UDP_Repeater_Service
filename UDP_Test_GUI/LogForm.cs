@@ -66,7 +66,39 @@ namespace UDP_Repeater_GUI
 
                 // hides the logs until the they're finished loading
             logDataGridView.Visible = false;
+
+            backgroundLogPopulator.RunWorkerAsync();
         }
+
+        /// <summary> 
+        ///  Class Name: LogForm  <br/><br/>
+        ///
+        ///  Description: Populates the table while the loading label is shown. <br/>
+        ///  When done, it then hides the loading label and shows the log data grid view. <br/><br/>
+        ///
+        ///  Inputs:  <br/>
+        ///  object <paramref name="sender"/> - Necessary for handling the DoWork call, but I don't use it. <br/>
+        ///  DoWorkEventArgs <paramref name="e"/> - Necessary for handling the DoWork call, but I don't use it. <br/><br/>
+        ///  </summary>
+        ///  
+        ///  <returns> None </returns>
+        private void backgroundLogPopulator_DoWork(object sender, DoWorkEventArgs e)
+        {
+                // Waits for the logDataGridView to load so we use it
+            System.Threading.Thread.Sleep(500);
+
+            Invoke(new Action(() =>
+            {
+                    // Populates the log data grid view with it's log entries
+                PopulateTable();
+
+                    // Hides the loading label, shows the logDataGridViewm, and sets full row select
+                loadingLabel.Visible = false;
+                logDataGridView.Visible = true;
+                logDataGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            }));
+        }
+
 
         /// <summary> 
         ///  Class Name: LogForm  <br/><br/>
@@ -263,35 +295,6 @@ namespace UDP_Repeater_GUI
             }
             row.Cells["messageColumn"].Value = entry.Message;
             row.Cells["timeStampColumn"].Value = entry.TimeWritten;
-        }
-
-
-        /// <summary> 
-        ///  Class Name: LogForm  <br/><br/>
-        ///
-        ///  Description: Finishes the controls rendering and then populates the table while the <br/>
-        ///  loading label is shown. When done, it then hides the loading label and shows the table. <br/><br/>
-        ///
-        ///  Inputs:  <br/>
-        ///  object <paramref name="sender"/> - Necessary for handling the button, but I don't use it. <br/>
-        ///  EventArgs <paramref name="e"/> - Necessary for handling the button, but I don't use it. <br/><br/>
-        ///  </summary>
-        ///  
-        ///  <returns> None </returns>
-        private void LogForm_Shown(object sender, EventArgs e)
-        {
-                // Finishes the form loading it's elements
-            Application.DoEvents();
-
-                // Then populates the log data grid view with it's log entries
-            PopulateTable();
-
-                // Hides the loading label and shows the log data grid view
-            loadingLabel.Visible = false;
-            logDataGridView.Visible = true;
-
-                // This actually is to deselect the automatically selected row
-            logDataGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
         }
 
         /// <summary> 

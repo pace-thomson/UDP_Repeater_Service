@@ -363,7 +363,7 @@ namespace Repeater
                 while (!token.IsCancellationRequested)
                 {
                     listenerSocket.Receive(buffer);
-                    HandleNewPacket();
+                    HandleNewPacketReceived();
                 }
 
                 CloseAllOurSockets();
@@ -385,7 +385,7 @@ namespace Repeater
         ///  
         ///  Returns:  None
         /// </summary>
-        private void HandleNewPacket()
+        private void HandleNewPacketReceived()
         {
             try
             {

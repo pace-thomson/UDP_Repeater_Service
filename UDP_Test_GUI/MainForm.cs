@@ -573,6 +573,10 @@ namespace UDP_Repeater_GUI
                         }
                     }
                 }
+                else
+                {
+                    return;
+                }
             }
         }
 
