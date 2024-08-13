@@ -202,9 +202,9 @@ class TheMainProgram
                     jsonObject["currentConfig"]["sendTo"]["port"]       =   (string)jsonObject["defaultSettings"]["sendTo"]["port"];
 
                     newbackendObject.receiveIp    = (string)jsonObject["defaultSettings"]["receiveFrom"]["ip"];
-                    newbackendObject.receivePort  = (int)   jsonObject["defaultSettings"]["receiveFrom"]["port"];
+                    newbackendObject.receivePort  =  (int)  jsonObject["defaultSettings"]["receiveFrom"]["port"];
                     newbackendObject.sendIp       = (string)jsonObject["defaultSettings"]["sendTo"]["ip"];
-                    newbackendObject.sendPort     = (int)   jsonObject["defaultSettings"]["sendTo"]["port"];
+                    newbackendObject.sendPort     =  (int)  jsonObject["defaultSettings"]["sendTo"]["port"];
                     break;
             }
 

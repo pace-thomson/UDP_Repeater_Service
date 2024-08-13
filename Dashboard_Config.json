@@ -405,7 +405,7 @@
           "color": {
             "mode": "continuous-GrYlRd"
           },
-          "displayName": "Packet Ingress/Egress Time",
+          "displayName": "Packet Handling Time",
           "mappings": [
             {
               "options": {
@@ -466,7 +466,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "rate(packetHandling_sum{job=\"unknown_service:UDP_Repeater_Service\"}[$__rate_interval]) / rate(packetHandling_count{job=\"unknown_service:UDP_Repeater_Service\"}[$__rate_interval])",
+          "expr": "rate(packetHandlingTimer_sum{job=\"unknown_service:UDP_Repeater_Service\"}[$__rate_interval]) / rate(packetHandlingTimer_count{job=\"unknown_service:UDP_Repeater_Service\"}[$__rate_interval])",
           "fullMetaSearch": false,
           "hide": false,
           "includeNullMetadata": true,
@@ -801,6 +801,6 @@
   "timezone": "browser",
   "title": "RepeaterDashboard",
   "uid": "ddrdno3tbvp4wc",
-  "version": 48,
+  "version": 51,
   "weekStart": ""
 }
