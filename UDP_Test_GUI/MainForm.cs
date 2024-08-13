@@ -15,7 +15,7 @@
 // Change History:
 //
 // Version   Date          Author            Description
-//   1.0    7/25/24    Jade Pace Thomson   Initial Release
+//   1.0    8/3/24    Jade Pace Thomson     Initial Release
 //---------------------------------------------------
 
 
@@ -63,7 +63,7 @@ namespace UDP_Repeater_GUI
         {
             InitializeComponent();
 
-                // double unhandling exception handling, just in case
+                // double unhandled exception handling, just in case
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
             Application.ThreadException += new System.Threading.ThreadExceptionEventHandler(ThreadExceptionHandlerFunction);
 

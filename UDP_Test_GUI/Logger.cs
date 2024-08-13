@@ -13,7 +13,7 @@
 // Change History:
 //
 // Version   Date          Author            Description
-//   1.0    7/25/24    Jade Pace Thomson   Initial Release
+//   1.0    8/3/24    Jade Pace Thomson     Initial Release
 //---------------------------------------------------
 
 
@@ -52,7 +52,15 @@ namespace UDP_Repeater_GUI
             /// <summary> Tracks the memory use of the gui </summary>
         public ObservableGauge<double> processMemory;
 
-
+        /// <summary> 
+        ///  Class Name: Logger  <br/><br/> 
+        ///
+        ///  Description: The Logger Constructor. Initializes the Windows Event log, loki, and prometheus. <br/><br/>
+        ///
+        ///  Inputs: None <br/><br/> 
+        ///  
+        /// Returns: A Logger Object
+        /// </summary>
         public Logger()
         {
             this.eventLog = new EventLog("UDP Packet Repeater");
