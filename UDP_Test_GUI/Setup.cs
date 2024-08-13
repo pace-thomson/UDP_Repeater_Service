@@ -39,7 +39,7 @@ namespace UDP_Test_GUI
     public partial class Setup : Form
     {
             /// <summary> Tracks whether the user's selection/inputs were valid </summary>
-        public bool isValid;
+        public bool isValidInput;
             /// <summary> The main form's object. </summary>
         private MainForm theMainForm;
             /// <summary> The uri string for the prometheus endpoint that this form will return. </summary>
@@ -68,7 +68,7 @@ namespace UDP_Test_GUI
 
             this.theMainForm = TheMainForm;
 
-            this.isValid = true;
+            this.isValidInput = true;
 
             listOfNICs.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
         }
@@ -136,7 +136,7 @@ namespace UDP_Test_GUI
         {
             try
             {
-                isValid = true;
+                isValidInput = true;
                 int selectedRowCount = listOfNICs.Rows.GetRowCount(DataGridViewElementStates.Selected);
 
                 this.prom = promEndpoint.Text.Trim();
@@ -154,7 +154,6 @@ namespace UDP_Test_GUI
                             string ip = row.Cells["ipAddressColumn"].Value.ToString();
                             string description = row.Cells["descriptionColumn"].Value.ToString();
 
-
                             using (UdpClient sendRequest = new UdpClient())
                             {
                                 byte[] bytes = Encoding.ASCII.GetBytes($"{this.prom},{this.loki},setup,{ip}");
@@ -169,21 +168,21 @@ namespace UDP_Test_GUI
                         else
                         {
                             MessageBox.Show("Invalid uri endpoint input. Please try again.");
-                            isValid = false;
+                            isValidInput = false;
                             return;
                         }
                     }
                     else
                     {
                         MessageBox.Show("Please fill in both endpoint fields.");
-                        isValid = false;
+                        isValidInput = false;
                         return;
                     }
                 }
                 else
                 {
                     MessageBox.Show("Please pick one Network Interface Card.");
-                    isValid = false;
+                    isValidInput = false;
                     return;
                 }
             }
@@ -193,17 +192,17 @@ namespace UDP_Test_GUI
         /// <summary> 
         ///  Class Name: Setup <br/><br/>
         ///
-        ///  Description: Checks if isValid is true, and either cancels the form closing or lets it close. <br/><br/>
+        ///  Description: Checks if isValidInput is true, and either cancels the form closing or lets it close. <br/><br/>
         ///
         ///  Inputs:  None 
         ///  </summary> 
         ///  <returns> void </returns>
         private void Setup_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (!isValid)
+            if (!isValidInput)
             {
                 e.Cancel = true;
-                isValid = true;
+                isValidInput = true;
                 return;
             }
         }

@@ -29,6 +29,9 @@ using System.Timers;
 using System.Net;
 using System.Diagnostics;
 using System.Net.NetworkInformation;
+using System.Threading.Tasks;
+using GUIreceiver;
+using Newtonsoft.Json.Linq;
 
 
 namespace Repeater
@@ -237,10 +240,10 @@ namespace Repeater
 
         public void CloseAllOurSockets()
         {
-            if (listenerSocket != null) { listenerSocket.Dispose(); }
-            if (multicastSender != null) { multicastSender.Dispose(); }
-            if (otherSender != null) { otherSender.Dispose(); }
-            if (guiSender != null) { guiSender.Dispose(); }
+            if (listenerSocket != null)  listenerSocket.Dispose(); 
+            if (multicastSender != null)  multicastSender.Dispose();
+            if (otherSender != null)  otherSender.Dispose();
+            if (guiSender != null)  guiSender.Dispose();
         }
 
         /// <summary> 
@@ -266,6 +269,11 @@ namespace Repeater
                 {
                     otherSender.Send(messageBytes, messageBytes.Length);
                 }
+            }
+            catch (ObjectDisposedException)
+            {
+                // This gets thrown when the cancellation token pops and the sockets get closed but
+                // it still trys to send it's last packet
             }
             catch (Exception ex)
             {
@@ -294,6 +302,11 @@ namespace Repeater
                 byte[] bytes = Encoding.ASCII.GetBytes(receiveIp + "," + receivePort + "," + dataLength);
 
                 guiSender.Send(bytes, bytes.Length);
+            }
+            catch (ObjectDisposedException)
+            {
+                // This gets thrown when the cancellation token pops and the sockets get closed but
+                // it still trys to send it's last packet
             }
             catch (Exception e)
             {
@@ -337,15 +350,16 @@ namespace Repeater
         /// <summary> 
         ///  Class Name: RepeaterClass  <br/><br/>
         ///
-        ///  Description: Intializes the listening socket. Sets up the event handler for <br/>
-        ///  packet arrival. It then starts listening and waits for the cancellation token to stop the listening. <br/><br/>
+        ///  Description: Intializes the listening socket and begins the listening task. <br/>
+        ///  This also registers the TaskCompletionSource and waits for it to know when we're reconfiguring <br/>
+        ///  so we can stop listening and close the sockets. <br/><br/>
         ///
         ///  Inputs:  <br/>
         ///  CancellationToken <paramref name="token"/> - A token that signals a configuration change was made, so this task need to end. <br/><br/>
         ///  
         ///  Returns:  None
         /// </summary>
-        public void SetupAndStartListener(CancellationToken token)
+        public async void SetupAndStartListener(CancellationToken token)
         {
             try
             {
@@ -358,19 +372,40 @@ namespace Repeater
                 {
                     HandleBadNicIP();
                 }
-                    
-                    // This is the main listening loop
-                while (!token.IsCancellationRequested)
-                {
-                    listenerSocket.Receive(buffer);
-                    HandleNewPacketReceived();
-                }
+
+                Task.Run(() => MainListeningLoop(token));
+
+                var tcs = new TaskCompletionSource<bool>();
+                token.Register(() => tcs.SetResult(true));
+
+                await tcs.Task;
 
                 CloseAllOurSockets();
             }
             catch (Exception ex)
             {
                 backendObject.ExceptionLogger(ex);
+            }
+        }
+
+        /// <summary> 
+        ///  Class Name: RepeaterClass  <br/><br/>
+        ///
+        ///  Description: Handles the main listening loop. Keeps listening until the cancellation pops <br/>br/>
+        ///
+        ///  Inputs:  <br/>
+        ///  CancellationToken <paramref name="token"/> - A token that signals a configuration change was made, 
+        ///                                               so we need to stop listening. <br/><br/>
+        ///  
+        ///  Returns:  None
+        /// </summary>
+        private void MainListeningLoop(CancellationToken token)
+        {
+            // This is the main listening loop
+            while (!token.IsCancellationRequested)
+            {
+                listenerSocket.Receive(buffer);
+                HandleNewPacketReceived();
             }
         }
 

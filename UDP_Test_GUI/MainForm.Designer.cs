@@ -30,6 +30,11 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.packetsHandledDisplay = new System.Windows.Forms.DataGridView();
+            this.indexColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ipColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.portColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.payloadColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.timeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.title_label = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
@@ -57,11 +62,6 @@
             this.label13 = new System.Windows.Forms.Label();
             this.statusLabel = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
-            this.indexColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ipColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.portColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.payloadColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.timeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.packetsHandledDisplay)).BeginInit();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -89,6 +89,38 @@
             this.packetsHandledDisplay.RowHeadersWidth = 70;
             this.packetsHandledDisplay.Size = new System.Drawing.Size(630, 251);
             this.packetsHandledDisplay.TabIndex = 4;
+            // 
+            // indexColumn
+            // 
+            this.indexColumn.HeaderText = "Packet Number";
+            this.indexColumn.Name = "indexColumn";
+            this.indexColumn.ReadOnly = true;
+            // 
+            // ipColumn
+            // 
+            this.ipColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.ipColumn.HeaderText = "IP Address";
+            this.ipColumn.Name = "ipColumn";
+            this.ipColumn.ReadOnly = true;
+            // 
+            // portColumn
+            // 
+            this.portColumn.HeaderText = "Port";
+            this.portColumn.Name = "portColumn";
+            this.portColumn.ReadOnly = true;
+            // 
+            // payloadColumn
+            // 
+            this.payloadColumn.HeaderText = "Data Length (Bytes)";
+            this.payloadColumn.Name = "payloadColumn";
+            this.payloadColumn.ReadOnly = true;
+            // 
+            // timeColumn
+            // 
+            this.timeColumn.HeaderText = "Time Stamp";
+            this.timeColumn.Name = "timeColumn";
+            this.timeColumn.ReadOnly = true;
+            this.timeColumn.Width = 150;
             // 
             // title_label
             // 
@@ -168,7 +200,7 @@
             // currentSendPort
             // 
             this.currentSendPort.AutoSize = true;
-            this.currentSendPort.Location = new System.Drawing.Point(158, 85);
+            this.currentSendPort.Location = new System.Drawing.Point(163, 85);
             this.currentSendPort.Name = "currentSendPort";
             this.currentSendPort.Size = new System.Drawing.Size(25, 13);
             this.currentSendPort.TabIndex = 10;
@@ -195,7 +227,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(20, 85);
+            this.label7.Location = new System.Drawing.Point(22, 85);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(32, 13);
             this.label7.TabIndex = 4;
@@ -232,7 +264,7 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(126, 85);
+            this.label9.Location = new System.Drawing.Point(137, 85);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(32, 13);
             this.label9.TabIndex = 6;
@@ -261,7 +293,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(61, 9);
+            this.label3.Location = new System.Drawing.Point(69, 9);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(182, 20);
             this.label3.TabIndex = 0;
@@ -367,38 +399,6 @@
             this.label14.Size = new System.Drawing.Size(167, 13);
             this.label14.TabIndex = 24;
             this.label14.Text = "*Inactivity Reconfiguration is Here";
-            // 
-            // indexColumn
-            // 
-            this.indexColumn.HeaderText = "Packet Number";
-            this.indexColumn.Name = "indexColumn";
-            this.indexColumn.ReadOnly = true;
-            // 
-            // ipColumn
-            // 
-            this.ipColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.ipColumn.HeaderText = "IP Address";
-            this.ipColumn.Name = "ipColumn";
-            this.ipColumn.ReadOnly = true;
-            // 
-            // portColumn
-            // 
-            this.portColumn.HeaderText = "Port";
-            this.portColumn.Name = "portColumn";
-            this.portColumn.ReadOnly = true;
-            // 
-            // payloadColumn
-            // 
-            this.payloadColumn.HeaderText = "Data Length (Bytes)";
-            this.payloadColumn.Name = "payloadColumn";
-            this.payloadColumn.ReadOnly = true;
-            // 
-            // timeColumn
-            // 
-            this.timeColumn.HeaderText = "Time Stamp";
-            this.timeColumn.Name = "timeColumn";
-            this.timeColumn.ReadOnly = true;
-            this.timeColumn.Width = 150;
             // 
             // MainForm
             // 

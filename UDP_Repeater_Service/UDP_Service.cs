@@ -200,6 +200,11 @@ class TheMainProgram
                     jsonObject["currentConfig"]["receiveFrom"]["port"]  =   (string)jsonObject["defaultSettings"]["receiveFrom"]["port"];
                     jsonObject["currentConfig"]["sendTo"]["ip"]         =   (string)jsonObject["defaultSettings"]["sendTo"]["ip"];
                     jsonObject["currentConfig"]["sendTo"]["port"]       =   (string)jsonObject["defaultSettings"]["sendTo"]["port"];
+
+                    newbackendObject.receiveIp    = (string)jsonObject["defaultSettings"]["receiveFrom"]["ip"];
+                    newbackendObject.receivePort  = (int)   jsonObject["defaultSettings"]["receiveFrom"]["port"];
+                    newbackendObject.sendIp       = (string)jsonObject["defaultSettings"]["sendTo"]["ip"];
+                    newbackendObject.sendPort     = (int)   jsonObject["defaultSettings"]["sendTo"]["port"];
                     break;
             }
 
@@ -266,14 +271,16 @@ class TheMainProgram
                 repeaterThread.Join();                  // Wait for the send thread to complete
                 cts = new CancellationTokenSource();    // Reset the cancellation token for the next iteration
 
-                
-                UpdateConfigJson(newbackendObject, backendObject);              // updates config.json
-                if (newbackendObject.change == Backend.changeType.setup)
+                if (newbackendObject != null)
                 {
-                    Thread.Sleep(1000);
-                    Environment.Exit(1); // forces restart because loki/prom change is weird and this service is set to restart on failure
+                    UpdateConfigJson(newbackendObject, backendObject);
+                    if (newbackendObject.change == Backend.changeType.setup)
+                    {
+                        Thread.Sleep(1000);
+                        Environment.Exit(1);   // forces restart because loki/prom change is weird and this service is set to restart on failure
+                    }
+                    backendObject.UpdateWithNewBackendObject(newbackendObject);     // updates the original backendObject with the new values
                 }
-                backendObject.UpdateWithNewBackendObject(newbackendObject);     // updates the original backendObject with the new values
             }
         }
         catch (Exception e)

@@ -66,7 +66,8 @@ namespace GUIreceiver
                         {
                             backendObject.WarningLogger("Receiving from GUI port 63763 not open. " +
                                                         "Tried 15 times to connect without success");
-                            break;
+
+                            return null;
                         }
                         System.Threading.Thread.Sleep(1000); 
                     }
@@ -109,6 +110,15 @@ namespace GUIreceiver
 
                         // waits for input from the GUI
                 string[] dataParts = ReceivingFromGUI(backendObject);
+
+                        // if dataparts is null, there was an issue with connecting to the socket,
+                        // so we return null to show that there was an issue.
+                if (dataParts == null)
+                {
+                    backendObject.WarningLogger("Service is unable to receive configuration changes from " +
+                                                "the user interface at this time.");
+                    return null;
+                }
 
                         // dataParts[2] is the change mode 
                 switch (dataParts[2])

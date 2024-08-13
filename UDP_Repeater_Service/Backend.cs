@@ -138,13 +138,18 @@ namespace BackendClassNameSpace
 
             try
             {
-                if (!Uri.IsWellFormedUriString(this.promEndpoint, UriKind.Absolute) ||
-                    !Uri.IsWellFormedUriString(this.lokiEndpoint, UriKind.Absolute))
+                if (!Uri.IsWellFormedUriString(this.promEndpoint, UriKind.Absolute))
                 {
-                    throw new UriFormatException();
+                    string message = $"Invalid Prometheus endpoint configured: {this.promEndpoint} \nNo monitoring currently.";
+                    throw new UriFormatException(message);
+                }
+                if (!Uri.IsWellFormedUriString(this.lokiEndpoint, UriKind.Absolute))
+                {
+                    string message = $"Invalid Loki endpoint configured: {this.lokiEndpoint} \nNo monitoring currently.";
+                    throw new UriFormatException(message);
                 }
 
-                    // Loki event logger set up fields
+                // Loki event logger set up fields
                 const string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss} \t Backend/Service \t {Level} \n{Message}";
                 this.lokiLogger = new LoggerConfiguration()
                                   .WriteTo.GrafanaLoki
@@ -176,9 +181,10 @@ namespace BackendClassNameSpace
                 this.processMemory = myMeter.CreateObservableGauge("backendMemory", () => GetProcessMemory());
                 this.packetHandlingTimer = myMeter.CreateHistogram<double>("packetHandlingTimer");
             }
-            catch (UriFormatException) 
+            catch (UriFormatException e) 
             {
-                eventLog.WriteEntry("Invalid endpoint configured, no monitoring currently.", EventLogEntryType.Warning, 9);
+               
+                eventLog.WriteEntry(e.Message, EventLogEntryType.Warning, 9);
             }
         }
 
@@ -273,10 +279,7 @@ namespace BackendClassNameSpace
 
             try
             {
-                if (!Uri.IsWellFormedUriString(this.lokiEndpoint, UriKind.Absolute))
-                {
-                    throw new UriFormatException();
-                }
+                if (!Uri.IsWellFormedUriString(this.lokiEndpoint, UriKind.Absolute)) throw new UriFormatException();
 
                     // Loki event logger set up
                 const string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss} \t Backend/Service \t {Level} \n{Message}";
@@ -297,7 +300,7 @@ namespace BackendClassNameSpace
             }
             catch (UriFormatException) 
             {
-                eventLog.WriteEntry("Invalid endpoint configured, no monitoring currently.", EventLogEntryType.Warning, 9);
+                eventLog.WriteEntry("Invalid Loki endpoint configured, no monitoring currently.", EventLogEntryType.Warning, 9);
             }
         }
 

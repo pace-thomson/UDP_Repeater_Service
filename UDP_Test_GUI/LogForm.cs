@@ -58,7 +58,6 @@ namespace UDP_Repeater_GUI
             InitializeComponent();
 
             eventLogForReading = SetCheckerForLogChanges();
-
             theMainForm = mainForm;
 
                 // this makes sure that the rows can fit if there's multiple lines of text
@@ -67,6 +66,7 @@ namespace UDP_Repeater_GUI
                 // hides the logs until the they're finished loading
             logDataGridView.Visible = false;
 
+                // We populate the logs in the background so the user can tell they are loading
             backgroundLogPopulator.RunWorkerAsync();
         }
 
@@ -162,7 +162,7 @@ namespace UDP_Repeater_GUI
 
                                 // unit shoudn't be uppcase here because the backend wants it in lowercase
                         byte[] bytes = Encoding.ASCII.GetBytes(interval + "," + unit + "," + "inactive");
-                        sendRequest.Send(bytes, bytes.Length, "127.0.0.1", 50001);
+                        sendRequest.Send(bytes, bytes.Length, "127.0.0.1", 63763);
                     }
                     catch (Exception exception)
                     {

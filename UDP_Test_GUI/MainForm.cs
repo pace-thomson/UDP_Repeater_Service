@@ -446,17 +446,27 @@ namespace UDP_Repeater_GUI
             {
                 try
                 {
-                    using (ServiceController thePacketRepeaterServiceourService = new ServiceController("UDP_Repeater_Service"))
+                    using (ServiceController ourServiceMonitor = new ServiceController("UDP_Repeater_Service"))
                     {
-                        if (thePacketRepeaterServiceourService.Status == ServiceControllerStatus.Running)
+                        if (ourServiceMonitor.Status == ServiceControllerStatus.Running)
                         {
                             statusLabel.Text = "Running";
                             statusLabel.ForeColor = Color.Green;
                         }
-                        else if (thePacketRepeaterServiceourService.Status == ServiceControllerStatus.Stopped)
+                        else if (ourServiceMonitor.Status == ServiceControllerStatus.Stopped)
                         {
                             statusLabel.Text = "Not Running";
                             statusLabel.ForeColor = Color.Red;
+                        }
+                        else if (ourServiceMonitor.Status == ServiceControllerStatus.StartPending)
+                        {
+                            statusLabel.Text = "Start Pending";
+                            statusLabel.ForeColor = Color.Purple;
+                        }
+                        else if (ourServiceMonitor.Status == ServiceControllerStatus.StopPending)
+                        {
+                            statusLabel.Text = "Stop Pending";
+                            statusLabel.ForeColor = Color.Purple;
                         }
                     }
                 }
