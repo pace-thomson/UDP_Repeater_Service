@@ -146,33 +146,32 @@ namespace Repeater
     /// </summary>
     class RepeaterClass
     {
-            /// <summary> The ip we are receiving from. </summary>
-        public string receiveIpString { get; set; }
-            /// <summary> The port we are receiving from. </summary>
-        public string receivePortString { get; set; }
             /// <summary> A Backend object that we use to get the configuration settings. </summary>
-        public static Backend backendObject { get; set; }
+        public static Backend backendObject;
 
             /// <summary> A timerClass object that we use to get the update the last received packet time. </summary>
-        public static TimerClass timer { get; set; }
+        public static TimerClass timer;
             /// <summary> Times how long it takes to process packets. </summary>
-        public static Stopwatch stopWatch { get; set; }
+        public static Stopwatch stopWatch;
 
             /// <summary> Tells us if the send ip is multicast or not. </summary>
-        private static bool isMulticast { get; set; }
+        private static bool isMulticast;
             /// <summary> The sending endpoint object. </summary>
-        public IPEndPoint endPoint { get; set; }
+        public IPEndPoint endPoint;
             /// <summary> The multicast sender, which is a Socket object. </summary>
-        public Socket multicastSender { get; set; }
+        public Socket multicastSender;
             /// <summary> The other sender, which is a UdpClient object. </summary>
-        public UdpClient otherSender { get; set; }
+        public UdpClient otherSender;
             /// <summary> The GUI sender. Handles all of the sending to the GUI. </summary>
-        public UdpClient guiSender { get; set; }
+        public UdpClient guiSender;
 
-
-        private Socket listenerSocket { get; set; }
-
-        private byte[] buffer { get; set; }
+            /// <summary> The raw socket that we listen on. </summary>
+        private Socket listenerSocket;
+            /// <summary> The buffer that we put the newly received packets into. </summary>
+        private readonly byte[] buffer;
+            /// <summary> Counts our object disposed frequency in ReceiveCallback. One happens naturally 
+            /// when we reconfigure. Any more means there is anothe issue. </summary>
+        private int objectDisposedCounter;
 
 
         /// <summary> 
@@ -196,6 +195,7 @@ namespace Repeater
             guiSender = new UdpClient("127.0.0.1", 56722);
 
             buffer = new byte[1028];
+            objectDisposedCounter = 0;
         }
 
 
@@ -240,14 +240,18 @@ namespace Repeater
 
         public void CloseAllOurSockets()
         {
-            if (multicastSender != null) multicastSender.Dispose();
-            if (otherSender != null) otherSender.Dispose();
-            if (guiSender != null) guiSender.Dispose();
-            if (listenerSocket != null)
+            try
             {
-                listenerSocket.Close();
-                listenerSocket = null;
+                if (multicastSender != null) multicastSender.Dispose();
+                if (otherSender != null) otherSender.Dispose();
+                if (guiSender != null) guiSender.Dispose();
+                if (listenerSocket != null)
+                {
+                    listenerSocket.Close();
+                    listenerSocket = null;
+                }
             }
+            catch (Exception ex) { backendObject.ExceptionLogger(ex); }
         }
 
         /// <summary> 
@@ -351,6 +355,7 @@ namespace Repeater
             }
         }
 
+
         /// <summary> 
         ///  Class Name: RepeaterClass  <br/><br/>
         ///
@@ -380,9 +385,11 @@ namespace Repeater
                 listenerSocket.IOControl(IOControlCode.ReceiveAll, BitConverter.GetBytes(1), null);
                 listenerSocket.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, new AsyncCallback(PacketReceivedCallback), null);
 
+                    // Registering the task completion task/source
                 var tcs = new TaskCompletionSource<bool>();
                 token.Register(() => tcs.SetResult(true));
 
+                    // This task finishes when the cancellation token pops, pretty cool right?
                 await tcs.Task;
 
                 CloseAllOurSockets();
@@ -401,7 +408,8 @@ namespace Repeater
         ///  information to the GUI. This also times the packet handling time and reports it, increments total  <br/>
         ///  packets handled, and updates the last received packet time.  <br/><br/>
         ///
-        ///  Inputs:  <br/><br/>
+        ///  Inputs:  <br/>
+        ///  IAsyncResult <paramref name="ar"/> - The result object of receiving, it's needed for EndReceive(). <br/><br/>
         ///  
         ///  Returns:  None
         /// </summary>
@@ -414,50 +422,76 @@ namespace Repeater
                     stopWatch.Restart();
 
                     listenerSocket.EndReceive(ar);
+                    
+                    byte[] udpPayload = ParsePacket();
 
-
-                    // Parse the IP header to find UDP packet
-                    var ipHeaderLength = (buffer[0] & 0x0F) * 4;
-                    int udpHeaderOffset = ipHeaderLength;
-                    int udpLength = (buffer[udpHeaderOffset + 4] << 8) | buffer[udpHeaderOffset + 5];
-
-                    string sourceIP = $"{buffer[12]}.{buffer[13]}.{buffer[14]}.{buffer[15]}";
-                    int destinationPort = (buffer[udpHeaderOffset + 2] << 8) | buffer[udpHeaderOffset + 3];
-
-                    if (sourceIP == backendObject.receiveIp && destinationPort == backendObject.receivePort)
+                    if (udpPayload != null)     // if udpPayload is null, that means the src ip and dest port didn't match our receiving config
                     {
-                        // Extract UDP payload
-                        var udpPayloadOffset = udpHeaderOffset + 8;
-                        var udpPayloadLength = udpLength - 8;
-
-                        byte[] udpPayload = new byte[udpPayloadLength];
-                        Array.Copy(buffer, udpPayloadOffset, udpPayload, 0, udpPayloadLength);
-
-                        // Process the UDP packet
+                            // Send the paylod out
                         SendMessageOut(udpPayload);
 
-                        // stop the stopwatch, time the packet handling perfomance and record it
+                            // stop the stopwatch, time the packet handling perfomance and record it
                         stopWatch.Stop();
-                        backendObject.AddNewPacketTimeHandled(stopWatch.Elapsed.TotalMilliseconds);
+                        backendObject.AddNewPacketTimeHandled(stopWatch.Elapsed.TotalMilliseconds * 10);
                         stopWatch.Reset();
 
-                        // sending to GUI section
+                            // Send the payload length to the GUI
                         SendToGUI(udpPayload.Length);
 
-                        // update last received packet time for inactivity checker
+                            // update last received packet time for inactivity checker
                         timer.UpdateLastReceivedTime(DateTime.Now);
 
-                        // increment the packets received counter for prometheus
+                            // increment the packets received counter for prometheus metric
                         backendObject.IncrementTotalPacketsHandled();
                     }
                     
                     listenerSocket.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, new AsyncCallback(PacketReceivedCallback), null);
                 }
             }
+            catch (ObjectDisposedException) when (objectDisposedCounter == 0)
+            {
+                    // This gets thrown when the cancellation token pops and the sockets get closed but it still trys to
+                    // send it's last packet. The objectDisposedCounter gets incremented so that if it happens multiple
+                    // times, we know it's more than some normal reconfiguration, and there's another issue.
+                objectDisposedCounter++;
+            }
             catch (Exception ex)
             {
                 backendObject.ExceptionLogger(ex);
             }
+        }
+        /// <summary> 
+        ///  Class Name: RepeaterClass  <br/><br/>
+        ///
+        ///  Description: First gets the source IP and destination port and checks if they are addressed correctly. If <br/>
+        ///  they aren't this, returns null. Otherwise, it gets the packet payload as a byte[] and returns it. <br/><br/>
+        ///
+        ///  Inputs: None <br/><br/>
+        ///     
+        /// </summary>
+        /// <returns> byte[]? - The packet's payload. This returns null if the packet wasn't for the right endpoint. </returns> 
+        private byte[] ParsePacket()
+        {
+            // Parse the IP header to find the source IP and destination port
+            int udpHeaderOffset = (buffer[0] & 0x0F) * 4;
+            string sourceIP = $"{buffer[12]}.{buffer[13]}.{buffer[14]}.{buffer[15]}";
+            int destinationPort = (buffer[udpHeaderOffset + 2] << 8) | buffer[udpHeaderOffset + 3];
+
+            if (sourceIP != backendObject.receiveIp || destinationPort != backendObject.receivePort)
+            {
+                return null;
+            }
+
+            int udpLength = (buffer[udpHeaderOffset + 4] << 8) | buffer[udpHeaderOffset + 5];
+
+                // Extract the payload offset and length
+            int udpPayloadOffset = udpHeaderOffset + 8;
+            int udpPayloadLength = udpLength - 8;
+
+                // Copy the payload out of the buffer and return it
+            byte[] udpPayload = new byte[udpPayloadLength];
+            Array.Copy(buffer, udpPayloadOffset, udpPayload, 0, udpPayloadLength);
+            return udpPayload;
         }
 
 

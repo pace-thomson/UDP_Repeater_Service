@@ -106,15 +106,15 @@ namespace BackendClassNameSpace
         ///  Description: Overload 1/3. The main Backend Constructor. Initializes all of the fields. <br/><br/>
         ///
         ///  Inputs:  <br/>
-        ///  string <paramref name="ReceiveIp"/>    -    The IP being listened to. <br/>
-        ///  string <paramref name="ReceivePort"/>  -    The Port being listened to. <br/>
-        ///  string <paramref name="SendIp"/>       -    The IP being sent to. <br/>
-        ///  string <paramref name="SendPort"/>     -    The Port being sent to. <br/>
-        ///  int    <paramref name="newInterval"/>  -    The interval (number) at which the service reports inactivity <br/>
-        ///  string <paramref name="newUnit"/>      -    The unit (minute, day, hour) at which the service reports inactivity <br/>
-        ///  string <paramref name="PromEndpoint"/> -    The endpoint of the prometheus server we are sending metrics to. <br/>
-        ///  string <paramref name="LokiEndpoint"/> -    The endpoint of the loki server we are sending logs to. <br/>
-        ///  string <paramref name="IpAddressOfNIC"/>    -    The name of the NIC we're listening on <br/><br/> 
+        ///  string <paramref name="ReceiveIp"/>        -    The IP being listened to. <br/>
+        ///  string <paramref name="ReceivePort"/>      -    The Port being listened to. <br/>
+        ///  string <paramref name="SendIp"/>           -    The IP being sent to. <br/>
+        ///  string <paramref name="SendPort"/>         -    The Port being sent to. <br/>
+        ///  int    <paramref name="newInterval"/>      -    The interval (number) at which the service reports inactivity <br/>
+        ///  string <paramref name="newUnit"/>          -    The unit (minute, day, hour) at which the service reports inactivity <br/>
+        ///  string <paramref name="PromEndpoint"/>     -    The endpoint of the prometheus server we are sending metrics to. <br/>
+        ///  string <paramref name="LokiEndpoint"/>     -    The endpoint of the loki server we are sending logs to. <br/>
+        ///  string <paramref name="IpAddressOfNIC"/>   -    The name of the NIC we're listening on <br/><br/> 
         ///  
         /// Returns: A Backend Object
         /// </summary>
@@ -157,9 +157,9 @@ namespace BackendClassNameSpace
                                       this.lokiEndpoint,
                                       labels: new List<LokiLabel>
                                       {
-                                      new LokiLabel(){ Key = "RepeaterSide", Value = "Backend/Service" },
-                                      new LokiLabel(){ Key = "MachineName", Value = Environment.MachineName },
-                                      new LokiLabel(){ Key = "User", Value = Environment.UserName }
+                                          new LokiLabel(){ Key = "RepeaterSide", Value = "Backend/Service" },
+                                          new LokiLabel(){ Key = "MachineName", Value = Environment.MachineName },
+                                          new LokiLabel(){ Key = "User", Value = Environment.UserName }
                                       },
                                       textFormatter: new MessageTemplateTextFormatter(outputTemplate, null)
                                   )
@@ -360,7 +360,7 @@ namespace BackendClassNameSpace
         /// <summary> 
         ///  Class Name: Backend  <br/><br/> 
         ///
-        ///  Description: Inputs a new time metric for our packet ingress/egress calculation. <br/><br/>
+        ///  Description: Inputs a new packet handling time span for our packet ingress/egress calculation. <br/><br/>
         ///
         ///  Inputs: None <br/>
         ///  double <paramref name="stopWatchTime"/> - The time (in milliseconds) for a packet ingress/egress time. <br/><br/>

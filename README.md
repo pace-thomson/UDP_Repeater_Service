@@ -1,6 +1,5 @@
 
 # Overview
-
 This application was developed to solve a problem where multiple machines need to get the same UDP packets. It functions by listening for 
 packets on a host machine using a raw socket to not disturb the packet's intended destination from receiving it. It then sends the payload of 
 that packet out to a taget endpoint using UDP Unicast, Multicast, or Broadcast. It was built as a Windows Service backend that interacts 
@@ -8,9 +7,8 @@ with a GUI frontend for user interaction and system monitoring. Included in this
 
 <p align="center">
   <img src="./Images_For_README/UDP_Packet_Repeater_Flowchart.png" alt="Flowchart">
-  <em>The task flow of this system</em>
+  <em>System Task Flow</em>
 </p>
-
 
 
 ## Service/Backend
@@ -29,7 +27,7 @@ to the other children forms of the application. Among those children are forms f
 application when the user logs in. It is intended to run in the background and as such, only runs out of the system tray.
 
 ## Installer
-The installer for this application is a 2 part wix toolset bootstrapper. It first installs .NET Framework 4.7.2 and then runs the main installer for the whole Packet 
+The installer for this application is a 2 part wix toolset bootstrapper. It first installs .NET Framework 4.7.2 and then runs the main installer for the actual UDP 
 Repeater Service. This installer downloads all the needed files for operation, registers the Service/Backend with the Windows Service Controller, and sets up 
 the GUI to run on startup. Running [Packet_Repeater_Installer.exe](Packet_Repeater_Installer.exe) will do everything needed to get this system up and running. 
 
@@ -49,5 +47,5 @@ PS C:\Users> .\loki-windows-amd64.exe --config.file=loki-local-config.yaml
 
 <p align="center">
   <img src="./Images_For_README/Dashboard_Screenshot.png" alt="Grafana Dashboard Screenshot">
-  <em> A screenshot of the Grafana Dashboard in use </em>
+  <em> Running Grafana Dashboard </em>
 </p>
