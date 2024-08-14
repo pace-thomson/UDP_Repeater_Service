@@ -84,9 +84,9 @@ namespace UDP_Repeater_GUI
                                     lokiURI,
                                     labels: new List<LokiLabel>
                                     {
-                                    new LokiLabel(){ Key = "RepeaterSide", Value = "Frontend/Interface" },
-                                    new LokiLabel(){ Key = "MachineName", Value = Environment.MachineName },
-                                    new LokiLabel(){ Key = "User", Value = Environment.UserName }
+                                        new LokiLabel(){ Key = "RepeaterSide", Value = "Frontend/Interface" },
+                                        new LokiLabel(){ Key = "MachineName", Value = Environment.MachineName },
+                                        new LokiLabel(){ Key = "User", Value = Environment.UserName }
                                     },
                                     textFormatter: new MessageTemplateTextFormatter(outputTemplate, null)
                                 )

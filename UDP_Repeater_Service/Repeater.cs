@@ -240,10 +240,14 @@ namespace Repeater
 
         public void CloseAllOurSockets()
         {
-            if (listenerSocket != null)  listenerSocket.Dispose(); 
-            if (multicastSender != null)  multicastSender.Dispose();
-            if (otherSender != null)  otherSender.Dispose();
-            if (guiSender != null)  guiSender.Dispose();
+            if (multicastSender != null) multicastSender.Dispose();
+            if (otherSender != null) otherSender.Dispose();
+            if (guiSender != null) guiSender.Dispose();
+            if (listenerSocket != null)
+            {
+                listenerSocket.Close();
+                listenerSocket = null;
+            }
         }
 
         /// <summary> 
@@ -373,7 +377,8 @@ namespace Repeater
                     HandleBadNicIP();
                 }
 
-                Task.Run(() => MainListeningLoop(token));
+                listenerSocket.IOControl(IOControlCode.ReceiveAll, BitConverter.GetBytes(1), null);
+                listenerSocket.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, new AsyncCallback(PacketReceivedCallback), null);
 
                 var tcs = new TaskCompletionSource<bool>();
                 token.Register(() => tcs.SetResult(true));
@@ -388,26 +393,6 @@ namespace Repeater
             }
         }
 
-        /// <summary> 
-        ///  Class Name: RepeaterClass  <br/><br/>
-        ///
-        ///  Description: Handles the main listening loop. Keeps listening until the cancellation pops <br/>br/>
-        ///
-        ///  Inputs:  <br/>
-        ///  CancellationToken <paramref name="token"/> - A token that signals a configuration change was made, 
-        ///                                               so we need to stop listening. <br/><br/>
-        ///  
-        ///  Returns:  None
-        /// </summary>
-        private void MainListeningLoop(CancellationToken token)
-        {
-            // This is the main listening loop
-            while (!token.IsCancellationRequested)
-            {
-                listenerSocket.Receive(buffer);
-                HandleNewPacketReceived();
-            }
-        }
 
         /// <summary> 
         ///  Class Name: RepeaterClass  <br/><br/>
@@ -420,45 +405,53 @@ namespace Repeater
         ///  
         ///  Returns:  None
         /// </summary>
-        private void HandleNewPacketReceived()
+        private void PacketReceivedCallback(IAsyncResult ar)
         {
             try
             {
-                stopWatch.Restart();
-
-                // Parse the IP header to find UDP packet
-                var ipHeaderLength = (buffer[0] & 0x0F) * 4;
-                int udpHeaderOffset = ipHeaderLength;
-                int udpLength = (buffer[udpHeaderOffset + 4] << 8) | buffer[udpHeaderOffset + 5];
-
-                string sourceIP = $"{buffer[12]}.{buffer[13]}.{buffer[14]}.{buffer[15]}";
-                int destinationPort = (buffer[udpHeaderOffset + 2] << 8) | buffer[udpHeaderOffset + 3];
-
-                if (sourceIP == backendObject.receiveIp && destinationPort == backendObject.receivePort)
+                if (listenerSocket != null) 
                 {
-                    // Extract UDP payload
-                    var udpPayloadOffset = udpHeaderOffset + 8;
-                    var udpPayloadLength = udpLength - 8;
+                    stopWatch.Restart();
 
-                    byte[] udpPayload = new byte[udpPayloadLength];
-                    Array.Copy(buffer, udpPayloadOffset, udpPayload, 0, udpPayloadLength);
+                    listenerSocket.EndReceive(ar);
 
-                    // Process the UDP packet
-                    SendMessageOut(udpPayload);
 
-                    // stop the stopwatch, time the packet handling perfomance and record it
-                    stopWatch.Stop();
-                    backendObject.AddNewPacketTimeHandled(stopWatch.Elapsed.TotalMilliseconds);
-                    stopWatch.Reset();
+                    // Parse the IP header to find UDP packet
+                    var ipHeaderLength = (buffer[0] & 0x0F) * 4;
+                    int udpHeaderOffset = ipHeaderLength;
+                    int udpLength = (buffer[udpHeaderOffset + 4] << 8) | buffer[udpHeaderOffset + 5];
 
-                    // sending to GUI section
-                    SendToGUI(udpPayload.Length);
+                    string sourceIP = $"{buffer[12]}.{buffer[13]}.{buffer[14]}.{buffer[15]}";
+                    int destinationPort = (buffer[udpHeaderOffset + 2] << 8) | buffer[udpHeaderOffset + 3];
 
-                    // update last received packet time for inactivity checker
-                    timer.UpdateLastReceivedTime(DateTime.Now);
+                    if (sourceIP == backendObject.receiveIp && destinationPort == backendObject.receivePort)
+                    {
+                        // Extract UDP payload
+                        var udpPayloadOffset = udpHeaderOffset + 8;
+                        var udpPayloadLength = udpLength - 8;
 
-                    // increment the packets received counter for prometheus
-                    backendObject.IncrementTotalPacketsHandled();
+                        byte[] udpPayload = new byte[udpPayloadLength];
+                        Array.Copy(buffer, udpPayloadOffset, udpPayload, 0, udpPayloadLength);
+
+                        // Process the UDP packet
+                        SendMessageOut(udpPayload);
+
+                        // stop the stopwatch, time the packet handling perfomance and record it
+                        stopWatch.Stop();
+                        backendObject.AddNewPacketTimeHandled(stopWatch.Elapsed.TotalMilliseconds);
+                        stopWatch.Reset();
+
+                        // sending to GUI section
+                        SendToGUI(udpPayload.Length);
+
+                        // update last received packet time for inactivity checker
+                        timer.UpdateLastReceivedTime(DateTime.Now);
+
+                        // increment the packets received counter for prometheus
+                        backendObject.IncrementTotalPacketsHandled();
+                    }
+                    
+                    listenerSocket.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, new AsyncCallback(PacketReceivedCallback), null);
                 }
             }
             catch (Exception ex)
