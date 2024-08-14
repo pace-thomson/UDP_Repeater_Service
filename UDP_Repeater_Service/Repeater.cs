@@ -147,31 +147,33 @@ namespace Repeater
     class RepeaterClass
     {
             /// <summary> A Backend object that we use to get the configuration settings. </summary>
-        public static Backend backendObject;
+        public static Backend backendObject { get; set; }
 
             /// <summary> A timerClass object that we use to get the update the last received packet time. </summary>
-        public static TimerClass timer;
+        public static TimerClass timer { get; set; }
             /// <summary> Times how long it takes to process packets. </summary>
-        public static Stopwatch stopWatch;
+        public static Stopwatch stopWatch { get; set; }
 
             /// <summary> Tells us if the send ip is multicast or not. </summary>
-        private static bool isMulticast;
+        private static bool isMulticast { get; set; }
             /// <summary> The sending endpoint object. </summary>
-        public IPEndPoint endPoint;
+        public IPEndPoint endPoint { get; set; }
             /// <summary> The multicast sender, which is a Socket object. </summary>
-        public Socket multicastSender;
+        public Socket multicastSender { get; set; }
             /// <summary> The other sender, which is a UdpClient object. </summary>
-        public UdpClient otherSender;
+        public UdpClient otherSender { get; set; }
             /// <summary> The GUI sender. Handles all of the sending to the GUI. </summary>
-        public UdpClient guiSender;
+        public UdpClient guiSender { get; set; }
 
             /// <summary> The raw socket that we listen on. </summary>
-        private Socket listenerSocket;
+        private Socket listenerSocket { get; set; }
             /// <summary> The buffer that we put the newly received packets into. </summary>
-        private readonly byte[] buffer;
+        private byte[] buffer { get; set; }
             /// <summary> Counts our object disposed frequency in ReceiveCallback. One happens naturally 
-            /// when we reconfigure. Any more means there is anothe issue. </summary>
-        private int objectDisposedCounter;
+            /// when we reconfigure. Any more means there is another issue. </summary>
+        private int objectDisposedCounter { get; set; }
+
+        private bool isReceiveIpSet { get; set; }
 
 
         /// <summary> 
@@ -196,6 +198,9 @@ namespace Repeater
 
             buffer = new byte[1028];
             objectDisposedCounter = 0;
+
+            if (backendObject.receiveIp == "0.0.0.0") isReceiveIpSet = false;
+            else isReceiveIpSet = true;
         }
 
 
@@ -299,15 +304,15 @@ namespace Repeater
         ///  
         ///  Returns:  None
         /// </summary>
-        public void SendToGUI(int payloadLength)
+        public void SendToGUI(int udpHeaderOffset, int payloadLength)
         {
             try
             {
-                string receiveIp = backendObject.receiveIp;
-                string receivePort = backendObject.receivePort.ToString();
+                string sourceIP = $"{buffer[12]}.{buffer[13]}.{buffer[14]}.{buffer[15]}";
+                string sourcePort = ((buffer[udpHeaderOffset] << 8) | buffer[udpHeaderOffset + 1]).ToString();
                 string dataLength = payloadLength.ToString();
 
-                byte[] bytes = Encoding.ASCII.GetBytes(receiveIp + "," + receivePort + "," + dataLength);
+                byte[] bytes = Encoding.ASCII.GetBytes($"{sourceIP},{sourcePort},{dataLength}");
 
                 guiSender.Send(bytes, bytes.Length);
             }
@@ -422,8 +427,9 @@ namespace Repeater
                     stopWatch.Restart();
 
                     listenerSocket.EndReceive(ar);
-                    
-                    byte[] udpPayload = ParsePacket();
+
+                    int udpHeaderOffset = (buffer[0] & 0x0F) * 4;
+                    byte[] udpPayload = ParsePacket(udpHeaderOffset);
 
                     if (udpPayload != null)     // if udpPayload is null, that means the src ip and dest port didn't match our receiving config
                     {
@@ -435,12 +441,12 @@ namespace Repeater
                         backendObject.AddNewPacketTimeHandled(stopWatch.Elapsed.TotalMilliseconds * 10);
                         stopWatch.Reset();
 
-                            // Send the payload length to the GUI
-                        SendToGUI(udpPayload.Length);
+                            // Send the source IP and payload length
+                        SendToGUI(udpHeaderOffset, udpPayload.Length);
 
                             // update last received packet time for inactivity checker
                         timer.UpdateLastReceivedTime(DateTime.Now);
-
+                         
                             // increment the packets received counter for prometheus metric
                         backendObject.IncrementTotalPacketsHandled();
                     }
@@ -470,16 +476,25 @@ namespace Repeater
         ///     
         /// </summary>
         /// <returns> byte[]? - The packet's payload. This returns null if the packet wasn't for the right endpoint. </returns> 
-        private byte[] ParsePacket()
+        private byte[] ParsePacket(int udpHeaderOffset)
         {
             // Parse the IP header to find the source IP and destination port
-            int udpHeaderOffset = (buffer[0] & 0x0F) * 4;
-            string sourceIP = $"{buffer[12]}.{buffer[13]}.{buffer[14]}.{buffer[15]}";
             int destinationPort = (buffer[udpHeaderOffset + 2] << 8) | buffer[udpHeaderOffset + 3];
 
-            if (sourceIP != backendObject.receiveIp || destinationPort != backendObject.receivePort)
+            if (isReceiveIpSet)
             {
-                return null;
+                string sourceIP = $"{buffer[12]}.{buffer[13]}.{buffer[14]}.{buffer[15]}";
+                if (sourceIP != backendObject.receiveIp || destinationPort != backendObject.receivePort)
+                {
+                    return null;
+                }
+            }
+            else
+            {
+                if (destinationPort != backendObject.receivePort)
+                {
+                    return null;
+                }
             }
 
             int udpLength = (buffer[udpHeaderOffset + 4] << 8) | buffer[udpHeaderOffset + 5];

@@ -444,38 +444,35 @@ namespace UDP_Repeater_GUI
         {
             try
             {
-                try
+                using (ServiceController ourServiceMonitor = new ServiceController("UDP_Repeater_Service"))
                 {
-                    using (ServiceController ourServiceMonitor = new ServiceController("UDP_Repeater_Service"))
+                    if (ourServiceMonitor.Status == ServiceControllerStatus.Running)
                     {
-                        if (ourServiceMonitor.Status == ServiceControllerStatus.Running)
-                        {
-                            statusLabel.Text = "Running";
-                            statusLabel.ForeColor = Color.Green;
-                        }
-                        else if (ourServiceMonitor.Status == ServiceControllerStatus.Stopped)
-                        {
-                            statusLabel.Text = "Not Running";
-                            statusLabel.ForeColor = Color.Red;
-                        }
-                        else if (ourServiceMonitor.Status == ServiceControllerStatus.StartPending)
-                        {
-                            statusLabel.Text = "Start Pending";
-                            statusLabel.ForeColor = Color.Purple;
-                        }
-                        else if (ourServiceMonitor.Status == ServiceControllerStatus.StopPending)
-                        {
-                            statusLabel.Text = "Stop Pending";
-                            statusLabel.ForeColor = Color.Purple;
-                        }
+                        statusLabel.Text = "Running";
+                        statusLabel.ForeColor = Color.Green;
+                    }
+                    else if (ourServiceMonitor.Status == ServiceControllerStatus.Stopped)
+                    {
+                        statusLabel.Text = "Not Running";
+                        statusLabel.ForeColor = Color.Red;
+                    }
+                    else if (ourServiceMonitor.Status == ServiceControllerStatus.StartPending)
+                    {
+                        statusLabel.Text = "Start Pending";
+                        statusLabel.ForeColor = Color.Purple;
+                    }
+                    else if (ourServiceMonitor.Status == ServiceControllerStatus.StopPending)
+                    {
+                        statusLabel.Text = "Stop Pending";
+                        statusLabel.ForeColor = Color.Purple;
                     }
                 }
-                catch (InvalidOperationException notFound)
-                {
-                    statusLabel.Text = "Service Not Found";
-                    statusLabel.ForeColor = Color.DarkRed;
-                    logger.LogException(notFound);
-                }
+            }
+            catch (InvalidOperationException notFound)
+            {
+                statusLabel.Text = "Not Found";
+                statusLabel.ForeColor = Color.DarkRed;
+                logger.LogException(notFound);
             }
             catch (Exception ex)
             {
