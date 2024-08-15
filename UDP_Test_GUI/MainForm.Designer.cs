@@ -30,6 +30,11 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.packetsHandledDisplay = new System.Windows.Forms.DataGridView();
+            this.indexColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ipColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.portColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.payloadColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.timeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.title_label = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
@@ -57,11 +62,7 @@
             this.label13 = new System.Windows.Forms.Label();
             this.statusLabel = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
-            this.indexColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ipColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.portColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.payloadColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.timeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.label15 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.packetsHandledDisplay)).BeginInit();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -89,6 +90,38 @@
             this.packetsHandledDisplay.RowHeadersWidth = 70;
             this.packetsHandledDisplay.Size = new System.Drawing.Size(630, 251);
             this.packetsHandledDisplay.TabIndex = 4;
+            // 
+            // indexColumn
+            // 
+            this.indexColumn.HeaderText = "Packet Number";
+            this.indexColumn.Name = "indexColumn";
+            this.indexColumn.ReadOnly = true;
+            // 
+            // ipColumn
+            // 
+            this.ipColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.ipColumn.HeaderText = "IP Address (Source)";
+            this.ipColumn.Name = "ipColumn";
+            this.ipColumn.ReadOnly = true;
+            // 
+            // portColumn
+            // 
+            this.portColumn.HeaderText = "Port (Source)";
+            this.portColumn.Name = "portColumn";
+            this.portColumn.ReadOnly = true;
+            // 
+            // payloadColumn
+            // 
+            this.payloadColumn.HeaderText = "Data Length (Bytes)";
+            this.payloadColumn.Name = "payloadColumn";
+            this.payloadColumn.ReadOnly = true;
+            // 
+            // timeColumn
+            // 
+            this.timeColumn.HeaderText = "Time Stamp";
+            this.timeColumn.Name = "timeColumn";
+            this.timeColumn.ReadOnly = true;
+            this.timeColumn.Width = 150;
             // 
             // title_label
             // 
@@ -168,7 +201,7 @@
             // currentSendPort
             // 
             this.currentSendPort.AutoSize = true;
-            this.currentSendPort.Location = new System.Drawing.Point(163, 85);
+            this.currentSendPort.Location = new System.Drawing.Point(166, 80);
             this.currentSendPort.Name = "currentSendPort";
             this.currentSendPort.Size = new System.Drawing.Size(25, 13);
             this.currentSendPort.TabIndex = 10;
@@ -177,7 +210,7 @@
             // currentReceivePort
             // 
             this.currentReceivePort.AutoSize = true;
-            this.currentReceivePort.Location = new System.Drawing.Point(49, 85);
+            this.currentReceivePort.Location = new System.Drawing.Point(49, 80);
             this.currentReceivePort.Name = "currentReceivePort";
             this.currentReceivePort.Size = new System.Drawing.Size(31, 13);
             this.currentReceivePort.TabIndex = 9;
@@ -186,7 +219,7 @@
             // currentReceiveIp
             // 
             this.currentReceiveIp.AutoSize = true;
-            this.currentReceiveIp.Location = new System.Drawing.Point(20, 65);
+            this.currentReceiveIp.Location = new System.Drawing.Point(20, 60);
             this.currentReceiveIp.Name = "currentReceiveIp";
             this.currentReceiveIp.Size = new System.Drawing.Size(82, 13);
             this.currentReceiveIp.TabIndex = 7;
@@ -195,16 +228,16 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(22, 85);
+            this.label7.Location = new System.Drawing.Point(20, 80);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(32, 13);
+            this.label7.Size = new System.Drawing.Size(36, 13);
             this.label7.TabIndex = 4;
-            this.label7.Text = "Port: ";
+            this.label7.Text = "*Port: ";
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(3, 65);
+            this.label6.Location = new System.Drawing.Point(3, 60);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(23, 13);
             this.label6.TabIndex = 3;
@@ -214,25 +247,25 @@
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(20, 42);
+            this.label4.Location = new System.Drawing.Point(1, 38);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(70, 15);
+            this.label4.Size = new System.Drawing.Size(107, 15);
             this.label4.TabIndex = 1;
-            this.label4.Text = "Receiving";
+            this.label4.Text = "Receiving From";
             // 
             // currentSendIp
             // 
             this.currentSendIp.AutoSize = true;
-            this.currentSendIp.Location = new System.Drawing.Point(130, 65);
+            this.currentSendIp.Location = new System.Drawing.Point(133, 60);
             this.currentSendIp.Name = "currentSendIp";
-            this.currentSendIp.Size = new System.Drawing.Size(88, 13);
+            this.currentSendIp.Size = new System.Drawing.Size(82, 13);
             this.currentSendIp.TabIndex = 8;
-            this.currentSendIp.Text = "132.58.2002.157";
+            this.currentSendIp.Text = "132.58.202.157";
             // 
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(137, 85);
+            this.label9.Location = new System.Drawing.Point(140, 80);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(32, 13);
             this.label9.TabIndex = 6;
@@ -241,7 +274,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(114, 65);
+            this.label8.Location = new System.Drawing.Point(117, 60);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(23, 13);
             this.label8.TabIndex = 5;
@@ -251,24 +284,25 @@
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(130, 42);
+            this.label5.Location = new System.Drawing.Point(129, 38);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(60, 15);
+            this.label5.Size = new System.Drawing.Size(80, 15);
             this.label5.TabIndex = 2;
-            this.label5.Text = "Sending";
+            this.label5.Text = "Sending To";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(69, 9);
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 13F, System.Drawing.FontStyle.Bold);
+            this.label3.Location = new System.Drawing.Point(59, 9);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(182, 20);
+            this.label3.Size = new System.Drawing.Size(203, 22);
             this.label3.TabIndex = 0;
             this.label3.Text = "Current Configuration";
             // 
             // panel2
             // 
+            this.panel2.Controls.Add(this.label15);
             this.panel2.Controls.Add(this.currentTimeUnit);
             this.panel2.Controls.Add(this.currentInterval);
             this.panel2.Controls.Add(this.label12);
@@ -285,15 +319,15 @@
             this.panel2.Controls.Add(this.label8);
             this.panel2.Controls.Add(this.label9);
             this.panel2.Controls.Add(this.label4);
-            this.panel2.Location = new System.Drawing.Point(333, 12);
+            this.panel2.Location = new System.Drawing.Point(327, 12);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(308, 113);
+            this.panel2.Size = new System.Drawing.Size(314, 126);
             this.panel2.TabIndex = 21;
             // 
             // currentTimeUnit
             // 
             this.currentTimeUnit.AutoSize = true;
-            this.currentTimeUnit.Location = new System.Drawing.Point(261, 85);
+            this.currentTimeUnit.Location = new System.Drawing.Point(261, 80);
             this.currentTimeUnit.Name = "currentTimeUnit";
             this.currentTimeUnit.Size = new System.Drawing.Size(44, 13);
             this.currentTimeUnit.TabIndex = 15;
@@ -302,7 +336,7 @@
             // currentInterval
             // 
             this.currentInterval.AutoSize = true;
-            this.currentInterval.Location = new System.Drawing.Point(279, 65);
+            this.currentInterval.Location = new System.Drawing.Point(284, 60);
             this.currentInterval.Name = "currentInterval";
             this.currentInterval.Size = new System.Drawing.Size(13, 13);
             this.currentInterval.TabIndex = 14;
@@ -311,7 +345,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(232, 85);
+            this.label12.Location = new System.Drawing.Point(234, 80);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(29, 13);
             this.label12.TabIndex = 13;
@@ -320,7 +354,7 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(233, 65);
+            this.label11.Location = new System.Drawing.Point(238, 60);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(48, 13);
             this.label11.TabIndex = 12;
@@ -330,7 +364,7 @@
             // 
             this.label10.AutoSize = true;
             this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label10.Location = new System.Drawing.Point(237, 42);
+            this.label10.Location = new System.Drawing.Point(233, 38);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(62, 15);
             this.label10.TabIndex = 11;
@@ -368,37 +402,16 @@
             this.label14.TabIndex = 24;
             this.label14.Text = "*Inactivity Reconfiguration is Here";
             // 
-            // indexColumn
+            // label15
             // 
-            this.indexColumn.HeaderText = "Packet Number";
-            this.indexColumn.Name = "indexColumn";
-            this.indexColumn.ReadOnly = true;
-            // 
-            // ipColumn
-            // 
-            this.ipColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.ipColumn.HeaderText = "IP Address (Source)";
-            this.ipColumn.Name = "ipColumn";
-            this.ipColumn.ReadOnly = true;
-            // 
-            // portColumn
-            // 
-            this.portColumn.HeaderText = "Port (Source)";
-            this.portColumn.Name = "portColumn";
-            this.portColumn.ReadOnly = true;
-            // 
-            // payloadColumn
-            // 
-            this.payloadColumn.HeaderText = "Data Length (Bytes)";
-            this.payloadColumn.Name = "payloadColumn";
-            this.payloadColumn.ReadOnly = true;
-            // 
-            // timeColumn
-            // 
-            this.timeColumn.HeaderText = "Time Stamp";
-            this.timeColumn.Name = "timeColumn";
-            this.timeColumn.ReadOnly = true;
-            this.timeColumn.Width = 150;
+            this.label15.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(43, 103);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(238, 13);
+            this.label15.TabIndex = 25;
+            this.label15.Text = "*Receiving Port is local, everything else is remote";
             // 
             // MainForm
             // 
@@ -465,6 +478,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn portColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn payloadColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn timeColumn;
+        private System.Windows.Forms.Label label15;
     }
 }
 

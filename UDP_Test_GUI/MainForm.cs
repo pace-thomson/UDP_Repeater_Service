@@ -199,10 +199,9 @@ namespace UDP_Repeater_GUI
             currentSendPort.Text     =  (string)jsonObject["currentConfig"]["sendTo"]["port"];
             currentInterval.Text     =  (string)jsonObject["inactivitySettings"]["inactivityInterval"];
             currentTimeUnit.Text     =  FirstLetterCapital((string)jsonObject["inactivitySettings"]["inactivityUnit"]);
-            if (currentInterval.Text != "1")
-            {
-                currentTimeUnit.Text += "s";
-            }
+
+            if (currentInterval.Text != "1") currentTimeUnit.Text += "s";
+            if (currentReceiveIp.Text == "0.0.0.0") ;
         }
         /// <summary> 
         ///  Class Name: MainForm  <br/><br/>
@@ -223,7 +222,8 @@ namespace UDP_Repeater_GUI
         {
             if (mode == "Receiving From")
             {
-                currentReceiveIp.Text = ip;
+                if (ip == "0.0.0.0") currentReceiveIp.Text = "Any  -  (0.0.0.0)";
+                else currentReceiveIp.Text = ip;
                 currentReceivePort.Text = port;
             }
             else if (mode == "Sending To")

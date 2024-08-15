@@ -38,6 +38,7 @@
             this.label4 = new System.Windows.Forms.Label();
             this.restoreToDefaultsButton = new System.Windows.Forms.Button();
             this.reconfigSetupButton = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // dialogOkButton
@@ -69,14 +70,14 @@
             "Sending To",
             "Default Receive",
             "Default Send"});
-            this.profileDropdown.Location = new System.Drawing.Point(323, 124);
+            this.profileDropdown.Location = new System.Drawing.Point(328, 94);
             this.profileDropdown.Name = "profileDropdown";
             this.profileDropdown.Size = new System.Drawing.Size(123, 21);
             this.profileDropdown.TabIndex = 17;
             // 
             // ipTextbox
             // 
-            this.ipTextbox.Location = new System.Drawing.Point(45, 124);
+            this.ipTextbox.Location = new System.Drawing.Point(50, 94);
             this.ipTextbox.Name = "ipTextbox";
             this.ipTextbox.Size = new System.Drawing.Size(100, 20);
             this.ipTextbox.TabIndex = 18;
@@ -84,15 +85,15 @@
             // ip_label
             // 
             this.ip_label.AutoSize = true;
-            this.ip_label.Location = new System.Drawing.Point(68, 108);
+            this.ip_label.Location = new System.Drawing.Point(69, 78);
             this.ip_label.Name = "ip_label";
-            this.ip_label.Size = new System.Drawing.Size(58, 13);
+            this.ip_label.Size = new System.Drawing.Size(62, 13);
             this.ip_label.TabIndex = 19;
-            this.ip_label.Text = "IP Address";
+            this.ip_label.Text = "*IP Address";
             // 
             // portTextbox
             // 
-            this.portTextbox.Location = new System.Drawing.Point(186, 124);
+            this.portTextbox.Location = new System.Drawing.Point(191, 94);
             this.portTextbox.Name = "portTextbox";
             this.portTextbox.Size = new System.Drawing.Size(100, 20);
             this.portTextbox.TabIndex = 20;
@@ -100,7 +101,7 @@
             // port_label
             // 
             this.port_label.AutoSize = true;
-            this.port_label.Location = new System.Drawing.Point(220, 108);
+            this.port_label.Location = new System.Drawing.Point(225, 78);
             this.port_label.Name = "port_label";
             this.port_label.Size = new System.Drawing.Size(26, 13);
             this.port_label.TabIndex = 21;
@@ -109,7 +110,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(365, 108);
+            this.label4.Location = new System.Drawing.Point(370, 78);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(36, 13);
             this.label4.TabIndex = 22;
@@ -137,6 +138,19 @@
             this.reconfigSetupButton.UseVisualStyleBackColor = true;
             this.reconfigSetupButton.Click += new System.EventHandler(this.reconfigNicButton_Click);
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.label1.Location = new System.Drawing.Point(78, 140);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(308, 39);
+            this.label1.TabIndex = 25;
+            this.label1.Text = "*If you are configuring the IP Address for either of the Receving \r\n  profiles an" +
+    "d dont want to specify a source IP, just input \r\n  <0.0.0.0> to receive from any" +
+    " IP Address.";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // InputForm
             // 
             this.AcceptButton = this.dialogOkButton;
@@ -144,6 +158,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.dialogOkButton;
             this.ClientSize = new System.Drawing.Size(477, 263);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.reconfigSetupButton);
             this.Controls.Add(this.restoreToDefaultsButton);
             this.Controls.Add(this.label4);
@@ -178,5 +193,6 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button restoreToDefaultsButton;
         private System.Windows.Forms.Button reconfigSetupButton;
+        private System.Windows.Forms.Label label1;
     }
 }

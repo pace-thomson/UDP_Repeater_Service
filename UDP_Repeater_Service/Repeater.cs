@@ -438,7 +438,7 @@ namespace Repeater
 
                             // stop the stopwatch, time the packet handling perfomance and record it
                         stopWatch.Stop();
-                        backendObject.AddNewPacketTimeHandled(stopWatch.Elapsed.TotalMilliseconds * 10);
+                        backendObject.AddNewPacketTimeHandled(stopWatch.Elapsed.TotalMilliseconds * 5);
                         stopWatch.Reset();
 
                             // Send the source IP and payload length
@@ -522,7 +522,7 @@ namespace Repeater
         /// 
         /// Returns:  None
         /// </summary>
-        public async static void main(Backend BackendObject, CancellationToken token)
+        public static void main(Backend BackendObject, CancellationToken token)
         {
             try
             {

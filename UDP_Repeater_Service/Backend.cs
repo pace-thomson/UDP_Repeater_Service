@@ -43,26 +43,26 @@ namespace BackendClassNameSpace
     public class Backend
     {
             /// <summary> The IP being listened to</summary>
-        public string receiveIp;
+        public string receiveIp { get; set; }
             /// <summary> The Port being listened to</summary>
-        public int receivePort;
+        public int receivePort { get; set; }
             /// <summary> The IP being sent to</summary>
-        public string sendIp;
+        public string sendIp { get; set; }
             /// <summary> The Port being sent to</summary>
-        public int sendPort;
+        public int sendPort { get; set; }
             /// <summary> The unit (number) at which the service reports inactivity</summary>
-        public int inactivityInterval;
+        public int inactivityInterval { get; set; }
             /// <summary> The unit (minute, day, hour) at which the service reports inactivity</summary>
-        public string inactivityUnit;
+        public string inactivityUnit { get; set; }
             /// <summary> The uri string for the endpoint that our prometheus metrics will be sent to. </summary>
-        public string promEndpoint;
+        public string promEndpoint { get; set; }
             /// <summary> The uri string for the endpoint that our loki logs will be sent to. </summary>
-        public string lokiEndpoint;
+        public string lokiEndpoint { get; set; }
             /// <summary> The device.Name of the network card that we're listening on. </summary>
-        public string ipAddressOfNIC;
+        public string ipAddressOfNIC { get; set; }
 
             /// <summary> How we keep track of the change type. Only used with newBackendObject. </summary>
-        public changeType change;
+        public changeType change { get; set; }
             /// <summary> All the different change types. </summary>
         public enum changeType
         {
@@ -76,28 +76,28 @@ namespace BackendClassNameSpace
         }
 
             /// <summary> Our machine-local windows event log. </summary>
-        public EventLog eventLog;
+        public EventLog eventLog { get; set; }
             /// <summary> 
             /// The loki log that our logs get sent to, in addition to the windows log. 
             ///         local: http://localhost:3100       
             ///         sandbox: http://172.18.46.211:3100
             /// </summary>
-        public ILogger lokiLogger; 
+        public ILogger lokiLogger { get; set; }
 
             /// <summary> 
             /// The main meter provider for all of the prometheus metrics. 
             ///         local: http://localhost:9090/api/v1/otlp/v1/metrics  
             ///         sandbox: http://172.18.46.211:9090/api/v1/otlp/v1/metrics
             /// </summary>
-        public MeterProvider meterProvider;
+        public MeterProvider meterProvider { get; set; }
             /// <summary> Our Meter object (the base for all of the metric instrumentation) </summary>
-        public Meter myMeter;
+        public Meter myMeter { get; set; }
             /// <summary> The counter for packets handled </summary>
-        public Counter<long> TotalPacketsHandled;
+        public Counter<long> TotalPacketsHandled { get; set; }
             /// <summary> Tracks the memory use of the backend. </summary>
-        public ObservableGauge<double> processMemory;
+        public ObservableGauge<double> processMemory { get; set; }
             /// <summary> Tracks average time for packet ingress/egress </summary>
-        public Histogram<double> packetHandlingTimer;
+        public Histogram<double> packetHandlingTimer { get; set; }
 
 
         /// <summary> 
