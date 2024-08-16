@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LogForm));
             this.logDataGridView = new System.Windows.Forms.DataGridView();
             this.entryTypeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -69,8 +69,8 @@
             this.logDataGridView.Name = "logDataGridView";
             this.logDataGridView.ReadOnly = true;
             this.logDataGridView.RowHeadersVisible = false;
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.logDataGridView.RowsDefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.logDataGridView.RowsDefaultCellStyle = dataGridViewCellStyle2;
             this.logDataGridView.RowTemplate.DefaultCellStyle.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.logDataGridView.Size = new System.Drawing.Size(808, 342);
             this.logDataGridView.TabIndex = 1;
@@ -92,8 +92,8 @@
             // messageColumn
             // 
             this.messageColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.messageColumn.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.messageColumn.DefaultCellStyle = dataGridViewCellStyle1;
             this.messageColumn.HeaderText = "Message";
             this.messageColumn.Name = "messageColumn";
             this.messageColumn.ReadOnly = true;
@@ -193,7 +193,7 @@
             this.loadingLabel.AutoSize = true;
             this.loadingLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 36F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.loadingLabel.ForeColor = System.Drawing.Color.DarkGoldenrod;
-            this.loadingLabel.Location = new System.Drawing.Point(312, 265);
+            this.loadingLabel.Location = new System.Drawing.Point(298, 241);
             this.loadingLabel.Name = "loadingLabel";
             this.loadingLabel.Size = new System.Drawing.Size(245, 55);
             this.loadingLabel.TabIndex = 12;

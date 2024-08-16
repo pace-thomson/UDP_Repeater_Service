@@ -336,7 +336,7 @@
             // currentInterval
             // 
             this.currentInterval.AutoSize = true;
-            this.currentInterval.Location = new System.Drawing.Point(284, 60);
+            this.currentInterval.Location = new System.Drawing.Point(286, 60);
             this.currentInterval.Name = "currentInterval";
             this.currentInterval.Size = new System.Drawing.Size(13, 13);
             this.currentInterval.TabIndex = 14;
@@ -354,7 +354,7 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(238, 60);
+            this.label11.Location = new System.Drawing.Point(240, 60);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(48, 13);
             this.label11.TabIndex = 12;
@@ -364,7 +364,7 @@
             // 
             this.label10.AutoSize = true;
             this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label10.Location = new System.Drawing.Point(235, 38);
+            this.label10.Location = new System.Drawing.Point(239, 38);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(62, 15);
             this.label10.TabIndex = 11;

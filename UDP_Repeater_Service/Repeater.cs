@@ -169,10 +169,13 @@ namespace Repeater
         private Socket listenerSocket { get; set; }
             /// <summary> The buffer that we put the newly received packets into. </summary>
         private byte[] buffer { get; set; }
-            /// <summary> Counts our object disposed frequency in ReceiveCallback. One happens naturally 
+            /// <summary> Counts our object disposed frequency in SendToGUI. One can happen 
             /// when we reconfigure. Any more means there is another issue. </summary>
-        private int objectDisposedCounter { get; set; }
-
+        private int guiSenderDisposedCounter { get; set; }
+            /// <summary> Counts our object disposed frequency in SendMessageOut. One can happen 
+            /// when we reconfigure. Any more means there is another issue. </summary>
+        private int mainSenderDisposedCounter { get; set; }
+            /// <summary> In ParsePacket, tells us if we need to filter for remote IP or not. </summary>
         private bool isReceiveIpSet { get; set; }
 
 
@@ -197,7 +200,8 @@ namespace Repeater
             guiSender = new UdpClient("127.0.0.1", 56722);
 
             buffer = new byte[1028];
-            objectDisposedCounter = 0;
+            guiSenderDisposedCounter = 0;
+            mainSenderDisposedCounter = 0;
 
             if (backendObject.receiveIp == "0.0.0.0") isReceiveIpSet = false;
             else isReceiveIpSet = true;
@@ -250,11 +254,7 @@ namespace Repeater
                 if (multicastSender != null) multicastSender.Dispose();
                 if (otherSender != null) otherSender.Dispose();
                 if (guiSender != null) guiSender.Dispose();
-                if (listenerSocket != null)
-                {
-                    listenerSocket.Close();
-                    listenerSocket = null;
-                }
+                if (listenerSocket != null) listenerSocket.Dispose();
             }
             catch (Exception ex) { backendObject.ExceptionLogger(ex); }
         }
@@ -283,10 +283,11 @@ namespace Repeater
                     otherSender.Send(messageBytes, messageBytes.Length);
                 }
             }
-            catch (ObjectDisposedException)
+            catch (ObjectDisposedException) when (mainSenderDisposedCounter == 0)
             {
-                // This gets thrown when the cancellation token pops and the sockets get closed but
-                // it still trys to send it's last packet
+                    // This gets thrown when the cancellation token pops and the sockets get 
+                    // closed but it still trys to send it's last packet
+                mainSenderDisposedCounter++;
             }
             catch (Exception ex)
             {
@@ -316,10 +317,11 @@ namespace Repeater
 
                 guiSender.Send(bytes, bytes.Length);
             }
-            catch (ObjectDisposedException)
+            catch (ObjectDisposedException) when (guiSenderDisposedCounter == 0)
             {
-                // This gets thrown when the cancellation token pops and the sockets get closed but
-                // it still trys to send it's last packet
+                    // This gets thrown when the cancellation token pops and the sockets get 
+                    // closed but it still trys to send it's last packet
+                guiSenderDisposedCounter++;
             }
             catch (Exception e)
             {
@@ -388,16 +390,24 @@ namespace Repeater
                 }
 
                 listenerSocket.IOControl(IOControlCode.ReceiveAll, BitConverter.GetBytes(1), null);
-                listenerSocket.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, new AsyncCallback(PacketReceivedCallback), null);
 
-                    // Registering the task completion task/source
-                var tcs = new TaskCompletionSource<bool>();
-                token.Register(() => tcs.SetResult(true));
+                    // When the cancellation token pops, we close all our sockets
+                token.Register(() => CloseAllOurSockets());
 
-                    // This task finishes when the cancellation token pops, pretty cool right?
-                await tcs.Task;
-
-                CloseAllOurSockets();
+                try
+                {
+                    while (true)
+                    {
+                        listenerSocket.Receive(buffer);
+                        Task.Run(() => PacketReceivedCallback());
+                    }
+                }
+                catch (SocketException ex) when (ex.SocketErrorCode == SocketError.Interrupted)
+                {
+                        // This gets thrown because we dispose of the listening socket while 
+                        // it's still listening to cancel the receive and get out of the loop
+                    return;
+                }
             }
             catch (Exception ex)
             {
@@ -413,53 +423,38 @@ namespace Repeater
         ///  information to the GUI. This also times the packet handling time and reports it, increments total  <br/>
         ///  packets handled, and updates the last received packet time.  <br/><br/>
         ///
-        ///  Inputs:  <br/>
-        ///  IAsyncResult <paramref name="ar"/> - The result object of receiving, it's needed for EndReceive(). <br/><br/>
+        ///  Inputs: None <br/><br/>
         ///  
         ///  Returns:  None
         /// </summary>
-        private void PacketReceivedCallback(IAsyncResult ar)
+        private void PacketReceivedCallback()
         {
             try
             {
-                if (listenerSocket != null) 
+                stopWatch.Restart();
+
+                int udpHeaderOffset = (buffer[0] & 0x0F) * 4;
+                byte[] udpPayload = ParsePacket(udpHeaderOffset);
+
+                if (udpPayload != null)     // if udpPayload is null, that means the src ip and dest port didn't match our receive from config
                 {
-                    stopWatch.Restart();
+                        // Send the paylod out
+                    SendMessageOut(udpPayload);
 
-                    listenerSocket.EndReceive(ar);
+                        // stop the stopwatch, time the packet handling perfomance and record it
+                    stopWatch.Stop();
+                    backendObject.AddNewPacketTimeHandled(stopWatch.Elapsed.TotalMilliseconds * 5);
+                    stopWatch.Reset();
 
-                    int udpHeaderOffset = (buffer[0] & 0x0F) * 4;
-                    byte[] udpPayload = ParsePacket(udpHeaderOffset);
+                        // Send the source IP and payload length
+                    SendToGUI(udpHeaderOffset, udpPayload.Length);
 
-                    if (udpPayload != null)     // if udpPayload is null, that means the src ip and dest port didn't match our receiving config
-                    {
-                            // Send the paylod out
-                        SendMessageOut(udpPayload);
-
-                            // stop the stopwatch, time the packet handling perfomance and record it
-                        stopWatch.Stop();
-                        backendObject.AddNewPacketTimeHandled(stopWatch.Elapsed.TotalMilliseconds * 5);
-                        stopWatch.Reset();
-
-                            // Send the source IP and payload length
-                        SendToGUI(udpHeaderOffset, udpPayload.Length);
-
-                            // update last received packet time for inactivity checker
-                        timer.UpdateLastReceivedTime(DateTime.Now);
+                        // update last received packet time for inactivity checker
+                    timer.UpdateLastReceivedTime(DateTime.Now);
                          
-                            // increment the packets received counter for prometheus metric
-                        backendObject.IncrementTotalPacketsHandled();
-                    }
-                    
-                    listenerSocket.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, new AsyncCallback(PacketReceivedCallback), null);
+                        // increment the packets received counter for prometheus metric
+                    backendObject.IncrementTotalPacketsHandled();
                 }
-            }
-            catch (ObjectDisposedException) when (objectDisposedCounter == 0)
-            {
-                    // This gets thrown when the cancellation token pops and the sockets get closed but it still trys to
-                    // send it's last packet. The objectDisposedCounter gets incremented so that if it happens multiple
-                    // times, we know it's more than some normal reconfiguration, and there's another issue.
-                objectDisposedCounter++;
             }
             catch (Exception ex)
             {
