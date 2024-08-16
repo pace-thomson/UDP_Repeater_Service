@@ -49,6 +49,8 @@ namespace UDP_Repeater_GUI
         public Logger logger;
             /// <summary> Our timer object so we can release it when the form closes. </summary>
         private Timer timer;
+            /// <summary> How we monitor our service for its running status. </summary>
+        public ServiceController ourServiceMonitor;
 
         /// <summary> 
         ///  Class Name: MainForm  <br/><br/>
@@ -72,6 +74,7 @@ namespace UDP_Repeater_GUI
             {
                 timer = SetupTimerForServiceStatus();
                 logger.StartStopLogger("start");
+                ourServiceMonitor = new ServiceController("UDP_Repeater_Service");
                 totalPacketCounter = 0;
                 isListening = false;
                 
@@ -201,7 +204,7 @@ namespace UDP_Repeater_GUI
             currentTimeUnit.Text     =  FirstLetterCapital((string)jsonObject["inactivitySettings"]["inactivityUnit"]);
 
             if (currentInterval.Text != "1") currentTimeUnit.Text += "s";
-            if (currentReceiveIp.Text == "0.0.0.0") ;
+            if (currentReceiveIp.Text == "0.0.0.0") currentReceiveIp.Text = "Any  -  (0.0.0.0)";
         }
         /// <summary> 
         ///  Class Name: MainForm  <br/><br/>
@@ -444,28 +447,25 @@ namespace UDP_Repeater_GUI
         {
             try
             {
-                using (ServiceController ourServiceMonitor = new ServiceController("UDP_Repeater_Service"))
+                ourServiceMonitor.Refresh();
+                switch (ourServiceMonitor.Status)
                 {
-                    if (ourServiceMonitor.Status == ServiceControllerStatus.Running)
-                    {
+                    case ServiceControllerStatus.Running:
                         statusLabel.Text = "Running";
                         statusLabel.ForeColor = Color.Green;
-                    }
-                    else if (ourServiceMonitor.Status == ServiceControllerStatus.Stopped)
-                    {
+                        break;
+                    case ServiceControllerStatus.Stopped:
                         statusLabel.Text = "Not Running";
                         statusLabel.ForeColor = Color.Red;
-                    }
-                    else if (ourServiceMonitor.Status == ServiceControllerStatus.StartPending)
-                    {
+                        break;
+                    case ServiceControllerStatus.StartPending:
                         statusLabel.Text = "Start Pending";
                         statusLabel.ForeColor = Color.Purple;
-                    }
-                    else if (ourServiceMonitor.Status == ServiceControllerStatus.StopPending)
-                    {
+                        break;
+                    case ServiceControllerStatus.StopPending:
                         statusLabel.Text = "Stop Pending";
                         statusLabel.ForeColor = Color.Purple;
-                    }
+                        break;
                 }
             }
             catch (InvalidOperationException notFound)

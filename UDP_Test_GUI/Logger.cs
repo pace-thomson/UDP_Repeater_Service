@@ -52,6 +52,7 @@ namespace UDP_Repeater_GUI
             /// <summary> Tracks the memory use of the gui </summary>
         public ObservableGauge<double> processMemory;
 
+
         /// <summary> 
         ///  Class Name: Logger  <br/><br/> 
         ///

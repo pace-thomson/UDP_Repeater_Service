@@ -201,7 +201,7 @@
             // currentSendPort
             // 
             this.currentSendPort.AutoSize = true;
-            this.currentSendPort.Location = new System.Drawing.Point(166, 80);
+            this.currentSendPort.Location = new System.Drawing.Point(170, 80);
             this.currentSendPort.Name = "currentSendPort";
             this.currentSendPort.Size = new System.Drawing.Size(25, 13);
             this.currentSendPort.TabIndex = 10;
@@ -210,7 +210,7 @@
             // currentReceivePort
             // 
             this.currentReceivePort.AutoSize = true;
-            this.currentReceivePort.Location = new System.Drawing.Point(49, 80);
+            this.currentReceivePort.Location = new System.Drawing.Point(57, 80);
             this.currentReceivePort.Name = "currentReceivePort";
             this.currentReceivePort.Size = new System.Drawing.Size(31, 13);
             this.currentReceivePort.TabIndex = 9;
@@ -219,7 +219,7 @@
             // currentReceiveIp
             // 
             this.currentReceiveIp.AutoSize = true;
-            this.currentReceiveIp.Location = new System.Drawing.Point(20, 60);
+            this.currentReceiveIp.Location = new System.Drawing.Point(25, 60);
             this.currentReceiveIp.Name = "currentReceiveIp";
             this.currentReceiveIp.Size = new System.Drawing.Size(82, 13);
             this.currentReceiveIp.TabIndex = 7;
@@ -228,7 +228,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(20, 80);
+            this.label7.Location = new System.Drawing.Point(28, 80);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(36, 13);
             this.label7.TabIndex = 4;
@@ -237,7 +237,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(3, 60);
+            this.label6.Location = new System.Drawing.Point(8, 60);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(23, 13);
             this.label6.TabIndex = 3;
@@ -247,7 +247,7 @@
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(1, 38);
+            this.label4.Location = new System.Drawing.Point(6, 38);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(107, 15);
             this.label4.TabIndex = 1;
@@ -256,7 +256,7 @@
             // currentSendIp
             // 
             this.currentSendIp.AutoSize = true;
-            this.currentSendIp.Location = new System.Drawing.Point(133, 60);
+            this.currentSendIp.Location = new System.Drawing.Point(140, 60);
             this.currentSendIp.Name = "currentSendIp";
             this.currentSendIp.Size = new System.Drawing.Size(82, 13);
             this.currentSendIp.TabIndex = 8;
@@ -265,7 +265,7 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(140, 80);
+            this.label9.Location = new System.Drawing.Point(144, 80);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(32, 13);
             this.label9.TabIndex = 6;
@@ -274,7 +274,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(117, 60);
+            this.label8.Location = new System.Drawing.Point(124, 60);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(23, 13);
             this.label8.TabIndex = 5;
@@ -284,7 +284,7 @@
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(129, 38);
+            this.label5.Location = new System.Drawing.Point(132, 38);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(80, 15);
             this.label5.TabIndex = 2;
@@ -327,7 +327,7 @@
             // currentTimeUnit
             // 
             this.currentTimeUnit.AutoSize = true;
-            this.currentTimeUnit.Location = new System.Drawing.Point(261, 80);
+            this.currentTimeUnit.Location = new System.Drawing.Point(263, 80);
             this.currentTimeUnit.Name = "currentTimeUnit";
             this.currentTimeUnit.Size = new System.Drawing.Size(44, 13);
             this.currentTimeUnit.TabIndex = 15;
@@ -345,7 +345,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(234, 80);
+            this.label12.Location = new System.Drawing.Point(236, 80);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(29, 13);
             this.label12.TabIndex = 13;
@@ -364,7 +364,7 @@
             // 
             this.label10.AutoSize = true;
             this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label10.Location = new System.Drawing.Point(233, 38);
+            this.label10.Location = new System.Drawing.Point(235, 38);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(62, 15);
             this.label10.TabIndex = 11;
