@@ -2,21 +2,21 @@
  File Name: Bundle.wxs
 
  Description: This file houses the wix toolset installer 
-              bootstrapper that combines the other installer
-              and chains them together with a .NET framework
-			  4.7.2 installer and a NpCap installer. It also 
-			  has the UI that the installer uses to house all 
-			  of them.
+              bootstrapper that takes the main installer
+              for the Packet Repeater Service and combines
+			  it together with a .NET framework 4.7.2 installer.
+			  It also has the UI that this bootstrapper 
+			  installer uses to keep track of all of them.
               
- Language:         XML/wix toolset specific stuff
+ Language:         XML/wix toolset specific version
  Target:           Windows PC
  Operating System: Windows 11 Enterprise
  Compiler:         Visual Studio .Net 2022
 
  Change History:
 
- Version   Date 		 Author            Description
-   1.0    8/3/24    Jade Pace Thomson     Initial Release
+ Version   Date 		 Author              Description
+   1.0    8/16/24    Jade Pace Thomson     Initial Release
 =========================================================-->
 
 

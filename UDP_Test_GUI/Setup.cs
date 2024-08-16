@@ -1,4 +1,4 @@
-﻿//----------------------------------------------------
+﻿//-----------------------------------------------------------
 // File Name: Setup.cs
 // 
 // Description: This file handles the form for selecting
@@ -17,9 +17,9 @@
 //
 // Change History:
 //
-// Version   Date          Author            Description
-//   1.0    8/3/24    Jade Pace Thomson     Initial Release
-//---------------------------------------------------
+// Version   Date          Author              Description
+//   1.0    8/16/24    Jade Pace Thomson     Initial Release
+//----------------------------------------------------------
 
 
 using System;
@@ -34,8 +34,10 @@ using System.Net.NetworkInformation;
 
 namespace UDP_Test_GUI
 {
-    /// <summary> The form for configuring settings for the system's monitoring endpoints and selecting what NIC to
-    /// listen on. This is opened if UDP_Repeater_Config.json is new or if the user opens it off of the input form. </summary>
+    /// <summary> 
+    /// The form for configuring settings for the system's monitoring endpoints and selecting what NIC to <br/>
+    /// listen on. This is opened if UDP_Repeater_Config.json is new or if the user opens it off of the input form. 
+    /// </summary>
     public partial class Setup : Form
     {
             /// <summary> Tracks whether the user's selection/inputs were valid </summary>
@@ -54,9 +56,9 @@ namespace UDP_Test_GUI
         ///
         ///  Inputs:  <br/>
         ///  MainForm <paramref name="TheMainForm"/> - The main form's object. Passed in so that 
-        ///  we can have logging. <br/><br/>
+        ///                                            we can have logging. <br/><br/>
         ///  
-        ///  Returns: A Setup object.
+        ///  Returns: A Setup form object.
         /// </summary>
         public Setup(MainForm TheMainForm)
         {
@@ -108,11 +110,11 @@ namespace UDP_Test_GUI
         /// <summary> 
         ///  Class Name: Setup <br/><br/>
         ///
-        ///  Description: Polulates this form's current configuration section with the system's NIC and endpoints. <br/><br/>
+        ///  Description: Populates this form's current configuration section with the system's NIC and endpoints. <br/><br/>
         ///
         ///  Inputs:  None 
         ///  </summary> 
-        ///  <returns> void </returns>
+        ///  <returns> None </returns>
         private void PopulateCurrentConfig()
         {
             string jsonString = File.ReadAllText("C:\\Windows\\SysWOW64\\UDP_Repeater_Config.json");
@@ -127,7 +129,7 @@ namespace UDP_Test_GUI
         ///  Class Name: Setup <br/><br/>
         ///
         ///  Description: Handles the "done" button click. Validates input and then sends to the Backend. <br/>
-        ///  If input isn't valid, displays a specific messageBox.<br/><br/>
+        ///  If input isn't valid, displays a specific messageBox. <br/><br/>
         ///
         ///  Inputs:  None 
         ///  </summary> 
@@ -196,7 +198,7 @@ namespace UDP_Test_GUI
         ///
         ///  Inputs:  None 
         ///  </summary> 
-        ///  <returns> void </returns>
+        ///  <returns> None </returns>
         private void Setup_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (!isValidInput)

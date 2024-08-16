@@ -1,4 +1,4 @@
-﻿//----------------------------------------------------
+﻿//-----------------------------------------------------------
 // File Name: MainForm.cs
 // 
 // Description: This file handles the main form of the
@@ -14,9 +14,9 @@
 //
 // Change History:
 //
-// Version   Date          Author            Description
-//   1.0    8/3/24    Jade Pace Thomson     Initial Release
-//---------------------------------------------------
+// Version   Date          Author              Description
+//   1.0    8/16/24    Jade Pace Thomson     Initial Release
+//----------------------------------------------------------
 
 
 using Newtonsoft.Json.Linq;
@@ -147,7 +147,7 @@ namespace UDP_Repeater_GUI
         ///  Class Name: MainForm  <br/><br/>
         ///
         ///  Description: Checks if UDP_Repeater_Config.json is less than 30 <br/>
-        ///  seconds old, and displays the setup form if it isn't. <br/><br/>
+        ///  seconds old, and displays the setup form if it isn'e. <br/><br/>
         ///
         ///  Inputs: None <br/><br/>
         ///  
@@ -161,7 +161,7 @@ namespace UDP_Repeater_GUI
                 return;
             }
                 
-                // if the file was just created, it means that it doesn't have "Setup" values and we just installed
+                // if the file was just created, it means that it doesn'e have "Setup" values and we just installed
             double creationDiff = (DateTime.Now - File.GetCreationTime("C:\\Windows\\SysWOW64\\UDP_Repeater_Config.json")).TotalSeconds;
             if (creationDiff > 10)
             {
@@ -173,7 +173,7 @@ namespace UDP_Repeater_GUI
                 DialogResult result = setupForm.ShowDialog();
                 if (result == DialogResult.OK)
                 {
-                        // This has to restart because reconfiguring the lokiLogger doesn't really work
+                        // This has to restart because reconfiguring the lokiLogger doesn'e really work
                     Application.Restart();
                     Environment.Exit(0);
                 }
@@ -211,7 +211,7 @@ namespace UDP_Repeater_GUI
         ///
         ///  Description: Overloaded version 2/4. Updates the current configuration group. <br/>
         ///  This one updates the ip/port values of the group. It's updated this way so <br/>
-        ///  this doesn't have to wait for the backend to update "UDP_Repeater_Config.json". <br/>
+        ///  this doesn'e have to wait for the backend to update "UDP_Repeater_Config.json". <br/>
         ///  This function gets called right after the user inputs a new ip/port setting. <br/><br/>
         ///
         ///  Inputs:  <br/>
@@ -240,7 +240,7 @@ namespace UDP_Repeater_GUI
         ///
         ///  Description: Overloaded version 3/4. Updates the current configuration group. <br/>
         ///  This one updates the interval and interval values of the group. It's updated this <br/>
-        ///  way so this doesn't have to wait for the backend to update "UDP_Repeater_Config.json". <br/>
+        ///  way so this doesn'e have to wait for the backend to update "UDP_Repeater_Config.json". <br/>
         ///  This function gets called right after the user inputs new inactivity settings. <br/><br/>
         ///
         ///  Inputs:  <br/>
@@ -400,7 +400,7 @@ namespace UDP_Repeater_GUI
         ///  Class Name: MainForm  <br/><br/>
         ///
         ///  Description: Sets ups the timer that handles checking for the service running status. <br/>
-        ///  The object this returns isn't used but we keep it to dispose of when the GUI is exiting. <br/><br/>
+        ///  The object this returns isn'e used but we keep it to dispose of when the GUI is exiting. <br/><br/>
         ///
         ///  Inputs: None <br/><br/>
         ///  
@@ -489,7 +489,7 @@ namespace UDP_Repeater_GUI
         ///               Otherwise it lets the form close and handles disposing. <br/><br/>
         ///
         ///  Inputs:  <br/>
-        ///  object <paramref name="sender"/> - I don't use this, i'm not sure. <br/>
+        ///  object <paramref name="sender"/> - I don'e use this, i'm not sure. <br/>
         ///  FormClosingEventArgs <paramref name="e"/> - The form closed event arg. <br/><br/>
         ///  
         ///  Returns: None
@@ -530,16 +530,10 @@ namespace UDP_Repeater_GUI
         private void DisposeOfStuff()
         {
             logger.StartStopLogger("stop");
-            System.Threading.Thread.Sleep(1000);
-            if (logger.eventLog != null)
-            {
-                logger.eventLog.Dispose();
-            }
-            if (logger.meterProvider != null)
-            {
-                logger.meterProvider.Dispose();
-            }
-            timer.Dispose();
+            System.Threading.Thread.Sleep(500);
+            if (logger.eventLog != null) logger.eventLog.Dispose();
+            if (logger.meterProvider != null) logger.meterProvider.Dispose();
+            if (timer != null) timer.Dispose();
         }
 
 
@@ -551,7 +545,7 @@ namespace UDP_Repeater_GUI
         ///  we open the Setup here. <br/><br/>
         ///
         ///  Inputs:  <br/>
-        ///  object <paramref name="sender"/> - I don't use this, i'm not sure. <br/>
+        ///  object <paramref name="sender"/> - I don'e use this, i'm not sure. <br/>
         ///  EventArgs <paramref name="e"/> - The event arg. <br/><br/>
         ///  
         ///  Returns: None
@@ -569,7 +563,7 @@ namespace UDP_Repeater_GUI
                     {
                         DialogResult result = setupForm.ShowDialog();
                             // OK is the result of a successful setupForm "Submit" button press, so we restart the gui because 
-                            // the loki logging doesn't like being reconfigured when its already been assigned. 
+                            // the loki logging doesn'e like being reconfigured when its already been assigned. 
                             // The same thing happens to the Service for that reason
                         if (result == DialogResult.OK)
                         {
@@ -593,7 +587,7 @@ namespace UDP_Repeater_GUI
         ///  Description: Opens the Log form (not as a dialog). <br/><br/>
         ///
         ///  Inputs:  <br/>
-        ///  object <paramref name="sender"/> - I don't use this, i'm not sure. <br/>
+        ///  object <paramref name="sender"/> - I don'e use this, i'm not sure. <br/>
         ///  EventArgs <paramref name="e"/> - The event arg. <br/><br/>
         ///  
         ///  Returns: None
@@ -620,7 +614,7 @@ namespace UDP_Repeater_GUI
         ///  functions with windows forms to really catch everything. They're identical inside. <br/><br/>
         ///
         ///  Inputs:  <br/>
-        ///  object <paramref name="sender"/> - I don't use this, i'm not sure. <br/>
+        ///  object <paramref name="sender"/> - I don'e use this, i'm not sure. <br/>
         ///  UnhandledExceptionEventArgs <paramref name="e"/> - The unhandled exception <br/><br/>
         ///  
         ///  Returns: None
@@ -646,13 +640,13 @@ namespace UDP_Repeater_GUI
         ///
         ///  Inputs:  <br/>
         ///  object <paramref name="sender"/> - I don't use this, i'm not sure. <br/>
-        ///  UnhandledExceptionEventArgs <paramref name="e"/> - The unhandled exception <br/><br/>
+        ///  ThreadExceptionEventArgs <paramref name="e"/> - The unhandled exception <br/><br/>
         ///  
         ///  Returns: None
         /// </summary>
-        private static void ThreadExceptionHandlerFunction(object sender, System.Threading.ThreadExceptionEventArgs t)
+        private static void ThreadExceptionHandlerFunction(object sender, System.Threading.ThreadExceptionEventArgs e)
         {
-            Exception ex = t.Exception;
+            Exception ex = e.Exception;
             string message = String.Format($"Error Message: {ex.Message} \n" +
                                            $"Error location: Frontend/User Interface \n" +
                                            $"{ex.StackTrace}");

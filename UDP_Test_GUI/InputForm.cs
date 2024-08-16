@@ -1,4 +1,4 @@
-﻿//----------------------------------------------------
+﻿//-----------------------------------------------------------
 // File Name: InputForm.cs
 // 
 // Description: This file handles the input IP/Port
@@ -11,9 +11,9 @@
 //
 // Change History:
 //
-// Version   Date          Author            Description
-//   1.0    8/3/24    Jade Pace Thomson     Initial Release
-//---------------------------------------------------
+// Version   Date          Author              Description
+//   1.0    8/16/24    Jade Pace Thomson     Initial Release
+//----------------------------------------------------------
 
 
 using System;
@@ -48,7 +48,7 @@ namespace UDP_Repeater_GUI
         ///  we can update it's "Current Configuration" section whenever a change is made. <br/>
         ///  Also we use it's logger object for all of our logging needs. <br/><br/>
         ///  
-        ///  Returns: A InputForm form object.
+        ///  Returns: An InputForm form object.
         /// </summary>
         public InputForm(MainForm mainForm)
         {

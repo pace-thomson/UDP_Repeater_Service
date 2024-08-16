@@ -1,4 +1,4 @@
-﻿//----------------------------------------------------
+﻿//-----------------------------------------------------------
 // File Name: ReceiveFromGUI.cs
 // 
 // Description: This file contains the methods for 
@@ -13,9 +13,9 @@
 //
 //          Change History:
 //
-// Version   Date          Author            Description
-//   1.0    8/3/24    Jade Pace Thomson     Initial Release
-//---------------------------------------------------
+// Version   Date          Author              Description
+//   1.0    8/16/24    Jade Pace Thomson     Initial Release
+//----------------------------------------------------------
 
 
 using System;
@@ -42,12 +42,14 @@ namespace GUIreceiver
         ///  Inputs:  None <br/>
         ///  Backend <paramref name="backendObject"/> - The Backend object for logging. <br/><br/>
         ///  
-        ///  Returns: string[] - An string array containing the new configuration information
+        ///  Returns: string[] - An string array containing the new configuration information.
         /// </summary>
         public static string[] ReceivingFromGUI(Backend backendObject)
         {
             bool socketOpen = false;
             int socketCantConnectCount = 0;
+            int receivingFromGuiPort = 63763;
+
             UdpClient listener = new UdpClient();
             try
             {
@@ -55,7 +57,7 @@ namespace GUIreceiver
                 {
                     try
                     {
-                        listener = new UdpClient(63763);
+                        listener = new UdpClient(receivingFromGuiPort);
                         socketOpen = true;
                     }
                     catch (SocketException) 
@@ -64,7 +66,7 @@ namespace GUIreceiver
                         
                         if (socketCantConnectCount > 15)
                         {
-                            backendObject.WarningLogger("Receiving from GUI port 63763 not open. " +
+                            backendObject.WarningLogger($"Receiving from GUI port: {receivingFromGuiPort} not open. " +
                                                         "Tried 15 times to connect without success");
 
                             return null;
@@ -73,7 +75,7 @@ namespace GUIreceiver
                     }
                 }
                 
-                IPEndPoint senderEndPoint = new IPEndPoint(IPAddress.Any, 0);
+                IPEndPoint senderEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 0);
 
                 byte[] messageBytes = listener.Receive(ref senderEndPoint);
 
@@ -105,7 +107,7 @@ namespace GUIreceiver
         {
             try
             {
-                        // a new backendObject gets made to compare to the old one when this function returns
+                        // a new backendObject gets made to compare to store the new values
                 Backend newbackendObject = new Backend(backendObject);
 
                         // waits for input from the GUI

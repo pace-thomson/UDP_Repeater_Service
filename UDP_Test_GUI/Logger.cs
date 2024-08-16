@@ -1,4 +1,4 @@
-﻿//----------------------------------------------------
+﻿//-----------------------------------------------------------
 // File Name: Logger.cs
 // 
 // Description: This file contains all the methods for
@@ -12,9 +12,9 @@
 //
 // Change History:
 //
-// Version   Date          Author            Description
-//   1.0    8/3/24    Jade Pace Thomson     Initial Release
-//---------------------------------------------------
+// Version   Date          Author              Description
+//   1.0    8/16/24    Jade Pace Thomson     Initial Release
+//----------------------------------------------------------
 
 
 using Newtonsoft.Json.Linq;
@@ -293,7 +293,7 @@ namespace UDP_Repeater_GUI
         ///
         ///  Inputs:  <br/>
         ///  string <paramref name="name"/> - The new NIC's name. <br/>
-        ///  string <paramref name="type"/> - The new NIC's interface type. <br/><br/>
+        ///  string <paramref name="ipAddress"/> - The new NIC's IP Address. <br/><br/>
         ///  
         ///  Returns:  None
         /// </summary>

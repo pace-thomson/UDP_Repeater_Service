@@ -1,4 +1,4 @@
-﻿//----------------------------------------------------
+﻿//-----------------------------------------------------------
 // File Name: Repeater.cs
 // 
 // Description: This file contains the method that constantly 
@@ -14,9 +14,9 @@
 //
 // Change History:
 //
-// Version   Date          Author            Description
-//   1.0    8/3/24    Jade Pace Thomson     Initial Release
-//---------------------------------------------------
+// Version   Date          Author              Description
+//   1.0    8/16/24    Jade Pace Thomson     Initial Release
+//----------------------------------------------------------
 
 
 
@@ -39,17 +39,17 @@ namespace Repeater
     public class TimerClass
     {
                 /// <summary>The actual Timer object.</summary>
-        public static System.Timers.Timer timer;
+        public static System.Timers.Timer timer { get; set; }
                 /// <summary>Keeps track of events fired in a row to caculate total time since last packet.</summary>
-        public static int consecutiveEventsFired = 0;
+        public static int consecutiveEventsFired { get; set; }
                 /// <summary>Check every 5 seconds</summary>
-        public static int checkInterval = 5000;
+        public static int checkInterval { get; set; }
                 /// <summary> The specified time between packets, in seconds </summary>
-        public static double timeoutThreshold;
+        public static double timeoutThreshold { get; set; }
                 /// <summary> This can either be the mose recent packet, or most recent log event </summary>
-        public static DateTime mostRecentTimestamp;
+        public static DateTime mostRecentTimestamp { get; set; }
                 /// <summary> A Backend object that we use to get the inactivity settings and logging. </summary>
-        private static Backend backendObject;
+        private static Backend backendObject { get; set; }
 
 
         /// <summary> 
@@ -67,15 +67,18 @@ namespace Repeater
         {
             try
             {
-                timer = new System.Timers.Timer(checkInterval);
-                timer.Elapsed += OnTimerFiring;
-
-                timer.AutoReset = true;  
-                timer.Enabled = true;
-
                 backendObject = BackendObject;
 
                 mostRecentTimestamp = DateTime.Now;
+                consecutiveEventsFired = 0;
+                checkInterval = 5000;
+
+                timer = new System.Timers.Timer(checkInterval);
+                timer.Elapsed += OnTimerFiring;
+                timer.AutoReset = true;  
+                timer.Enabled = true;
+
+                
 
                 double intervalDouble = Convert.ToDouble(backendObject.inactivityInterval);
                 switch (backendObject.inactivityUnit)
@@ -189,7 +192,7 @@ namespace Repeater
         ///                                             settings and error logging. <br/><br/> 
         /// </summary>
         /// <returns>A RepeaterClass Object</returns>
-        public RepeaterClass(Backend BackendObject, CancellationToken originalToken)
+        public RepeaterClass(Backend BackendObject)
         {
             backendObject = BackendObject;
             timer = new TimerClass(BackendObject);
@@ -247,6 +250,15 @@ namespace Repeater
             }
         }
 
+        /// <summary> 
+        ///  Class Name: RepeaterClass  <br/><br/>
+        ///
+        ///  Description: Disposes of all of the sockets. This is called when the cancellation token pops. <br/><br/>
+        ///
+        ///  Inputs: None <br/><br/>
+        ///  
+        ///  Returns: None
+        /// </summary>
         public void CloseAllOurSockets()
         {
             try
@@ -301,7 +313,7 @@ namespace Repeater
         ///  Description: Sends packet information to the GUI. <br/><br/>
         ///
         ///  Inputs:  <br/>
-        ///  int <paramref name="payloadLength"/> - The length of the received packet's payload.s <br/><br/>
+        ///  int <paramref name="payloadLength"/> - The length of the received packet's payload. <br/><br/>
         ///  
         ///  Returns:  None
         /// </summary>
@@ -366,12 +378,13 @@ namespace Repeater
         /// <summary> 
         ///  Class Name: RepeaterClass  <br/><br/>
         ///
-        ///  Description: Intializes the listening socket and begins the listening task. <br/>
-        ///  This also registers the TaskCompletionSource and waits for it to know when we're reconfiguring <br/>
-        ///  so we can stop listening and close the sockets. <br/><br/>
+        ///  Description: Intializes the listening socket and begins the listening loop. <br/>
+        ///  This also registers the token to CloseAllOurSockets() when it pops, and waits for it to know <br/>
+        ///  when we're reconfiguring so we can stop listening and close the sockets. <br/><br/>
         ///
         ///  Inputs:  <br/>
-        ///  CancellationToken <paramref name="token"/> - A token that signals a configuration change was made, so this task need to end. <br/><br/>
+        ///  CancellationToken <paramref name="token"/> - A token that signals a configuration change was <br/> 
+        ///                                               made, so we need to stop listening and return. <br/><br/>
         ///  
         ///  Returns:  None
         /// </summary>
@@ -461,6 +474,7 @@ namespace Repeater
                 backendObject.ExceptionLogger(ex);
             }
         }
+
         /// <summary> 
         ///  Class Name: RepeaterClass  <br/><br/>
         ///
@@ -470,10 +484,10 @@ namespace Repeater
         ///  Inputs: None <br/><br/>
         ///     
         /// </summary>
-        /// <returns> byte[]? - The packet's payload. This returns null if the packet wasn't for the right endpoint. </returns> 
+        /// <returns> byte[]? - The packet's payload. This returns null if the packet doesn't <br/>
+        ///                      match the "Receive From" Settings. </returns> 
         private byte[] ParsePacket(int udpHeaderOffset)
         {
-            // Parse the IP header to find the source IP and destination port
             int destinationPort = (buffer[udpHeaderOffset + 2] << 8) | buffer[udpHeaderOffset + 3];
 
             if (isReceiveIpSet)
@@ -508,8 +522,9 @@ namespace Repeater
         /// <summary> 
         /// Class Name: RepeaterClass  <br/><br/> 
         ///
-        /// Description: The main function of the RepeaterClass. Starts and runs the StartReceiver funtion <br/>
-        /// in it's own task. Also initializes the backendOjbect and timer fields. <br/><br/>
+        /// Description: The main function of the RepeaterClass. Intializes the repeaterObject <br/>
+        ///              and then starts and runs the SetupAndStartListener function. <br/>
+        /// in it's own task. Also  <br/><br/>
         ///
         /// Inputs:  <br/>
         /// Backend <paramref name="BackendObject"/> - The Backend object to supply configuraiton information <br/>
@@ -521,7 +536,7 @@ namespace Repeater
         {
             try
             {
-                RepeaterClass repeaterObject = new RepeaterClass(BackendObject, token);
+                RepeaterClass repeaterObject = new RepeaterClass(BackendObject);
 
                 repeaterObject.SetupAndStartListener(token);
 

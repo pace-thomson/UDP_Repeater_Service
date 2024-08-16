@@ -8,15 +8,15 @@
 			  our event log sources, registers the service side, 
 			  and sets the GUI to run on startup. 
               
- Language:         XML/wix toolset specific stuff
+ Language:         XML/wix toolset specific version
  Target:           Windows PC
  Operating System: Windows 11 Enterprise
  Compiler:         Visual Studio .Net 2022
 
  Change History:
 
- Version   Date 		 Author            Description
-   1.0    8/3/24    Jade Pace Thomson     Initial Release
+ Version   Date 		 Author              Description
+   1.0    8/16/24    Jade Pace Thomson     Initial Release
 =========================================================-->
 
 

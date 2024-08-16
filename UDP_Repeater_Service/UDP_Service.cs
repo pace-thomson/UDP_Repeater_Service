@@ -1,4 +1,4 @@
-﻿//----------------------------------------------------
+﻿//-----------------------------------------------------------
 // File Name: UDP_Service.cs
 // 
 // Description: This file contains the methods for 
@@ -12,9 +12,9 @@
 //
 //          Change History:
 //
-// Version   Date          Author            Description
-//   1.0    8/3/24    Jade Pace Thomson     Initial Release
-//---------------------------------------------------
+// Version   Date          Author              Description
+//   1.0    8/16/24    Jade Pace Thomson     Initial Release
+//----------------------------------------------------------
 
 using BackendClassNameSpace;
 using GUIreceiver;
@@ -55,6 +55,7 @@ namespace UDP_Repeater_Service
         public UDP_Service()
         {
             InitializeComponent();
+
             if (!EventLog.SourceExists("UDP_Repeater_Backend"))
             {
                 EventLog.CreateEventSource("UDP_Repeater_Backend", "UDP Packet Repeater");
@@ -74,7 +75,7 @@ namespace UDP_Repeater_Service
         ///  This logs the service starting and then calls the main method for the service. <br/><br/>
         ///
         ///  Inputs: <br/>
-        ///  string[] <paramref name="args"/> - The arguements for starting the service. <br/><br/>
+        ///  string[] <paramref name="args"/> - The arguments for starting the service. <br/><br/>
         ///  
         ///  Returns:  None
         /// </summary>
@@ -116,7 +117,7 @@ class TheMainProgram
     ///
     ///  Inputs: None <br/><br/>
     ///  
-    ///  Returns:  Backend newbackendObject - The main Backend objects.
+    ///  Returns:  Backend newbackendObject - The main Backend object.
     /// </summary>
     public static Backend SetConfig()
     {
@@ -241,7 +242,7 @@ class TheMainProgram
     ///
     ///  Description: Runs the main part of the whole repeater service. Turns on the repeater thread asynchronously <br/>
     ///  and then continuely listens until a new configuraton is received from the GUI. At which point, <br/>
-    ///  the "UDP_Repeater_Config.json and the Backend Object is updated. It then restarts the repeater <br/>
+    ///  "UDP_Repeater_Config.json" and the Backend Object are updated. It then restarts the repeater <br/>
     ///  thread with the updated settings, or restarts the whole service if the "setup" was reconfigured. <br/><br/>
     ///
     ///  Inputs: None <br/><br/>
