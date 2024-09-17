@@ -73,7 +73,7 @@ namespace UDP_Repeater_GUI
             try
             {
                 timer = SetupTimerForServiceStatus();
-                logger.StartStopLogger("start");
+                // logger.StartStopLogger("start");
                 ourServiceMonitor = new ServiceController("UDP_Repeater_Service");
                 totalPacketCounter = 0;
                 isListening = false;
