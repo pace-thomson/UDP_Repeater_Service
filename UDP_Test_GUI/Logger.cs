@@ -96,7 +96,7 @@ namespace UDP_Repeater_GUI
 
 
                 this.meterProvider = Sdk.CreateMeterProviderBuilder()
-                                    .AddMeter("JT4.Repeater.MyLibrary")
+                                    .AddMeter("Internship.Repeater.MyLibrary")
                                     .AddOtlpExporter((exporterOptions, metricReaderOptions) =>
                                     {
                                         exporterOptions.Endpoint = new Uri(promURI);
@@ -104,7 +104,7 @@ namespace UDP_Repeater_GUI
                                         metricReaderOptions.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 5000;
                                     })
                                     .Build();
-                this.myMeter = new Meter("JT4.Repeater.MyLibrary", "1.0");
+                this.myMeter = new Meter("Internship.Repeater.MyLibrary", "1.0");
                 this.processMemory = myMeter.CreateObservableGauge("frontendMemory", () => GetProcessMemory());
             }
             catch (UriFormatException) 

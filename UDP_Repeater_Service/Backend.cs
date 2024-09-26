@@ -168,7 +168,7 @@ namespace BackendClassNameSpace
 
                     // Prometheus set up fields
                 this.meterProvider = Sdk.CreateMeterProviderBuilder()
-                                    .AddMeter("JT4.Repeater.MyLibrary")
+                                    .AddMeter("Internship.Repeater.MyLibrary")
                                     .AddOtlpExporter((exporterOptions, metricReaderOptions) =>
                                     {
                                         exporterOptions.Endpoint = new Uri(this.promEndpoint);
@@ -176,7 +176,7 @@ namespace BackendClassNameSpace
                                         metricReaderOptions.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 5000;
                                     })
                                     .Build();
-                this.myMeter = new Meter("JT4.Repeater.MyLibrary", "1.0");
+                this.myMeter = new Meter("Internship.Repeater.MyLibrary", "1.0");
                 this.TotalPacketsHandled = myMeter.CreateCounter<long>("TotalPacketsHandled");
                 this.processMemory = myMeter.CreateObservableGauge("backendMemory", () => GetProcessMemory());
                 this.packetHandlingTimer = myMeter.CreateHistogram<double>("packetHandlingTimer");
